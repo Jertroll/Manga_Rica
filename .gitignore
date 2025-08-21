@@ -1,0 +1,25 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+[Bb]uild/
+x64/
+x86/
+
+# Others
+*.log
+*.tlog
+*.cache
+*.ide
+
+# Config files with secrets (mejor no subirlos si tienen credenciales)
+appsettings.json
+
