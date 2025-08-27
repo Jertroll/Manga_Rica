@@ -1,7 +1,10 @@
 // BLL/AuthService.cs
 using Manga_Rica_P1.DAL;
-using Manga_Rica_P1.Entity;
-
+using Manga_Rica_P1.Entity; 
+using Manga_Rica_P1.ENTITY;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Manga_Rica_P1.BLL.AutentificacionService
 {
@@ -10,44 +13,54 @@ namespace Manga_Rica_P1.BLL.AutentificacionService
         private readonly UsuarioRepository _repo;
         public AutentificacionService(UsuarioRepository repo) => _repo = repo;
 
-
+        // =======================
+        //        QUERIES
+        // =======================
         public List<Usuario> ObtenerUsuarios()
         {
             var usuarios = _repo.GetAllUsuario();
-
-          if (usuarios is null || usuarios.Count == 0)
-            {
-                return new List<Usuario>();
-            }
-                return usuarios;
-
+            return (usuarios is null || usuarios.Count == 0) ? new List<Usuario>() : usuarios;
         }
-
 
         public List<string> ObtenerUsernames()
         {
             return ObtenerUsuarios()
-                .Select(user => user.username)
+                .Select(u => u.username)
                 .Distinct()
                 .OrderBy(n => n)
                 .ToList();
         }
 
-        public (bool Ok, string Message, Usuario? User) Login(string username, string password)
+        // ==============================================
+        //  LOGIN (mismo nombre) -> ahora devuelve AuthUser
+        // ==============================================
+        public (bool Ok, string Message, AuthUser? User) Login(string username, string password)
         {
-            var user = _repo.GetByUsername(username);
-            if (user is null) return (false, "Usuario no existe. Solicita un nuevo perfil al administrador", null);
+            var usuario = _repo.GetByUsername(username);
+            if (usuario is null)
+                return (false, "Usuario no existe. Solicite un nuevo perfil al administrador.", null);
 
-            // 1) Regla de expiración
-            if (user.fecha < DateTime.Now)
+            // Regla de expiración (ajusta si 'fecha' significa otra cosa)
+            if (usuario.fecha < DateTime.Now)
                 return (false, "Usuario expirado. Contacte al administrador.", null);
 
-            // 2) Verificación de contraseña
-            bool ok = user.password == password;
+            // TODO: migrar a verificación de hash (bcrypt/Argon2)
+            if (usuario.password != password)
+                return (false, "Contraseña inválida.", null);
 
-            if (!ok) return (false, "Contraseña inválida.", null);
-
-            return (true, "OK", user);
+            // Mapea a DTO de sesión antes de devolver
+            var auth = MapToAuthUser(usuario);
+            return (true, "OK", auth);
         }
+
+        // =======================
+        //       MAPEO PRIVADO
+        // =======================
+        private static AuthUser MapToAuthUser(Usuario u) => new AuthUser
+        {
+            Id = u.Id,
+            Username = u.username,        
+            Rol = u.perfil
+        };
     }
 }
