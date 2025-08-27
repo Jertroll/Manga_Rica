@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Manga_Rica_P1.DAL;
 using Manga_Rica_P1.BLL.AutentificacionService;
 using Manga_Rica_P1.UI.Login;
+using Manga_Rica_P1.UI.Ventana_Principal;
 
 namespace Manga_Rica_P1
 {
@@ -35,7 +36,7 @@ namespace Manga_Rica_P1
         using var login = new LoginForm(autentificacionService);
             {
                 if (login.ShowDialog() == DialogResult.OK)
-                    Application.Run(new Form1());
+                    Application.Run(new Principal());
                 else
                     Application.Exit();
             }

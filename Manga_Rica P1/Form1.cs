@@ -147,5 +147,19 @@ namespace Manga_Rica_P1
             }
         }
 
+        private void labelTituloPrincipal_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
