@@ -852,7 +852,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             Controls.Add(panel8);
             Name = "Principal";
             Text = " ";
-            Load += Principal_Load_2;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -889,10 +888,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             ResumeLayout(false);
         }
 
-        private void Principal_Load_2(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+ 
 
         #endregion
 

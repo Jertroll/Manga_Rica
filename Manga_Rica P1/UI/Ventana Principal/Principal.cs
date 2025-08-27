@@ -10,7 +10,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
     {
         // Un controlador por menú
         private Dictionary<string, MenuDesplegable> _menus = new();
-        private Label lblUsuario;
+        // Cambia la declaración de lblUsuario para permitir nulos y suprime la advertencia donde se usa
+        private Label? lblUsuario;
         private readonly IAppSession _session;
         public Principal(IAppSession session)
         {
@@ -184,11 +185,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         }
 
 
+        // ...resto del código...
+
         private void ActualizarUsuario()
         {
             var u = _session.CurrentUser;
-            lblUsuario.Text = u is null ? "Usuario: —"
-                : $"Usuario: {u.Username}";
+            if (lblUsuario is not null)
+            {
+                lblUsuario.Text = u is null ? "Usuario: —"
+                    : $"Usuario: {u.Username}";
+            }
         }
 
         private void lblUsuario_Click(object sender, EventArgs e)
