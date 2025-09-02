@@ -1,9 +1,11 @@
 ﻿using Manga_Rica_P1.BLL.Session;
+using Manga_Rica_P1.UI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+
 namespace Manga_Rica_P1.UI.Ventana_Principal
 {
     public partial class Principal : Form
@@ -248,6 +250,23 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void btnSalir_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void btnEmpleadosReporte_Click(object sender, EventArgs e)
+        {
+            PopupMenus.ShowEmpleadosMenu(
+                btnEmpleado
+   // listado: () => ShowView<UI.Vistas.EmpleadosView>(),
+   //  nuevo: () => ShowView<UI.Vistas.EmpleadoNuevoView>(),
+   //  importar: () => ShowView<UI.Vistas.ImportarEmpleadosView>()
+   );
+        }
+
+        private void btnPlanillaReportes_Click(object sender, EventArgs e)
+        {
+            PopupMenus.ShowPlanillaMenu(
+                btnPlanillaReportes
+                );
         }
     }
 }

@@ -166,7 +166,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             flowLayoutPanelSideBar.Location = new Point(0, 37);
             flowLayoutPanelSideBar.Name = "flowLayoutPanelSideBar";
             flowLayoutPanelSideBar.Padding = new Padding(0, 30, 0, 0);
-            flowLayoutPanelSideBar.Size = new Size(201, 473);
+            flowLayoutPanelSideBar.Size = new Size(198, 473);
             flowLayoutPanelSideBar.TabIndex = 1;
             // 
             // menuConfContenedor
@@ -200,10 +200,10 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnConfiguraciones.ForeColor = Color.White;
             btnConfiguraciones.Image = (Image)resources.GetObject("btnConfiguraciones.Image");
             btnConfiguraciones.ImageAlign = ContentAlignment.MiddleLeft;
-            btnConfiguraciones.Location = new Point(-29, -20);
+            btnConfiguraciones.Location = new Point(-29, -23);
             btnConfiguraciones.Name = "btnConfiguraciones";
             btnConfiguraciones.Padding = new Padding(40, 0, 0, 0);
-            btnConfiguraciones.Size = new Size(268, 89);
+            btnConfiguraciones.Size = new Size(231, 89);
             btnConfiguraciones.TabIndex = 2;
             btnConfiguraciones.Text = "       Configuraciones";
             btnConfiguraciones.TextAlign = ContentAlignment.MiddleLeft;
@@ -345,7 +345,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanilla.Location = new Point(-29, -20);
             btnPlanilla.Name = "btnPlanilla";
             btnPlanilla.Padding = new Padding(40, 0, 0, 0);
-            btnPlanilla.Size = new Size(268, 89);
+            btnPlanilla.Size = new Size(231, 89);
             btnPlanilla.TabIndex = 2;
             btnPlanilla.Text = "       Planilla";
             btnPlanilla.TextAlign = ContentAlignment.MiddleLeft;
@@ -510,7 +510,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnDeducciones.Location = new Point(-29, -20);
             btnDeducciones.Name = "btnDeducciones";
             btnDeducciones.Padding = new Padding(40, 0, 0, 0);
-            btnDeducciones.Size = new Size(268, 89);
+            btnDeducciones.Size = new Size(231, 89);
             btnDeducciones.TabIndex = 2;
             btnDeducciones.Text = "       Deducciones";
             btnDeducciones.TextAlign = ContentAlignment.MiddleLeft;
@@ -648,7 +648,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPagosPrincipal.Location = new Point(-29, -20);
             btnPagosPrincipal.Name = "btnPagosPrincipal";
             btnPagosPrincipal.Padding = new Padding(40, 0, 0, 0);
-            btnPagosPrincipal.Size = new Size(268, 89);
+            btnPagosPrincipal.Size = new Size(231, 89);
             btnPagosPrincipal.TabIndex = 2;
             btnPagosPrincipal.Text = "       Pagos";
             btnPagosPrincipal.TextAlign = ContentAlignment.MiddleLeft;
@@ -737,7 +737,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnReporte.Location = new Point(-29, -20);
             btnReporte.Name = "btnReporte";
             btnReporte.Padding = new Padding(40, 0, 0, 0);
-            btnReporte.Size = new Size(268, 89);
+            btnReporte.Size = new Size(231, 89);
             btnReporte.TabIndex = 2;
             btnReporte.Text = "       Reportes";
             btnReporte.TextAlign = ContentAlignment.MiddleLeft;
@@ -767,6 +767,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnEmpleadosReporte.Text = "       Empleados              >";
             btnEmpleadosReporte.TextAlign = ContentAlignment.MiddleLeft;
             btnEmpleadosReporte.UseVisualStyleBackColor = false;
+            btnEmpleadosReporte.Click += btnEmpleadosReporte_Click;
             // 
             // panel26
             // 
@@ -792,6 +793,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanillaReportes.Text = "       Planilla                     >";
             btnPlanillaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnPlanillaReportes.UseVisualStyleBackColor = false;
+            btnPlanillaReportes.Click += btnPlanillaReportes_Click;
             // 
             // panel27
             // 
@@ -837,7 +839,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSalir.Location = new Point(-32, -20);
             btnSalir.Name = "btnSalir";
             btnSalir.Padding = new Padding(40, 0, 0, 0);
-            btnSalir.Size = new Size(273, 89);
+            btnSalir.Size = new Size(234, 89);
             btnSalir.TabIndex = 2;
             btnSalir.Text = "       Salir";
             btnSalir.TextAlign = ContentAlignment.MiddleLeft;
