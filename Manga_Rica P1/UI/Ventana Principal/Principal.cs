@@ -268,5 +268,25 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 btnPlanillaReportes
                 );
         }
+
+        private void btnUsuarios_Click(object sender, EventArgs e)
+        {
+            vistaUsuario();
+        }
+
+
+        private void vistaUsuario()
+        {
+            // Crea una nueva instancia del UserView
+            var vista = new Manga_Rica_P1.UI.User.UserView();
+            vista.Dock = DockStyle.Fill;
+
+            // Limpia lo que hubiera antes en el panel
+            panelPrincipal.Controls.Clear();
+
+            // Inserta la vista en el área de contenido
+            panelPrincipal.Controls.Add(vista);
+        }
+
     }
 }

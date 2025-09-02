@@ -87,6 +87,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSodaReportes = new Button();
             botonSalirContenedor = new Panel();
             btnSalir = new Button();
+            panelPrincipal = new Panel();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             flowLayoutPanelSideBar.SuspendLayout();
@@ -234,6 +235,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnUsuarios.Text = "       Usuarios";
             btnUsuarios.TextAlign = ContentAlignment.MiddleLeft;
             btnUsuarios.UseVisualStyleBackColor = false;
+            btnUsuarios.Click += btnUsuarios_Click;
             // 
             // panel11
             // 
@@ -846,11 +848,21 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSalir.UseVisualStyleBackColor = false;
             btnSalir.Click += btnSalir_Click;
             // 
+            // panelPrincipal
+            // 
+            panelPrincipal.BackColor = Color.FromArgb(238, 238, 238, 238);
+            panelPrincipal.Dock = DockStyle.Fill;
+            panelPrincipal.Location = new Point(198, 37);
+            panelPrincipal.Name = "panelPrincipal";
+            panelPrincipal.Size = new Size(724, 473);
+            panelPrincipal.TabIndex = 2;
+            // 
             // Principal
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(922, 510);
+            Controls.Add(panelPrincipal);
             Controls.Add(flowLayoutPanelSideBar);
             Controls.Add(panel1);
             Name = "Principal";
@@ -955,5 +967,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private Button btnSodaReportes;
         private Panel panel6;
         private Button btnSolicitudesPlanilla;
+        private Panel panelPrincipal;
     }
 }
