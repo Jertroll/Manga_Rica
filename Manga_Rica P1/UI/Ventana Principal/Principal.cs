@@ -18,6 +18,44 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             InitializeComponent();
             _session = session;
 
+            // ====== Sidebar con botón fijo abajo ======
+            // 1) Crear contenedor de la barra lateral
+            var sideBarHost = new Panel
+            {
+                Width = flowLayoutPanelSideBar.Width,        // usa el ancho actual
+                Dock = DockStyle.Left,
+                BackColor = flowLayoutPanelSideBar.BackColor // mismo color que tu sidebar
+            };
+
+            // 2) Ajustar el FlowLayoutPanel de menús para funcionar dentro del host
+            flowLayoutPanelSideBar.FlowDirection = FlowDirection.TopDown;
+            flowLayoutPanelSideBar.WrapContents = false;
+            flowLayoutPanelSideBar.AutoScroll = false;
+            flowLayoutPanelSideBar.Dock = DockStyle.Fill;    // ocupa la parte superior (restante)
+
+            // 3) Configurar el contenedor del botón Salir para ir abajo
+            botonSalirContenedor.Dock = DockStyle.Bottom;
+            botonSalirContenedor.BackColor = flowLayoutPanelSideBar.BackColor;
+            botonSalirContenedor.Padding = new Padding(6, 8, 6, 8);
+
+            // (opcional) Estética del botón
+            btnSalir.FlatStyle = FlatStyle.Flat;
+            btnSalir.FlatAppearance.BorderSize = 0;
+            btnSalir.Cursor = Cursors.Hand;
+            btnSalir.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            btnSalir.Margin = new Padding(4);
+
+            // 4) Re-parenting: sacar los controles del form y meterlos al host
+            this.Controls.Remove(flowLayoutPanelSideBar);
+            this.Controls.Remove(botonSalirContenedor);
+
+            sideBarHost.Controls.Add(flowLayoutPanelSideBar);   // Fill
+            sideBarHost.Controls.Add(botonSalirContenedor);     // Bottom
+
+            // 5) Agregar el host al form (antes que el panel superior para que quede a la izquierda)
+            this.Controls.Add(sideBarHost);
+            this.Controls.SetChildIndex(sideBarHost, 0);
+
             // aquí puedes usar _session.CurrentUser
             ColocarLabelUsuario();
             ActualizarUsuario();
@@ -200,6 +238,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void lblUsuario_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void Principal_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnSalir_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

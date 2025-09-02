@@ -85,7 +85,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanillaReportes = new Button();
             panel27 = new Panel();
             btnSodaReportes = new Button();
-            panel8 = new Panel();
+            botonSalirContenedor = new Panel();
             btnSalir = new Button();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -118,7 +118,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel25.SuspendLayout();
             panel26.SuspendLayout();
             panel27.SuspendLayout();
-            panel8.SuspendLayout();
+            botonSalirContenedor.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -160,12 +160,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             flowLayoutPanelSideBar.Controls.Add(menuDeduccionesContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuPagosContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuReportesContenedor);
+            flowLayoutPanelSideBar.Controls.Add(botonSalirContenedor);
             flowLayoutPanelSideBar.Dock = DockStyle.Left;
             flowLayoutPanelSideBar.ForeColor = SystemColors.ControlText;
             flowLayoutPanelSideBar.Location = new Point(0, 37);
             flowLayoutPanelSideBar.Name = "flowLayoutPanelSideBar";
             flowLayoutPanelSideBar.Padding = new Padding(0, 30, 0, 0);
-            flowLayoutPanelSideBar.Size = new Size(197, 473);
+            flowLayoutPanelSideBar.Size = new Size(201, 473);
             flowLayoutPanelSideBar.TabIndex = 1;
             // 
             // menuConfContenedor
@@ -817,14 +818,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSodaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnSodaReportes.UseVisualStyleBackColor = false;
             // 
-            // panel8
+            // botonSalirContenedor
             // 
-            panel8.Controls.Add(btnSalir);
-            panel8.Location = new Point(395, 343);
-            panel8.Margin = new Padding(0);
-            panel8.Name = "panel8";
-            panel8.Size = new Size(202, 46);
-            panel8.TabIndex = 10;
+            botonSalirContenedor.Controls.Add(btnSalir);
+            botonSalirContenedor.Location = new Point(0, 260);
+            botonSalirContenedor.Margin = new Padding(0);
+            botonSalirContenedor.Name = "botonSalirContenedor";
+            botonSalirContenedor.Size = new Size(202, 46);
+            botonSalirContenedor.TabIndex = 10;
             // 
             // btnSalir
             // 
@@ -841,6 +842,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSalir.Text = "       Salir";
             btnSalir.TextAlign = ContentAlignment.MiddleLeft;
             btnSalir.UseVisualStyleBackColor = false;
+            btnSalir.Click += btnSalir_Click;
             // 
             // Principal
             // 
@@ -849,9 +851,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             ClientSize = new Size(922, 510);
             Controls.Add(flowLayoutPanelSideBar);
             Controls.Add(panel1);
-            Controls.Add(panel8);
             Name = "Principal";
             Text = " ";
+            Load += Principal_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -884,11 +886,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel25.ResumeLayout(false);
             panel26.ResumeLayout(false);
             panel27.ResumeLayout(false);
-            panel8.ResumeLayout(false);
+            botonSalirContenedor.ResumeLayout(false);
             ResumeLayout(false);
         }
 
- 
+
 
         #endregion
 
@@ -903,7 +905,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private FlowLayoutPanel menuConfContenedor;
         private Panel panel7;
         private Button btnUsuarios;
-        private Panel panel8;
+        private Panel botonSalirContenedor;
         private Button btnSalir;
         private Panel panel9;
         private Button btnArticulos;
