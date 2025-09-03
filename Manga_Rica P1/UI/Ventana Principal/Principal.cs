@@ -20,55 +20,89 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             InitializeComponent();
             _session = session;
 
-            // ====== Sidebar con botón fijo abajo ======
-            // 1) Crear contenedor de la barra lateral
+            // Evita recálculos de layout mientras reacomodamos todo
+            this.SuspendLayout();
+
+            // ====== 1) Crear host del sidebar (contenedor izquierdo) ======
             var sideBarHost = new Panel
             {
-                Width = flowLayoutPanelSideBar.Width,        // usa el ancho actual
+                Width = flowLayoutPanelSideBar.Width,              // el ancho que ya tenías (198 aprox.)
                 Dock = DockStyle.Left,
-                BackColor = flowLayoutPanelSideBar.BackColor // mismo color que tu sidebar
+                BackColor = flowLayoutPanelSideBar.BackColor,
+                Margin = Padding.Empty,
+                Padding = Padding.Empty
             };
 
-            // 2) Ajustar el FlowLayoutPanel de menús para funcionar dentro del host
+            // ====== 2) Preparar los controles internos del sidebar ======
             flowLayoutPanelSideBar.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanelSideBar.WrapContents = false;
             flowLayoutPanelSideBar.AutoScroll = false;
-            flowLayoutPanelSideBar.Dock = DockStyle.Fill;    // ocupa la parte superior (restante)
+            flowLayoutPanelSideBar.Dock = DockStyle.Fill;
+            flowLayoutPanelSideBar.Margin = Padding.Empty;
 
-            // 3) Configurar el contenedor del botón Salir para ir abajo
             botonSalirContenedor.Dock = DockStyle.Bottom;
             botonSalirContenedor.BackColor = flowLayoutPanelSideBar.BackColor;
             botonSalirContenedor.Padding = new Padding(6, 8, 6, 8);
+            botonSalirContenedor.Margin = Padding.Empty;
 
-            // (opcional) Estética del botón
+            // Estética del botón Salir (como ya tenías)
             btnSalir.FlatStyle = FlatStyle.Flat;
             btnSalir.FlatAppearance.BorderSize = 0;
             btnSalir.Cursor = Cursors.Hand;
             btnSalir.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             btnSalir.Margin = new Padding(4);
 
-            // 4) Re-parenting: sacar los controles del form y meterlos al host
+            // ====== 3) Re-parenting: mover piezas del sidebar al host ======
             this.Controls.Remove(flowLayoutPanelSideBar);
             this.Controls.Remove(botonSalirContenedor);
+            sideBarHost.Controls.Add(flowLayoutPanelSideBar);  // Fill
+            sideBarHost.Controls.Add(botonSalirContenedor);    // Bottom
 
-            sideBarHost.Controls.Add(flowLayoutPanelSideBar);   // Fill
-            sideBarHost.Controls.Add(botonSalirContenedor);     // Bottom
+            // ====== 4) Asegurar hermandad de contenedores (mismo padre) ======
+            // panel1  = topbar, sideBarHost = sidebar, panelPrincipal = área de contenido
+            if (panelPrincipal.Parent != this)
+                panelPrincipal.Parent = this;
 
-            // 5) Agregar el host al form (antes que el panel superior para que quede a la izquierda)
-            this.Controls.Add(sideBarHost);
-            this.Controls.SetChildIndex(sideBarHost, 0);
+            // Agregar al form si hiciera falta (por seguridad)
+            if (!this.Controls.Contains(panelPrincipal))
+                this.Controls.Add(panelPrincipal);
+            if (!this.Controls.Contains(sideBarHost))
+                this.Controls.Add(sideBarHost);
+            if (!this.Controls.Contains(panel1))
+                this.Controls.Add(panel1);
 
-            // aquí puedes usar _session.CurrentUser
+            // ====== 5) Docking correcto de cada zona ======
+            panel1.Dock = DockStyle.Top;           // barra superior
+            sideBarHost.Dock = DockStyle.Left;     // barra lateral
+            panelPrincipal.Dock = DockStyle.Fill;  // contenido (ocupa el resto)
+
+            // Mantener ancho fijo del sidebar (no “respira”)
+            sideBarHost.Width = 198;                       // ajusta si usas otro ancho
+            sideBarHost.MinimumSize = new Size(198, 0);
+
+            // Márgenes/padding limpios en el contenedor central
+            panelPrincipal.Margin = Padding.Empty;
+            panelPrincipal.Padding = Padding.Empty;
+
+            // ====== 6) Z-order: el Fill al fondo, luego Left, luego Top ======
+            this.Controls.SetChildIndex(panelPrincipal, 0); // fondo (el Fill se calcula primero)
+            this.Controls.SetChildIndex(sideBarHost, 1);  // izquierda por encima del Fill
+            this.Controls.SetChildIndex(panel1, 2);  // top por encima de todo
+
+            // Reactivar layout
+            this.ResumeLayout();
+
+            // ====== 7) Tu lógica existente ======
             ColocarLabelUsuario();
             ActualizarUsuario();
-
-            // Si quieres que se actualice automáticamente si cambia la sesión
             _session.UserChanged += (_, __) => ActualizarUsuario();
             this.DoubleBuffered = true; // menos flicker
 
             InicializarMenus();
             WireUpHeaderClicks();
             AplicarEstilosHover();
+
+
         }
 
         private void InicializarMenus()

@@ -136,10 +136,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // LabelTitulo
             // 
             LabelTitulo.AutoSize = true;
-            LabelTitulo.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            LabelTitulo.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LabelTitulo.ForeColor = Color.FromArgb(76, 139, 59);
             LabelTitulo.Location = new Point(61, 9);
             LabelTitulo.Name = "LabelTitulo";
-            LabelTitulo.Size = new Size(116, 20);
+            LabelTitulo.Size = new Size(131, 21);
             LabelTitulo.TabIndex = 1;
             LabelTitulo.Text = "Manga Rica S.A ";
             // 
@@ -155,7 +156,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // flowLayoutPanelSideBar
             // 
-            flowLayoutPanelSideBar.BackColor = Color.FromArgb(0, 221, 0);
+            flowLayoutPanelSideBar.BackColor = Color.FromArgb(76, 139, 59);
             flowLayoutPanelSideBar.Controls.Add(menuConfContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuPlanillaContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuDeduccionesContenedor);
@@ -167,7 +168,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             flowLayoutPanelSideBar.Location = new Point(0, 37);
             flowLayoutPanelSideBar.Name = "flowLayoutPanelSideBar";
             flowLayoutPanelSideBar.Padding = new Padding(0, 30, 0, 0);
-            flowLayoutPanelSideBar.Size = new Size(198, 473);
+            flowLayoutPanelSideBar.Size = new Size(192, 473);
             flowLayoutPanelSideBar.TabIndex = 1;
             // 
             // menuConfContenedor
@@ -196,7 +197,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnConfiguraciones
             // 
-            btnConfiguraciones.BackColor = Color.FromArgb(0, 221, 0);
+            btnConfiguraciones.BackColor = Color.FromArgb(76, 139, 59);
             btnConfiguraciones.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnConfiguraciones.ForeColor = Color.White;
             btnConfiguraciones.Image = (Image)resources.GetObject("btnConfiguraciones.Image");
@@ -339,7 +340,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnPlanilla
             // 
-            btnPlanilla.BackColor = Color.FromArgb(0, 221, 0);
+            btnPlanilla.BackColor = Color.FromArgb(76, 139, 59);
             btnPlanilla.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnPlanilla.ForeColor = Color.White;
             btnPlanilla.Image = (Image)resources.GetObject("btnPlanilla.Image");
@@ -504,7 +505,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnDeducciones
             // 
-            btnDeducciones.BackColor = Color.FromArgb(0, 221, 0);
+            btnDeducciones.BackColor = Color.FromArgb(76, 139, 59);
             btnDeducciones.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnDeducciones.ForeColor = Color.White;
             btnDeducciones.Image = (Image)resources.GetObject("btnDeducciones.Image");
@@ -642,7 +643,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnPagosPrincipal
             // 
-            btnPagosPrincipal.BackColor = Color.FromArgb(0, 221, 0);
+            btnPagosPrincipal.BackColor = Color.FromArgb(76, 139, 59);
             btnPagosPrincipal.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnPagosPrincipal.ForeColor = Color.White;
             btnPagosPrincipal.Image = (Image)resources.GetObject("btnPagosPrincipal.Image");
@@ -731,7 +732,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnReporte
             // 
-            btnReporte.BackColor = Color.FromArgb(0, 221, 0);
+            btnReporte.BackColor = Color.FromArgb(76, 139, 59);
             btnReporte.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnReporte.ForeColor = Color.White;
             btnReporte.Image = (Image)resources.GetObject("btnReporte.Image");
@@ -851,10 +852,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // panelPrincipal
             // 
             panelPrincipal.BackColor = Color.FromArgb(238, 238, 238, 238);
-            panelPrincipal.Dock = DockStyle.Fill;
-            panelPrincipal.Location = new Point(198, 37);
+            panelPrincipal.Location = new Point(192, 37);
             panelPrincipal.Name = "panelPrincipal";
-            panelPrincipal.Size = new Size(724, 473);
+            panelPrincipal.Size = new Size(730, 473);
             panelPrincipal.TabIndex = 2;
             // 
             // Principal
