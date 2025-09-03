@@ -37,6 +37,7 @@
             panelToolbar.Controls.Add(btnEliminar);
             panelToolbar.Dock = DockStyle.Right;
             panelToolbar.Location = new Point(711, 0);
+            panelToolbar.Margin = new Padding(0);
             panelToolbar.Name = "panelToolbar";
             panelToolbar.Size = new Size(89, 600);
             panelToolbar.TabIndex = 0;
