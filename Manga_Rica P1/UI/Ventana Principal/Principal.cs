@@ -165,35 +165,34 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void AplicarEstilosHover()
         {
-            // VERDES (headers)
-            ConfigurarHoverBoton(btnConfiguraciones, Color.FromArgb(0, 200, 0), Color.FromArgb(0, 180, 0), Color.White);
-            ConfigurarHoverBoton(btnPlanilla, Color.FromArgb(0, 200, 0), Color.FromArgb(0, 180, 0), Color.White);
-            ConfigurarHoverBoton(btnDeducciones, Color.FromArgb(0, 200, 0), Color.FromArgb(0, 180, 0), Color.White);
-            ConfigurarHoverBoton(btnPagosPrincipal, Color.FromArgb(0, 200, 0), Color.FromArgb(0, 180, 0), Color.White);
-            ConfigurarHoverBoton(btnReporte, Color.FromArgb(0, 200, 0), Color.FromArgb(0, 180, 0), Color.White);
+            ConfigurarHoverBoton(btnConfiguraciones, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White); // #4CAF50 / #388E3C
+            ConfigurarHoverBoton(btnPlanilla, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
+            ConfigurarHoverBoton(btnDeducciones, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
+            ConfigurarHoverBoton(btnPagosPrincipal, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
+            ConfigurarHoverBoton(btnReporte, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
 
-            // GRIS (submenús)
-            var hoverGray = Color.FromArgb(240, 240, 240);
-            var downGray = Color.FromArgb(225, 225, 225);
+            // VERDES (submenús, combinan con el fondo de tu screenshot)
+            var hoverGreen = Color.FromArgb(139, 195, 74);  // Verde lima claro (#8BC34A)
+            var downGreen = Color.FromArgb(104, 159, 56);  // Verde oliva (#689F38)
 
-            ConfigurarHoverBoton(btnUsuarios, hoverGray, downGray);
-            ConfigurarHoverBoton(btnDepartamentos, hoverGray, downGray);
-            ConfigurarHoverBoton(btnSemanas, hoverGray, downGray);
-            ConfigurarHoverBoton(btnArticulos, hoverGray, downGray);
-            ConfigurarHoverBoton(btnEmpleado, hoverGray, downGray);
-            ConfigurarHoverBoton(btnEntrada, hoverGray, downGray);
-            ConfigurarHoverBoton(btnSalidas, hoverGray, downGray);
-            ConfigurarHoverBoton(btnCierreDiario, hoverGray, downGray);
-            ConfigurarHoverBoton(btnSolicitudesPlanilla, hoverGray, downGray);
-            ConfigurarHoverBoton(btnSoda, hoverGray, downGray);
-            ConfigurarHoverBoton(btnUniforme, hoverGray, downGray);
-            ConfigurarHoverBoton(btnReporteEmpleadoDeducciones, hoverGray, downGray);
-            ConfigurarHoverBoton(btnReporteGneralDeducciones, hoverGray, downGray);
-            ConfigurarHoverBoton(btnActivarPagos, hoverGray, downGray);
-            ConfigurarHoverBoton(btnPagosSubmenu, hoverGray, downGray);
-            ConfigurarHoverBoton(btnEmpleadosReporte, hoverGray, downGray);
-            ConfigurarHoverBoton(btnPlanillaReportes, hoverGray, downGray);
-            ConfigurarHoverBoton(btnSodaReportes, hoverGray, downGray);
+            ConfigurarHoverBoton(btnUsuarios, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnDepartamentos, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnSemanas, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnArticulos, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnEmpleado, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnEntrada, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnSalidas, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnCierreDiario, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnSolicitudesPlanilla, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnSoda, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnUniforme, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnReporteEmpleadoDeducciones, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnReporteGneralDeducciones, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnActivarPagos, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnPagosSubmenu, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnEmpleadosReporte, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnPlanillaReportes, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnSodaReportes, hoverGreen, downGreen);
         }
 
         private void ConfigurarHoverBoton(Button btn, Color hoverBack, Color downBack, Color? hoverFore = null)
