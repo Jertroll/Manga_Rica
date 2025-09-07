@@ -20,6 +20,13 @@
         private Label lblTam;
         private ComboBox cboPageSize;
 
+        private Panel panelBuscar;
+        private TextBox txtBuscar;
+        private Button btnBuscar;
+        private Button btnLimpiar;
+        private Label lblBuscar;
+
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -48,6 +55,12 @@
             lblPageInfo = new Label();
             lblTam = new Label();
             cboPageSize = new ComboBox();
+            panelBuscar = new Panel();
+            txtBuscar = new TextBox();
+            btnBuscar = new Button();
+            btnLimpiar = new Button();
+            lblBuscar = new Label();
+
             panelHeader.SuspendLayout();
             panelToolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridUsuarios).BeginInit();
@@ -215,6 +228,38 @@
             lblPageInfo.Size = new Size(38, 15);
             lblPageInfo.TabIndex = 4;
             lblPageInfo.Text = "1 de 1";
+            // panelBuscar
+            panelBuscar.Dock = DockStyle.Top;
+            panelBuscar.Height = 40;
+            panelBuscar.BackColor = Color.WhiteSmoke;
+            panelBuscar.Padding = new Padding(8, 5, 8, 5);
+
+            // lblBuscar
+            lblBuscar.AutoSize = true;
+            lblBuscar.Text = "Buscar:";
+            lblBuscar.Location = new Point(10, 11);
+
+            // txtBuscar
+            txtBuscar.Location = new Point(65, 8);
+            txtBuscar.Width = 220;
+            txtBuscar.KeyDown += txtBuscar_KeyDown;
+
+            // btnBuscar
+            btnBuscar.Text = "Buscar";
+            btnBuscar.Location = new Point(295, 7);
+            btnBuscar.Size = new Size(65, 25);
+            btnBuscar.Click += btnBuscar_Click;
+
+            // btnLimpiar
+            btnLimpiar.Text = "Limpiar";
+            btnLimpiar.Location = new Point(365, 7);
+            btnLimpiar.Size = new Size(65, 25);
+            btnLimpiar.Click += btnLimpiar_Click;
+            // Componer barra
+            panelBuscar.Controls.Add(lblBuscar);
+            panelBuscar.Controls.Add(txtBuscar);
+            panelBuscar.Controls.Add(btnBuscar);
+            panelBuscar.Controls.Add(btnLimpiar);
             // 
             // lblTam
             // 
@@ -236,7 +281,11 @@
             // 
             // UserView
             // 
-            Controls.Add(dataGridUsuarios);
+            Controls.Add(dataGridUsuarios);   // Fill
+            Controls.Add(panelPaginador);     // Bottom
+            Controls.Add(panelToolbar);       // Right
+            Controls.Add(panelBuscar);        // Top (debajo del header)
+            Controls.Add(panelHeader);        // Top (arriba del todo)
             Controls.Add(panelPaginador);
             Controls.Add(panelToolbar);
             Controls.Add(panelHeader);

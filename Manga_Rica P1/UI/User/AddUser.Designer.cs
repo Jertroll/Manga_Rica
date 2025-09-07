@@ -164,16 +164,17 @@ namespace Manga_Rica_P1.UI.User
             // 
             panel1.BackColor = Color.Lime;
             panel1.Controls.Add(labelTitulo);
-            panel1.Location = new Point(1, 0);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(713, 41);
+            panel1.Size = new Size(729, 41);
             panel1.TabIndex = 13;
             // 
             // AddUser
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(713, 374);
+            ClientSize = new Size(729, 388);
             Controls.Add(panel1);
             Controls.Add(dateTimePicker1);
             Controls.Add(textBoxPerfil);

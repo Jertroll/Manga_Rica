@@ -12,6 +12,8 @@ namespace Manga_Rica_P1.UI.User
         private int _pageSize = 10;   // se setea desde el combo
         private int _totalPages = 1;
 
+        // 🔎 NUEVO: texto de filtro
+        private string _filtro = string.Empty;
         public UserView()
         {
             InitializeComponent();
@@ -35,75 +37,105 @@ namespace Manga_Rica_P1.UI.User
 
             // Tamaños de página disponibles
             cboPageSize.Items.Clear();
-            cboPageSize.Items.AddRange(new object[] { 5, 10, 22, 50 });
-            cboPageSize.SelectedItem = 10;
+            cboPageSize.Items.AddRange(new object[] { 5, 10, 20, 50 });
+            cboPageSize.SelectedItem = 20;
             _pageSize = (int)cboPageSize.SelectedItem;
 
             _pageIndex = 0;
             RefrescarPagina();
         }
 
+        // 🔎 NUEVO: función de filtrado (case-insensitive, contiene)
+        private static IEnumerable<DataRow> Filtrar(DataTable t, string filtro)
+        {
+            if (t.Rows.Count == 0) return Enumerable.Empty<DataRow>();
+            if (string.IsNullOrWhiteSpace(filtro)) return t.AsEnumerable();
+
+            string f = filtro.Trim().ToLower();
+
+            return t.AsEnumerable().Where(r =>
+                r.Field<int>("Id").ToString().Contains(f) ||
+                (r.Field<string>("Nombre") ?? string.Empty).ToLower().Contains(f) ||
+                (r.Field<string>("Usuario") ?? string.Empty).ToLower().Contains(f) ||
+                (r.Field<string>("Rol") ?? string.Empty).ToLower().Contains(f)
+            );
+        }
+
         private void RefrescarPagina()
         {
-            if (_tablaCompleta.Rows.Count == 0)
+            // 1) Fuente = conjunto filtrado
+            var fuente = Filtrar(_tablaCompleta, _filtro);
+            int totalFilas = fuente.Count();
+
+            if (totalFilas == 0)
             {
                 dataGridUsuarios.DataSource = null;
                 _totalPages = 1;
-                ActualizarUI();
+                _pageIndex = 0;
+                ActualizarUI(totalFilas);
                 return;
             }
 
-            _totalPages = (int)Math.Ceiling(_tablaCompleta.Rows.Count / (double)_pageSize);
+            // 2) Paginación sobre el filtrado
+            _totalPages = (int)Math.Ceiling(totalFilas / (double)_pageSize);
             if (_pageIndex < 0) _pageIndex = 0;
             if (_pageIndex > _totalPages - 1) _pageIndex = _totalPages - 1;
 
             var page = _tablaCompleta.Clone();
-            var rows = _tablaCompleta.AsEnumerable()
-                                     .Skip(_pageIndex * _pageSize)
-                                     .Take(_pageSize);
+            var rows = fuente.Skip(_pageIndex * _pageSize)
+                             .Take(_pageSize);
+
             foreach (var r in rows) page.ImportRow(r);
 
             dataGridUsuarios.DataSource = page;
-            ActualizarUI();
+
+            // 3) UI
+            ActualizarUI(totalFilas);
         }
 
-        private void ActualizarUI()
+        private void ActualizarUI(int totalFilasFiltradas)
         {
-            lblPageInfo.Text = $"{(_totalPages == 0 ? 0 : _pageIndex + 1)} de {_totalPages} (Total: {_tablaCompleta.Rows.Count})";
+            lblPageInfo.Text = $"{(_totalPages == 0 ? 0 : _pageIndex + 1)} de {_totalPages} (Coincidencias: {totalFilasFiltradas})";
             btnFirst.Enabled = btnPrev.Enabled = _pageIndex > 0;
             btnNext.Enabled = btnLast.Enabled = _pageIndex < _totalPages - 1;
         }
-
-        // ===== Eventos de los botones del paginador =====
-        private void btnFirst_Click(object sender, EventArgs e)
-        {
-            _pageIndex = 0;
-            RefrescarPagina();
-        }
-
-        private void btnPrev_Click(object sender, EventArgs e)
-        {
-            _pageIndex--;
-            RefrescarPagina();
-        }
-
-        private void btnNext_Click(object sender, EventArgs e)
-        {
-            _pageIndex++;
-            RefrescarPagina();
-        }
-
-        private void btnLast_Click(object sender, EventArgs e)
-        {
-            _pageIndex = _totalPages - 1;
-            RefrescarPagina();
-        }
+        // ===== Paginador =====
+        private void btnFirst_Click(object sender, EventArgs e) { _pageIndex = 0; RefrescarPagina(); }
+        private void btnPrev_Click(object sender, EventArgs e) { _pageIndex--; RefrescarPagina(); }
+        private void btnNext_Click(object sender, EventArgs e) { _pageIndex++; RefrescarPagina(); }
+        private void btnLast_Click(object sender, EventArgs e) { _pageIndex = _totalPages - 1; RefrescarPagina(); }
 
         private void cboPageSize_SelectionChangeCommitted(object sender, EventArgs e)
         {
             _pageSize = (int)cboPageSize.SelectedItem;
             _pageIndex = 0;
             RefrescarPagina();
+        }
+
+        // 🔎 NUEVO: eventos de búsqueda
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            _filtro = (txtBuscar.Text ?? string.Empty);
+            _pageIndex = 0;
+            RefrescarPagina();
+        }
+
+        private void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            txtBuscar.Text = "";
+            _filtro = "";
+            _pageIndex = 0;
+            RefrescarPagina();
+            txtBuscar.Focus();
+        }
+
+        private void txtBuscar_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnBuscar.PerformClick();
+                e.SuppressKeyPress = true; // evita 'ding'
+            }
         }
 
         private void dataGridUsuarios_CellContentClick(object sender, DataGridViewCellEventArgs e)
