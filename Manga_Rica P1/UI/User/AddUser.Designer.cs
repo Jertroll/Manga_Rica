@@ -34,7 +34,7 @@ namespace Manga_Rica_P1.UI.User
             btnCancelar = new Button();
             textBoxNombre = new TextBox();
             textBoxClave = new TextBox();
-            textBoxPerfil = new TextBox();
+
             dateTimePicker1 = new DateTimePicker();
             panel1 = new Panel();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
@@ -145,12 +145,17 @@ namespace Manga_Rica_P1.UI.User
             textBoxClave.Size = new Size(112, 23);
             textBoxClave.TabIndex = 10;
             // 
-            // textBoxPerfil
-            // 
-            textBoxPerfil.Location = new Point(420, 95);
-            textBoxPerfil.Name = "textBoxPerfil";
-            textBoxPerfil.Size = new Size(111, 23);
-            textBoxPerfil.TabIndex = 11;
+            // comboPerfil
+            comboPerfil = new ComboBox();
+            comboPerfil.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboPerfil.Location = new Point(420, 95);
+            comboPerfil.Name = "comboPerfil";
+            comboPerfil.Size = new Size(111, 23);
+            comboPerfil.TabIndex = 11;
+
+            // Cargar opciones fijas
+            comboPerfil.Items.AddRange(new object[] { "Admin", "Empleado", "Supervisor" });
+            comboPerfil.SelectedIndex = 0; 
             // 
             // dateTimePicker1
             // 
@@ -177,7 +182,7 @@ namespace Manga_Rica_P1.UI.User
             ClientSize = new Size(729, 388);
             Controls.Add(panel1);
             Controls.Add(dateTimePicker1);
-            Controls.Add(textBoxPerfil);
+            Controls.Add(comboPerfil);
             Controls.Add(textBoxClave);
             Controls.Add(textBoxNombre);
             Controls.Add(btnCancelar);
@@ -196,14 +201,47 @@ namespace Manga_Rica_P1.UI.User
             PerformLayout();
         }
 
-        private void btnAgregar_Click(object sender, EventArgs e)
+        // ===== Botones =====
+        private void BtnAgregar_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            // Validaciones mínimas (puedes migrar a ErrorProvider)
+            if (string.IsNullOrWhiteSpace(textBoxNombre.Text))
+            {
+                MessageBox.Show("El nombre es requerido.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBoxNombre.Focus();
+                return;
+            }
+            if (comboPerfil.SelectedItem is null)
+            {
+                MessageBox.Show("Seleccione un perfil.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                comboPerfil.DroppedDown = true;
+                return;
+            }
+            if (_mode == EditMode.Nuevo && string.IsNullOrWhiteSpace(textBoxClave.Text))
+            {
+                MessageBox.Show("La contraseña es requerida.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBoxClave.Focus();
+                return;
+            }
+
+            // Mapear al resultado
+            Resultado.Nombre = textBoxNombre.Text.Trim();
+            Resultado.Perfil = comboPerfil.SelectedItem?.ToString() ?? "";
+            Resultado.FechaExpiracion = dateTimePicker1.Value.Date;
+
+            // En Editar: solo cambiar clave si el usuario digitó una nueva
+            if (!string.IsNullOrWhiteSpace(textBoxClave.Text))
+                Resultado.Clave = textBoxClave.Text;
+
+            this.DialogResult = DialogResult.OK; // cierra modal devolviendo OK
         }
 
-        private void btnCancelar_Click(object sender, EventArgs e)
+        private void BtnCancelar_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            this.DialogResult = DialogResult.Cancel;
         }
 
         #endregion
@@ -218,7 +256,7 @@ namespace Manga_Rica_P1.UI.User
         private Button btnCancelar;
         private TextBox textBoxNombre;
         private TextBox textBoxClave;
-        private TextBox textBoxPerfil;
+        private ComboBox comboPerfil;
         private DateTimePicker dateTimePicker1;
         private Panel panel1;
     }

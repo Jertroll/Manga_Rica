@@ -142,5 +142,113 @@ namespace Manga_Rica_P1.UI.User
         {
             // Tu lógica si necesitas
         }
+
+        private void btnNuevo_Click(object sender, EventArgs e)
+        {
+            using var dlg = new AddUser(); // modo Nuevo
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                var r = dlg.Resultado;
+
+                int newId = _tablaCompleta.Rows.Count == 0
+                    ? 1
+                    : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
+
+                _tablaCompleta.Rows.Add(newId, r.Nombre,
+                    /*Usuario*/ r.Nombre.ToLower().Replace(" ", ""),
+                    /*Rol*/     r.Perfil);
+
+                _pageIndex = 0;
+                RefrescarPagina();
+            }
+        }
+
+        private void btnEditar_Click(object sender, EventArgs e)
+        {
+            if (dataGridUsuarios.CurrentRow is null) return;
+
+            int id = Convert.ToInt32(dataGridUsuarios.CurrentRow.Cells["Id"].Value);
+            var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id);
+            if (fila is null) return;
+
+            var inicial = new AddUser.UsuarioResult
+            {
+                Id = id,
+                Nombre = fila.Field<string>("Nombre") ?? "",
+                Perfil = fila.Field<string>("Rol") ?? "",
+                FechaExpiracion = DateTime.Today // si no la manejas en demo, pon Today
+            };
+
+            using var dlg = new AddUser(inicial); // modo Editar
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+            {
+                var r = dlg.Resultado;
+                fila.SetField("Nombre", r.Nombre);
+                fila.SetField("Rol", r.Perfil);
+
+                // Usuario: decide si lo recalculas o lo mantienes
+                // fila.SetField("Usuario", r.Nombre.ToLower().Replace(" ", ""));
+
+                // Clave: si r.Clave viene vacío, NO cambiar.
+                // Como ahora estamos en memoria y no guardas claves, lo omitimos.
+                // En DB: si r.Clave != "" => actualizas hash.
+
+                RefrescarPagina();
+            }
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            // 1) Validar selección
+            if (dataGridUsuarios.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Seleccione al menos un usuario para eliminar.",
+                                "Sin selección", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // 2) Tomar IDs desde la página mostrada (recuerda que el grid muestra una copia paginada)
+            var ids = dataGridUsuarios.SelectedRows
+                .Cast<DataGridViewRow>()
+                .Where(r => r.Cells["Id"]?.Value != null)
+                .Select(r => Convert.ToInt32(r.Cells["Id"].Value))
+                .ToList();
+
+            if (ids.Count == 0)
+            {
+                MessageBox.Show("No se pudo identificar el/los registro(s) a eliminar.",
+                                "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // 3) Confirmar
+            string detalle = ids.Count == 1 ? $"Id {ids[0]}" : $"{ids.Count} usuarios";
+            var dr = MessageBox.Show($"Confirmar acción?\n\nSe eliminará: {detalle}",
+                                     "Confirmar acción",
+                                     MessageBoxButtons.YesNo,
+                                     MessageBoxIcon.Warning,
+                                     MessageBoxDefaultButton.Button2);
+
+            if (dr != DialogResult.Yes) return;
+
+            // 4) Eliminar en la tabla base (_tablaCompleta)
+            foreach (var id in ids)
+            {
+                var fila = _tablaCompleta.AsEnumerable()
+                                         .FirstOrDefault(x => x.Field<int>("Id") == id);
+                if (fila != null)
+                    _tablaCompleta.Rows.Remove(fila);
+            }
+
+            // 5) Ajustar la página si quedó “vacía” tras la eliminación
+            //    (usamos el mismo filtro actual)
+            int totalFiltradas = Filtrar(_tablaCompleta, _filtro).Count();
+            if (_pageIndex > 0 && (_pageIndex * _pageSize) >= Math.Max(1, totalFiltradas))
+                _pageIndex = Math.Max(0, _pageIndex - 1);
+
+            // 6) Refrescar grilla y paginador
+            RefrescarPagina();
+        }
+
     }
 }

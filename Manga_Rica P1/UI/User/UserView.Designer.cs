@@ -56,15 +56,15 @@
             lblTam = new Label();
             cboPageSize = new ComboBox();
             panelBuscar = new Panel();
+            lblBuscar = new Label();
             txtBuscar = new TextBox();
             btnBuscar = new Button();
             btnLimpiar = new Button();
-            lblBuscar = new Label();
-
             panelHeader.SuspendLayout();
             panelToolbar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridUsuarios).BeginInit();
             panelPaginador.SuspendLayout();
+            panelBuscar.SuspendLayout();
             SuspendLayout();
             // 
             // panelHeader
@@ -115,6 +115,7 @@
             btnNuevo.TabIndex = 0;
             btnNuevo.Text = "Nuevo";
             btnNuevo.UseVisualStyleBackColor = false;
+            btnNuevo.Click += btnNuevo_Click;
             // 
             // btnEditar
             // 
@@ -126,6 +127,7 @@
             btnEditar.TabIndex = 1;
             btnEditar.Text = "Editar";
             btnEditar.UseVisualStyleBackColor = false;
+            btnEditar.Click += btnEditar_Click;
             // 
             // btnEliminar
             // 
@@ -137,6 +139,7 @@
             btnEliminar.TabIndex = 2;
             btnEliminar.Text = "Eliminar";
             btnEliminar.UseVisualStyleBackColor = false;
+            btnEliminar.Click += btnEliminar_Click;
             // 
             // dataGridUsuarios
             // 
@@ -154,7 +157,7 @@
             dataGridUsuarios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridUsuarios.Dock = DockStyle.Fill;
             dataGridUsuarios.EnableHeadersVisualStyles = false;
-            dataGridUsuarios.Location = new Point(0, 40);
+            dataGridUsuarios.Location = new Point(0, 80);
             dataGridUsuarios.Name = "dataGridUsuarios";
             dataGridUsuarios.ReadOnly = true;
             dataGridViewCellStyle2.ForeColor = Color.Black;
@@ -162,7 +165,7 @@
             dataGridViewCellStyle2.SelectionForeColor = Color.Black;
             dataGridUsuarios.RowsDefaultCellStyle = dataGridViewCellStyle2;
             dataGridUsuarios.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridUsuarios.Size = new Size(711, 520);
+            dataGridUsuarios.Size = new Size(711, 480);
             dataGridUsuarios.TabIndex = 1;
             dataGridUsuarios.CellContentClick += dataGridUsuarios_CellContentClick;
             // 
@@ -228,38 +231,6 @@
             lblPageInfo.Size = new Size(38, 15);
             lblPageInfo.TabIndex = 4;
             lblPageInfo.Text = "1 de 1";
-            // panelBuscar
-            panelBuscar.Dock = DockStyle.Top;
-            panelBuscar.Height = 40;
-            panelBuscar.BackColor = Color.WhiteSmoke;
-            panelBuscar.Padding = new Padding(8, 5, 8, 5);
-
-            // lblBuscar
-            lblBuscar.AutoSize = true;
-            lblBuscar.Text = "Buscar:";
-            lblBuscar.Location = new Point(10, 11);
-
-            // txtBuscar
-            txtBuscar.Location = new Point(65, 8);
-            txtBuscar.Width = 220;
-            txtBuscar.KeyDown += txtBuscar_KeyDown;
-
-            // btnBuscar
-            btnBuscar.Text = "Buscar";
-            btnBuscar.Location = new Point(295, 7);
-            btnBuscar.Size = new Size(65, 25);
-            btnBuscar.Click += btnBuscar_Click;
-
-            // btnLimpiar
-            btnLimpiar.Text = "Limpiar";
-            btnLimpiar.Location = new Point(365, 7);
-            btnLimpiar.Size = new Size(65, 25);
-            btnLimpiar.Click += btnLimpiar_Click;
-            // Componer barra
-            panelBuscar.Controls.Add(lblBuscar);
-            panelBuscar.Controls.Add(txtBuscar);
-            panelBuscar.Controls.Add(btnBuscar);
-            panelBuscar.Controls.Add(btnLimpiar);
             // 
             // lblTam
             // 
@@ -279,13 +250,59 @@
             cboPageSize.TabIndex = 6;
             cboPageSize.SelectionChangeCommitted += cboPageSize_SelectionChangeCommitted;
             // 
+            // panelBuscar
+            // 
+            panelBuscar.BackColor = Color.WhiteSmoke;
+            panelBuscar.Controls.Add(lblBuscar);
+            panelBuscar.Controls.Add(txtBuscar);
+            panelBuscar.Controls.Add(btnBuscar);
+            panelBuscar.Controls.Add(btnLimpiar);
+            panelBuscar.Dock = DockStyle.Top;
+            panelBuscar.Location = new Point(0, 40);
+            panelBuscar.Name = "panelBuscar";
+            panelBuscar.Padding = new Padding(8, 5, 8, 5);
+            panelBuscar.Size = new Size(711, 40);
+            panelBuscar.TabIndex = 3;
+            // 
+            // lblBuscar
+            // 
+            lblBuscar.AutoSize = true;
+            lblBuscar.Location = new Point(10, 11);
+            lblBuscar.Name = "lblBuscar";
+            lblBuscar.Size = new Size(45, 15);
+            lblBuscar.TabIndex = 0;
+            lblBuscar.Text = "Buscar:";
+            // 
+            // txtBuscar
+            // 
+            txtBuscar.Location = new Point(65, 8);
+            txtBuscar.Name = "txtBuscar";
+            txtBuscar.Size = new Size(220, 23);
+            txtBuscar.TabIndex = 1;
+            txtBuscar.KeyDown += txtBuscar_KeyDown;
+            // 
+            // btnBuscar
+            // 
+            btnBuscar.Location = new Point(295, 7);
+            btnBuscar.Name = "btnBuscar";
+            btnBuscar.Size = new Size(65, 25);
+            btnBuscar.TabIndex = 2;
+            btnBuscar.Text = "Buscar";
+            btnBuscar.Click += btnBuscar_Click;
+            // 
+            // btnLimpiar
+            // 
+            btnLimpiar.Location = new Point(365, 7);
+            btnLimpiar.Name = "btnLimpiar";
+            btnLimpiar.Size = new Size(65, 25);
+            btnLimpiar.TabIndex = 3;
+            btnLimpiar.Text = "Limpiar";
+            btnLimpiar.Click += btnLimpiar_Click;
+            // 
             // UserView
             // 
-            Controls.Add(dataGridUsuarios);   // Fill
-            Controls.Add(panelPaginador);     // Bottom
-            Controls.Add(panelToolbar);       // Right
-            Controls.Add(panelBuscar);        // Top (debajo del header)
-            Controls.Add(panelHeader);        // Top (arriba del todo)
+            Controls.Add(dataGridUsuarios);
+            Controls.Add(panelBuscar);
             Controls.Add(panelPaginador);
             Controls.Add(panelToolbar);
             Controls.Add(panelHeader);
@@ -297,6 +314,8 @@
             ((System.ComponentModel.ISupportInitialize)dataGridUsuarios).EndInit();
             panelPaginador.ResumeLayout(false);
             panelPaginador.PerformLayout();
+            panelBuscar.ResumeLayout(false);
+            panelBuscar.PerformLayout();
             ResumeLayout(false);
         }
     }
