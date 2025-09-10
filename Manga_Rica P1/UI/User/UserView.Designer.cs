@@ -4,8 +4,6 @@
     {
         private System.ComponentModel.IContainer components = null;
         private DataGridView dataGridUsuarios;
-        private Panel panelHeader;
-        private Label lblTitulo;
 
 
         protected override void Dispose(bool disposing)
@@ -21,36 +19,9 @@
         {
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
-            panelHeader = new Panel();
-            lblTitulo = new Label();
             dataGridUsuarios = new DataGridView();
-            panelHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridUsuarios).BeginInit();
             SuspendLayout();
-            // 
-            // panelHeader
-            // 
-            panelHeader.BackColor = Color.FromArgb(230, 135, 45);
-            panelHeader.BorderStyle = BorderStyle.Fixed3D;
-            panelHeader.Controls.Add(lblTitulo);
-            panelHeader.Dock = DockStyle.Top;
-            panelHeader.Location = new Point(0, 0);
-            panelHeader.Name = "panelHeader";
-            panelHeader.Size = new Size(800, 40);
-            panelHeader.TabIndex = 2;
-            // 
-            // lblTitulo
-            // 
-            lblTitulo.BackColor = Color.Transparent;
-            lblTitulo.Font = new Font("Segoe UI", 12.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblTitulo.ForeColor = Color.White;
-            lblTitulo.Location = new Point(194, 0);
-            lblTitulo.Name = "lblTitulo";
-            lblTitulo.Padding = new Padding(10, 10, 0, 0);
-            lblTitulo.Size = new Size(196, 40);
-            lblTitulo.TabIndex = 0;
-            lblTitulo.Text = "Listado de Usuarios";
-            lblTitulo.TextAlign = ContentAlignment.TopCenter;
             // 
             // dataGridUsuarios
             // 
@@ -68,7 +39,7 @@
             dataGridUsuarios.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridUsuarios.Dock = DockStyle.Fill;
             dataGridUsuarios.EnableHeadersVisualStyles = false;
-            dataGridUsuarios.Location = new Point(0, 40);
+            dataGridUsuarios.Location = new Point(0, 0);
             dataGridUsuarios.Name = "dataGridUsuarios";
             dataGridUsuarios.ReadOnly = true;
             dataGridViewCellStyle2.ForeColor = Color.Black;
@@ -76,16 +47,14 @@
             dataGridViewCellStyle2.SelectionForeColor = Color.Black;
             dataGridUsuarios.RowsDefaultCellStyle = dataGridViewCellStyle2;
             dataGridUsuarios.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dataGridUsuarios.Size = new Size(800, 560);
+            dataGridUsuarios.Size = new Size(800, 600);
             dataGridUsuarios.TabIndex = 1;
             // 
             // UserView
             // 
             Controls.Add(dataGridUsuarios);
-            Controls.Add(panelHeader);
             Name = "UserView";
             Size = new Size(800, 600);
-            panelHeader.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridUsuarios).EndInit();
             ResumeLayout(false);
         }

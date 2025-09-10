@@ -1,37 +1,40 @@
-﻿// UserView.cs
-using Manga_Rica_P1.UI.Helpers;
-using Manga_Rica_P1.UI.Helpers;
+﻿// Nueva implementacion
 using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using Manga_Rica_P1.UI.Helpers;
+// using Manga_Rica_P1.UI.Controls; // <- usa este si PagedSearchGrid está en UI.Controls
 
 namespace Manga_Rica_P1.UI.User
 {
     public partial class UserView : UserControl
     {
+        // Nueva implementacion: fuente demo en memoria
         private DataTable _tablaCompleta = new();
+        // Nueva implementacion: grid reutilizable con búsqueda + paginación
         private PagedSearchGrid pagedGrid;
 
         public UserView()
         {
             InitializeComponent();
 
-            // Limpia y usa el control compuesto
+            // Nueva implementacion: limpiar y montar el control compuesto
             Controls.Clear();
 
             pagedGrid = new PagedSearchGrid
             {
                 Dock = DockStyle.Fill,
-                Title = "Listado de Usuarios"
+                Title = "Listado de Usuarios" // <- el título ahora vive en el grid
             };
 
             // DEMO: datos quemados
             BuildDemoTable();
-            // Conectar el modo CLIENTE (in-memory)
+
+            // Nueva implementacion: modo CLIENTE (DataTable completo + filtro local)
             pagedGrid.GetAllFilteredDataTable = FiltroLocalComoDataTable;
 
-            // Eventos CRUD
+            // Nueva implementacion: eventos CRUD
             pagedGrid.NewRequested += (s, e) => Nuevo();
             pagedGrid.EditRequested += (s, e) => Editar();
             pagedGrid.DeleteRequested += (s, e) => Eliminar();
@@ -42,6 +45,7 @@ namespace Manga_Rica_P1.UI.User
             pagedGrid.RefreshData();
         }
 
+        // Nueva implementacion: datos demo
         private void BuildDemoTable()
         {
             _tablaCompleta.Columns.Add("Id", typeof(int));
@@ -56,7 +60,7 @@ namespace Manga_Rica_P1.UI.User
                 _tablaCompleta.Rows.Add(i, $"Usuario {i}", $"user{i}", i % 2 == 0 ? "Empleado" : "Supervisor");
         }
 
-        // ====== Filtro local: devuelve un DataTable con todas las coincidencias ======
+        // Nueva implementacion: filtro local devolviendo DataTable
         private DataTable FiltroLocalComoDataTable(string filtro)
         {
             if (string.IsNullOrWhiteSpace(filtro))
@@ -79,7 +83,7 @@ namespace Manga_Rica_P1.UI.User
         // ====== CRUD ======
         private void Nuevo()
         {
-            using var dlg = new AddUser();
+            using var dlg = new AddUser(); // modal
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
                 var r = dlg.Resultado;
@@ -87,11 +91,11 @@ namespace Manga_Rica_P1.UI.User
                     ? 1
                     : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
 
-                // Usuario DEMO: si no tienes campo usuario en el form, lo genero del nombre
+                // DEMO: generar "Usuario" a partir del nombre
                 string usuario = r.Nombre.ToLower().Replace(" ", "");
                 _tablaCompleta.Rows.Add(newId, r.Nombre, usuario, r.Perfil);
 
-                pagedGrid.RefreshData(); // mantiene filtro y página (recalcula si hace falta)
+                pagedGrid.RefreshData();
             }
         }
 
@@ -117,7 +121,7 @@ namespace Manga_Rica_P1.UI.User
                 var r = dlg.Resultado;
                 fila.SetField("Nombre", r.Nombre);
                 fila.SetField("Rol", r.Perfil);
-                // usuario: decide si recalculas o mantienes
+                // Si decides recalcular el alias de Usuario:
                 // fila.SetField("Usuario", r.Nombre.ToLower().Replace(" ", ""));
 
                 pagedGrid.RefreshData();
