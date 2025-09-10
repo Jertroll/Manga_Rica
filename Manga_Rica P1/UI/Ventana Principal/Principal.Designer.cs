@@ -29,7 +29,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Principal));
             panel1 = new Panel();
             LabelTitulo = new Label();
@@ -59,9 +58,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnCierreDiario = new Button();
             panel6 = new Panel();
             btnSolicitudesPlanilla = new Button();
-            panel8 = new Panel();
-            button2 = new Button();
-            menuConfTransicion = new System.Windows.Forms.Timer(components);
             menuDeduccionesContenedor = new FlowLayoutPanel();
             panel3 = new Panel();
             btnDeducciones = new Button();
@@ -89,7 +85,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanillaReportes = new Button();
             panel27 = new Panel();
             btnSodaReportes = new Button();
-            menuPlanillaTransicion = new System.Windows.Forms.Timer(components);
+            botonSalirContenedor = new Panel();
+            btnSalir = new Button();
+            panelPrincipal = new Panel();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             flowLayoutPanelSideBar.SuspendLayout();
@@ -106,7 +104,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel15.SuspendLayout();
             panel16.SuspendLayout();
             panel6.SuspendLayout();
-            panel8.SuspendLayout();
             menuDeduccionesContenedor.SuspendLayout();
             panel3.SuspendLayout();
             panel17.SuspendLayout();
@@ -122,6 +119,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel25.SuspendLayout();
             panel26.SuspendLayout();
             panel27.SuspendLayout();
+            botonSalirContenedor.SuspendLayout();
             SuspendLayout();
             // 
             // panel1
@@ -132,16 +130,17 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(831, 37);
+            panel1.Size = new Size(922, 37);
             panel1.TabIndex = 0;
             // 
             // LabelTitulo
             // 
             LabelTitulo.AutoSize = true;
-            LabelTitulo.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            LabelTitulo.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            LabelTitulo.ForeColor = Color.FromArgb(76, 139, 59);
             LabelTitulo.Location = new Point(61, 9);
             LabelTitulo.Name = "LabelTitulo";
-            LabelTitulo.Size = new Size(116, 20);
+            LabelTitulo.Size = new Size(131, 21);
             LabelTitulo.TabIndex = 1;
             LabelTitulo.Text = "Manga Rica S.A ";
             // 
@@ -157,21 +156,25 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // flowLayoutPanelSideBar
             // 
-            flowLayoutPanelSideBar.BackColor = Color.White;
+            flowLayoutPanelSideBar.BackColor = Color.FromArgb(76, 139, 59);
             flowLayoutPanelSideBar.Controls.Add(menuConfContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuPlanillaContenedor);
+            flowLayoutPanelSideBar.Controls.Add(menuDeduccionesContenedor);
+            flowLayoutPanelSideBar.Controls.Add(menuPagosContenedor);
+            flowLayoutPanelSideBar.Controls.Add(menuReportesContenedor);
+            flowLayoutPanelSideBar.Controls.Add(botonSalirContenedor);
             flowLayoutPanelSideBar.Dock = DockStyle.Left;
             flowLayoutPanelSideBar.ForeColor = SystemColors.ControlText;
             flowLayoutPanelSideBar.Location = new Point(0, 37);
             flowLayoutPanelSideBar.Name = "flowLayoutPanelSideBar";
             flowLayoutPanelSideBar.Padding = new Padding(0, 30, 0, 0);
-            flowLayoutPanelSideBar.Size = new Size(197, 413);
+            flowLayoutPanelSideBar.Size = new Size(192, 473);
             flowLayoutPanelSideBar.TabIndex = 1;
-            flowLayoutPanelSideBar.Paint += flowLayoutPanelSideBar_Paint;
             // 
             // menuConfContenedor
             // 
             menuConfContenedor.BackColor = Color.White;
+            menuConfContenedor.BorderStyle = BorderStyle.FixedSingle;
             menuConfContenedor.Controls.Add(panel2);
             menuConfContenedor.Controls.Add(panel7);
             menuConfContenedor.Controls.Add(panel11);
@@ -183,7 +186,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             menuConfContenedor.Name = "menuConfContenedor";
             menuConfContenedor.Size = new Size(202, 46);
             menuConfContenedor.TabIndex = 8;
-            menuConfContenedor.Paint += menuConfContenedor_Paint;
             // 
             // panel2
             // 
@@ -196,15 +198,15 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnConfiguraciones
             // 
-            btnConfiguraciones.BackColor = Color.FromArgb(0, 221, 0);
+            btnConfiguraciones.BackColor = Color.FromArgb(76, 139, 59);
             btnConfiguraciones.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnConfiguraciones.ForeColor = Color.White;
             btnConfiguraciones.Image = (Image)resources.GetObject("btnConfiguraciones.Image");
             btnConfiguraciones.ImageAlign = ContentAlignment.MiddleLeft;
-            btnConfiguraciones.Location = new Point(-29, -20);
+            btnConfiguraciones.Location = new Point(-29, -23);
             btnConfiguraciones.Name = "btnConfiguraciones";
             btnConfiguraciones.Padding = new Padding(40, 0, 0, 0);
-            btnConfiguraciones.Size = new Size(268, 89);
+            btnConfiguraciones.Size = new Size(231, 89);
             btnConfiguraciones.TabIndex = 2;
             btnConfiguraciones.Text = "       Configuraciones";
             btnConfiguraciones.TextAlign = ContentAlignment.MiddleLeft;
@@ -222,9 +224,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnUsuarios
             // 
-            btnUsuarios.BackColor = Color.FromArgb(224, 224, 224);
+            btnUsuarios.BackColor = Color.FromArgb(124, 179, 66);
             btnUsuarios.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnUsuarios.ForeColor = Color.Black;
+            btnUsuarios.ForeColor = Color.White;
             btnUsuarios.Image = (Image)resources.GetObject("btnUsuarios.Image");
             btnUsuarios.ImageAlign = ContentAlignment.MiddleLeft;
             btnUsuarios.Location = new Point(-32, -20);
@@ -248,9 +250,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnDepartamentos
             // 
-            btnDepartamentos.BackColor = Color.FromArgb(224, 224, 224);
+            btnDepartamentos.BackColor = Color.FromArgb(124, 179, 66);
             btnDepartamentos.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnDepartamentos.ForeColor = Color.Black;
+            btnDepartamentos.ForeColor = Color.White;
             btnDepartamentos.Image = (Image)resources.GetObject("btnDepartamentos.Image");
             btnDepartamentos.ImageAlign = ContentAlignment.MiddleLeft;
             btnDepartamentos.Location = new Point(-32, -20);
@@ -273,9 +275,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnSemanas
             // 
-            btnSemanas.BackColor = Color.FromArgb(224, 224, 224);
+            btnSemanas.BackColor = Color.FromArgb(124, 179, 66);
             btnSemanas.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSemanas.ForeColor = Color.Black;
+            btnSemanas.ForeColor = Color.White;
             btnSemanas.Image = (Image)resources.GetObject("btnSemanas.Image");
             btnSemanas.ImageAlign = ContentAlignment.MiddleLeft;
             btnSemanas.Location = new Point(-32, -20);
@@ -298,9 +300,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnArticulos
             // 
-            btnArticulos.BackColor = Color.FromArgb(224, 224, 224);
+            btnArticulos.BackColor = Color.FromArgb(124, 179, 66);
             btnArticulos.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnArticulos.ForeColor = Color.Black;
+            btnArticulos.ForeColor = Color.White;
             btnArticulos.Image = (Image)resources.GetObject("btnArticulos.Image");
             btnArticulos.ImageAlign = ContentAlignment.MiddleLeft;
             btnArticulos.Location = new Point(-32, -20);
@@ -315,6 +317,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // menuPlanillaContenedor
             // 
             menuPlanillaContenedor.BackColor = Color.White;
+            menuPlanillaContenedor.BorderStyle = BorderStyle.FixedSingle;
             menuPlanillaContenedor.Controls.Add(panel12);
             menuPlanillaContenedor.Controls.Add(panel13);
             menuPlanillaContenedor.Controls.Add(panel14);
@@ -325,7 +328,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             menuPlanillaContenedor.Location = new Point(0, 76);
             menuPlanillaContenedor.Margin = new Padding(0);
             menuPlanillaContenedor.Name = "menuPlanillaContenedor";
-            menuPlanillaContenedor.Size = new Size(202, 47);
+            menuPlanillaContenedor.Size = new Size(202, 46);
             menuPlanillaContenedor.TabIndex = 11;
             // 
             // panel12
@@ -339,7 +342,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnPlanilla
             // 
-            btnPlanilla.BackColor = Color.FromArgb(0, 221, 0);
+            btnPlanilla.BackColor = Color.FromArgb(76, 139, 59);
             btnPlanilla.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnPlanilla.ForeColor = Color.White;
             btnPlanilla.Image = (Image)resources.GetObject("btnPlanilla.Image");
@@ -347,7 +350,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanilla.Location = new Point(-29, -20);
             btnPlanilla.Name = "btnPlanilla";
             btnPlanilla.Padding = new Padding(40, 0, 0, 0);
-            btnPlanilla.Size = new Size(268, 89);
+            btnPlanilla.Size = new Size(231, 89);
             btnPlanilla.TabIndex = 2;
             btnPlanilla.Text = "       Planilla";
             btnPlanilla.TextAlign = ContentAlignment.MiddleLeft;
@@ -364,9 +367,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnEmpleado
             // 
-            btnEmpleado.BackColor = Color.FromArgb(224, 224, 224);
+            btnEmpleado.BackColor = Color.FromArgb(124, 179, 66);
             btnEmpleado.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEmpleado.ForeColor = Color.Black;
+            btnEmpleado.ForeColor = Color.White;
             btnEmpleado.Image = (Image)resources.GetObject("btnEmpleado.Image");
             btnEmpleado.ImageAlign = ContentAlignment.MiddleLeft;
             btnEmpleado.Location = new Point(-32, -20);
@@ -389,9 +392,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnEntrada
             // 
-            btnEntrada.BackColor = Color.FromArgb(224, 224, 224);
+            btnEntrada.BackColor = Color.FromArgb(124, 179, 66);
             btnEntrada.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEntrada.ForeColor = Color.Black;
+            btnEntrada.ForeColor = Color.White;
             btnEntrada.Image = (Image)resources.GetObject("btnEntrada.Image");
             btnEntrada.ImageAlign = ContentAlignment.MiddleLeft;
             btnEntrada.Location = new Point(-32, -20);
@@ -414,9 +417,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnSalidas
             // 
-            btnSalidas.BackColor = Color.FromArgb(224, 224, 224);
+            btnSalidas.BackColor = Color.FromArgb(124, 179, 66);
             btnSalidas.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSalidas.ForeColor = Color.Black;
+            btnSalidas.ForeColor = Color.White;
             btnSalidas.Image = (Image)resources.GetObject("btnSalidas.Image");
             btnSalidas.ImageAlign = ContentAlignment.MiddleLeft;
             btnSalidas.Location = new Point(-32, -20);
@@ -439,9 +442,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnCierreDiario
             // 
-            btnCierreDiario.BackColor = Color.FromArgb(224, 224, 224);
+            btnCierreDiario.BackColor = Color.FromArgb(124, 179, 66);
             btnCierreDiario.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnCierreDiario.ForeColor = Color.Black;
+            btnCierreDiario.ForeColor = Color.White;
             btnCierreDiario.Image = (Image)resources.GetObject("btnCierreDiario.Image");
             btnCierreDiario.ImageAlign = ContentAlignment.MiddleLeft;
             btnCierreDiario.Location = new Point(-32, -20);
@@ -464,9 +467,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnSolicitudesPlanilla
             // 
-            btnSolicitudesPlanilla.BackColor = Color.FromArgb(224, 224, 224);
+            btnSolicitudesPlanilla.BackColor = Color.FromArgb(124, 179, 66);
             btnSolicitudesPlanilla.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSolicitudesPlanilla.ForeColor = Color.Black;
+            btnSolicitudesPlanilla.ForeColor = Color.White;
             btnSolicitudesPlanilla.Image = (Image)resources.GetObject("btnSolicitudesPlanilla.Image");
             btnSolicitudesPlanilla.ImageAlign = ContentAlignment.MiddleLeft;
             btnSolicitudesPlanilla.Location = new Point(-32, -20);
@@ -478,49 +481,20 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSolicitudesPlanilla.TextAlign = ContentAlignment.MiddleLeft;
             btnSolicitudesPlanilla.UseVisualStyleBackColor = false;
             // 
-            // panel8
-            // 
-            panel8.Controls.Add(button2);
-            panel8.Location = new Point(245, 370);
-            panel8.Margin = new Padding(0);
-            panel8.Name = "panel8";
-            panel8.Size = new Size(202, 46);
-            panel8.TabIndex = 10;
-            // 
-            // button2
-            // 
-            button2.BackColor = Color.FromArgb(0, 221, 0);
-            button2.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            button2.ForeColor = Color.White;
-            button2.Image = (Image)resources.GetObject("button2.Image");
-            button2.ImageAlign = ContentAlignment.MiddleLeft;
-            button2.Location = new Point(-32, -20);
-            button2.Name = "button2";
-            button2.Padding = new Padding(40, 0, 0, 0);
-            button2.Size = new Size(273, 89);
-            button2.TabIndex = 2;
-            button2.Text = "       Configuraciones";
-            button2.TextAlign = ContentAlignment.MiddleLeft;
-            button2.UseVisualStyleBackColor = false;
-            // 
-            // menuConfTransicion
-            // 
-            menuConfTransicion.Interval = 20;
-            menuConfTransicion.Tick += menuConfTransicion_Tick;
-            // 
             // menuDeduccionesContenedor
             // 
             menuDeduccionesContenedor.BackColor = Color.White;
+            menuDeduccionesContenedor.BorderStyle = BorderStyle.FixedSingle;
             menuDeduccionesContenedor.Controls.Add(panel3);
             menuDeduccionesContenedor.Controls.Add(panel17);
             menuDeduccionesContenedor.Controls.Add(panel18);
             menuDeduccionesContenedor.Controls.Add(panel19);
             menuDeduccionesContenedor.Controls.Add(panel20);
             menuDeduccionesContenedor.ForeColor = Color.White;
-            menuDeduccionesContenedor.Location = new Point(409, 47);
+            menuDeduccionesContenedor.Location = new Point(0, 122);
             menuDeduccionesContenedor.Margin = new Padding(0);
             menuDeduccionesContenedor.Name = "menuDeduccionesContenedor";
-            menuDeduccionesContenedor.Size = new Size(202, 227);
+            menuDeduccionesContenedor.Size = new Size(202, 46);
             menuDeduccionesContenedor.TabIndex = 12;
             // 
             // panel3
@@ -534,7 +508,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnDeducciones
             // 
-            btnDeducciones.BackColor = Color.FromArgb(0, 221, 0);
+            btnDeducciones.BackColor = Color.FromArgb(76, 139, 59);
             btnDeducciones.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnDeducciones.ForeColor = Color.White;
             btnDeducciones.Image = (Image)resources.GetObject("btnDeducciones.Image");
@@ -542,7 +516,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnDeducciones.Location = new Point(-29, -20);
             btnDeducciones.Name = "btnDeducciones";
             btnDeducciones.Padding = new Padding(40, 0, 0, 0);
-            btnDeducciones.Size = new Size(268, 89);
+            btnDeducciones.Size = new Size(231, 89);
             btnDeducciones.TabIndex = 2;
             btnDeducciones.Text = "       Deducciones";
             btnDeducciones.TextAlign = ContentAlignment.MiddleLeft;
@@ -559,9 +533,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnSoda
             // 
-            btnSoda.BackColor = Color.FromArgb(224, 224, 224);
+            btnSoda.BackColor = Color.FromArgb(124, 179, 66);
             btnSoda.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSoda.ForeColor = Color.Black;
+            btnSoda.ForeColor = Color.White;
             btnSoda.Image = (Image)resources.GetObject("btnSoda.Image");
             btnSoda.ImageAlign = ContentAlignment.MiddleLeft;
             btnSoda.Location = new Point(-32, -20);
@@ -584,9 +558,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnUniforme
             // 
-            btnUniforme.BackColor = Color.FromArgb(224, 224, 224);
+            btnUniforme.BackColor = Color.FromArgb(124, 179, 66);
             btnUniforme.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnUniforme.ForeColor = Color.Black;
+            btnUniforme.ForeColor = Color.White;
             btnUniforme.Image = (Image)resources.GetObject("btnUniforme.Image");
             btnUniforme.ImageAlign = ContentAlignment.MiddleLeft;
             btnUniforme.Location = new Point(-32, -20);
@@ -609,9 +583,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnReporteEmpleadoDeducciones
             // 
-            btnReporteEmpleadoDeducciones.BackColor = Color.FromArgb(224, 224, 224);
+            btnReporteEmpleadoDeducciones.BackColor = Color.FromArgb(124, 179, 66);
             btnReporteEmpleadoDeducciones.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnReporteEmpleadoDeducciones.ForeColor = Color.Black;
+            btnReporteEmpleadoDeducciones.ForeColor = Color.White;
             btnReporteEmpleadoDeducciones.Image = (Image)resources.GetObject("btnReporteEmpleadoDeducciones.Image");
             btnReporteEmpleadoDeducciones.ImageAlign = ContentAlignment.MiddleLeft;
             btnReporteEmpleadoDeducciones.Location = new Point(-32, -20);
@@ -634,9 +608,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnReporteGneralDeducciones
             // 
-            btnReporteGneralDeducciones.BackColor = Color.FromArgb(224, 224, 224);
+            btnReporteGneralDeducciones.BackColor = Color.FromArgb(124, 179, 66);
             btnReporteGneralDeducciones.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnReporteGneralDeducciones.ForeColor = Color.Black;
+            btnReporteGneralDeducciones.ForeColor = Color.White;
             btnReporteGneralDeducciones.Image = (Image)resources.GetObject("btnReporteGneralDeducciones.Image");
             btnReporteGneralDeducciones.ImageAlign = ContentAlignment.MiddleLeft;
             btnReporteGneralDeducciones.Location = new Point(-32, -20);
@@ -651,14 +625,15 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // menuPagosContenedor
             // 
             menuPagosContenedor.BackColor = Color.White;
+            menuPagosContenedor.BorderStyle = BorderStyle.FixedSingle;
             menuPagosContenedor.Controls.Add(panel4);
             menuPagosContenedor.Controls.Add(panel5);
             menuPagosContenedor.Controls.Add(panel21);
             menuPagosContenedor.ForeColor = Color.White;
-            menuPagosContenedor.Location = new Point(200, 185);
+            menuPagosContenedor.Location = new Point(0, 168);
             menuPagosContenedor.Margin = new Padding(0);
             menuPagosContenedor.Name = "menuPagosContenedor";
-            menuPagosContenedor.Size = new Size(202, 138);
+            menuPagosContenedor.Size = new Size(202, 46);
             menuPagosContenedor.TabIndex = 13;
             // 
             // panel4
@@ -672,7 +647,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnPagosPrincipal
             // 
-            btnPagosPrincipal.BackColor = Color.FromArgb(0, 221, 0);
+            btnPagosPrincipal.BackColor = Color.FromArgb(76, 139, 59);
             btnPagosPrincipal.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnPagosPrincipal.ForeColor = Color.White;
             btnPagosPrincipal.Image = (Image)resources.GetObject("btnPagosPrincipal.Image");
@@ -680,7 +655,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPagosPrincipal.Location = new Point(-29, -20);
             btnPagosPrincipal.Name = "btnPagosPrincipal";
             btnPagosPrincipal.Padding = new Padding(40, 0, 0, 0);
-            btnPagosPrincipal.Size = new Size(268, 89);
+            btnPagosPrincipal.Size = new Size(231, 89);
             btnPagosPrincipal.TabIndex = 2;
             btnPagosPrincipal.Text = "       Pagos";
             btnPagosPrincipal.TextAlign = ContentAlignment.MiddleLeft;
@@ -697,9 +672,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnActivarPagos
             // 
-            btnActivarPagos.BackColor = Color.FromArgb(224, 224, 224);
+            btnActivarPagos.BackColor = Color.FromArgb(124, 179, 66);
             btnActivarPagos.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnActivarPagos.ForeColor = Color.Black;
+            btnActivarPagos.ForeColor = Color.White;
             btnActivarPagos.Image = (Image)resources.GetObject("btnActivarPagos.Image");
             btnActivarPagos.ImageAlign = ContentAlignment.MiddleLeft;
             btnActivarPagos.Location = new Point(-32, -20);
@@ -722,9 +697,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnPagosSubmenu
             // 
-            btnPagosSubmenu.BackColor = Color.FromArgb(224, 224, 224);
+            btnPagosSubmenu.BackColor = Color.FromArgb(124, 179, 66);
             btnPagosSubmenu.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnPagosSubmenu.ForeColor = Color.Black;
+            btnPagosSubmenu.ForeColor = Color.White;
             btnPagosSubmenu.Image = (Image)resources.GetObject("btnPagosSubmenu.Image");
             btnPagosSubmenu.ImageAlign = ContentAlignment.MiddleLeft;
             btnPagosSubmenu.Location = new Point(-32, -20);
@@ -739,15 +714,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // menuReportesContenedor
             // 
             menuReportesContenedor.BackColor = Color.White;
+            menuReportesContenedor.BorderStyle = BorderStyle.FixedSingle;
             menuReportesContenedor.Controls.Add(panel24);
             menuReportesContenedor.Controls.Add(panel25);
             menuReportesContenedor.Controls.Add(panel26);
             menuReportesContenedor.Controls.Add(panel27);
             menuReportesContenedor.ForeColor = Color.White;
-            menuReportesContenedor.Location = new Point(620, 47);
+            menuReportesContenedor.Location = new Point(0, 214);
             menuReportesContenedor.Margin = new Padding(0);
             menuReportesContenedor.Name = "menuReportesContenedor";
-            menuReportesContenedor.Size = new Size(202, 184);
+            menuReportesContenedor.Size = new Size(202, 46);
             menuReportesContenedor.TabIndex = 14;
             // 
             // panel24
@@ -761,7 +737,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnReporte
             // 
-            btnReporte.BackColor = Color.FromArgb(0, 221, 0);
+            btnReporte.BackColor = Color.FromArgb(76, 139, 59);
             btnReporte.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnReporte.ForeColor = Color.White;
             btnReporte.Image = (Image)resources.GetObject("btnReporte.Image");
@@ -769,7 +745,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnReporte.Location = new Point(-29, -20);
             btnReporte.Name = "btnReporte";
             btnReporte.Padding = new Padding(40, 0, 0, 0);
-            btnReporte.Size = new Size(268, 89);
+            btnReporte.Size = new Size(231, 89);
             btnReporte.TabIndex = 2;
             btnReporte.Text = "       Reportes";
             btnReporte.TextAlign = ContentAlignment.MiddleLeft;
@@ -786,9 +762,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnEmpleadosReporte
             // 
-            btnEmpleadosReporte.BackColor = Color.FromArgb(224, 224, 224);
+            btnEmpleadosReporte.BackColor = Color.FromArgb(124, 179, 66);
             btnEmpleadosReporte.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEmpleadosReporte.ForeColor = Color.Black;
+            btnEmpleadosReporte.ForeColor = Color.White;
             btnEmpleadosReporte.Image = (Image)resources.GetObject("btnEmpleadosReporte.Image");
             btnEmpleadosReporte.ImageAlign = ContentAlignment.MiddleLeft;
             btnEmpleadosReporte.Location = new Point(-32, -20);
@@ -799,6 +775,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnEmpleadosReporte.Text = "       Empleados              >";
             btnEmpleadosReporte.TextAlign = ContentAlignment.MiddleLeft;
             btnEmpleadosReporte.UseVisualStyleBackColor = false;
+            btnEmpleadosReporte.Click += btnEmpleadosReporte_Click;
             // 
             // panel26
             // 
@@ -811,9 +788,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnPlanillaReportes
             // 
-            btnPlanillaReportes.BackColor = Color.FromArgb(224, 224, 224);
+            btnPlanillaReportes.BackColor = Color.FromArgb(124, 179, 66);
             btnPlanillaReportes.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnPlanillaReportes.ForeColor = Color.Black;
+            btnPlanillaReportes.ForeColor = Color.White;
             btnPlanillaReportes.Image = (Image)resources.GetObject("btnPlanillaReportes.Image");
             btnPlanillaReportes.ImageAlign = ContentAlignment.MiddleLeft;
             btnPlanillaReportes.Location = new Point(-32, -20);
@@ -821,9 +798,10 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanillaReportes.Padding = new Padding(40, 0, 0, 0);
             btnPlanillaReportes.Size = new Size(273, 89);
             btnPlanillaReportes.TabIndex = 2;
-            btnPlanillaReportes.Text = "       Planilla                    >";
+            btnPlanillaReportes.Text = "       Planilla                     >";
             btnPlanillaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnPlanillaReportes.UseVisualStyleBackColor = false;
+            btnPlanillaReportes.Click += btnPlanillaReportes_Click;
             // 
             // panel27
             // 
@@ -836,9 +814,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // btnSodaReportes
             // 
-            btnSodaReportes.BackColor = Color.FromArgb(224, 224, 224);
+            btnSodaReportes.BackColor = Color.FromArgb(124, 179, 66);
             btnSodaReportes.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSodaReportes.ForeColor = Color.Black;
+            btnSodaReportes.ForeColor = Color.White;
             btnSodaReportes.Image = (Image)resources.GetObject("btnSodaReportes.Image");
             btnSodaReportes.ImageAlign = ContentAlignment.MiddleLeft;
             btnSodaReportes.Location = new Point(-32, -20);
@@ -850,25 +828,52 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSodaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnSodaReportes.UseVisualStyleBackColor = false;
             // 
-            // menuPlanillaTransicion
+            // botonSalirContenedor
             // 
-            menuPlanillaTransicion.Interval = 20;
-            menuPlanillaTransicion.Tick += menuPlanillaTransicion_Tick;
+            botonSalirContenedor.BorderStyle = BorderStyle.FixedSingle;
+            botonSalirContenedor.Controls.Add(btnSalir);
+            botonSalirContenedor.Location = new Point(0, 260);
+            botonSalirContenedor.Margin = new Padding(0);
+            botonSalirContenedor.Name = "botonSalirContenedor";
+            botonSalirContenedor.Size = new Size(202, 46);
+            botonSalirContenedor.TabIndex = 10;
+            // 
+            // btnSalir
+            // 
+            btnSalir.BackColor = Color.Firebrick;
+            btnSalir.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnSalir.ForeColor = Color.White;
+            btnSalir.Image = (Image)resources.GetObject("btnSalir.Image");
+            btnSalir.ImageAlign = ContentAlignment.MiddleLeft;
+            btnSalir.Location = new Point(-32, -20);
+            btnSalir.Name = "btnSalir";
+            btnSalir.Padding = new Padding(40, 0, 0, 0);
+            btnSalir.Size = new Size(234, 89);
+            btnSalir.TabIndex = 2;
+            btnSalir.Text = "       Salir";
+            btnSalir.TextAlign = ContentAlignment.MiddleLeft;
+            btnSalir.UseVisualStyleBackColor = false;
+            btnSalir.Click += btnSalir_Click;
+            // 
+            // panelPrincipal
+            // 
+            panelPrincipal.BackColor = Color.FromArgb(238, 238, 238, 238);
+            panelPrincipal.Location = new Point(192, 37);
+            panelPrincipal.Name = "panelPrincipal";
+            panelPrincipal.Size = new Size(730, 473);
+            panelPrincipal.TabIndex = 2;
             // 
             // Principal
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(831, 450);
-            Controls.Add(menuReportesContenedor);
-            Controls.Add(menuPagosContenedor);
-            Controls.Add(menuDeduccionesContenedor);
-            Controls.Add(panel8);
+            ClientSize = new Size(922, 510);
+            Controls.Add(panelPrincipal);
             Controls.Add(flowLayoutPanelSideBar);
             Controls.Add(panel1);
             Name = "Principal";
             Text = " ";
-            Load += Principal_Load_2;
+            Load += Principal_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -886,7 +891,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel15.ResumeLayout(false);
             panel16.ResumeLayout(false);
             panel6.ResumeLayout(false);
-            panel8.ResumeLayout(false);
             menuDeduccionesContenedor.ResumeLayout(false);
             panel3.ResumeLayout(false);
             panel17.ResumeLayout(false);
@@ -902,13 +906,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel25.ResumeLayout(false);
             panel26.ResumeLayout(false);
             panel27.ResumeLayout(false);
+            botonSalirContenedor.ResumeLayout(false);
             ResumeLayout(false);
         }
 
-        private void Principal_Load_2(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
+
 
         #endregion
 
@@ -923,15 +925,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private FlowLayoutPanel menuConfContenedor;
         private Panel panel7;
         private Button btnUsuarios;
-        private Panel panel8;
-        private Button button2;
+        private Panel botonSalirContenedor;
+        private Button btnSalir;
         private Panel panel9;
         private Button btnArticulos;
         private Panel panel10;
         private Button btnSemanas;
         private Panel panel11;
         private Button btnDepartamentos;
-        private System.Windows.Forms.Timer menuConfTransicion;
         private FlowLayoutPanel menuPlanillaContenedor;
         private FlowLayoutPanel flowLayoutPanel1;
         private Panel panel12;
@@ -972,6 +973,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private Button btnSodaReportes;
         private Panel panel6;
         private Button btnSolicitudesPlanilla;
-        private System.Windows.Forms.Timer menuPlanillaTransicion;
+        private Panel panelPrincipal;
     }
 }

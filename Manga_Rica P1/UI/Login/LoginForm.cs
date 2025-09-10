@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Linq; // para .Cast<object>()
 using System.Windows.Forms;
+
 using Manga_Rica_P1.BLL.AutentificacionService;
+using Manga_Rica_P1.BLL.Session;
 
 namespace Manga_Rica_P1.UI.Login
 {
     public partial class LoginForm : Form
     {
-
         private readonly AutentificacionService _auth;
+        private readonly IAppSession _session; // ⬅️ sesión compartida
 
-        // ============
-        // PALETA (igual a Form1)
-        // ============
+        // ============ PALETA ============ 
         private readonly Color Verde1 = Color.FromArgb(79, 170, 38);   // verde brillante
         private readonly Color Verde2 = Color.FromArgb(36, 128, 36);   // verde oscuro
         private readonly Color VerdeClaro = Color.FromArgb(219, 242, 191);
@@ -21,33 +22,30 @@ namespace Manga_Rica_P1.UI.Login
         private readonly Color VerdeTexto = Color.FromArgb(33, 60, 21);
         private readonly Color RojoSalir = Color.FromArgb(200, 50, 50);
 
-        // Panel “tarjeta” del login (debe existir en el Designer con el nombre panel1)
-        // Controles esperados: comboBox1 (usuario), txtPassword, btnLogin, btnSalir, picLogo…
-        public LoginForm(AutentificacionService auth)
+        // Constructor: ahora recibe también la sesión
+        public LoginForm(AutentificacionService auth, IAppSession session)
         {
             InitializeComponent();
-            _auth = auth;                
-            ConfigurarUI();
+            _auth = auth;
+            _session = session;
 
+            ConfigurarUI();
             this.Load += LoginForm_Load;
         }
 
         private void ConfigurarUI()
         {
-            // Comodidad de uso
             AcceptButton = btnLogin;
             CancelButton = btnSalir;
             DoubleBuffered = true;
             StartPosition = FormStartPosition.CenterScreen;
 
-            // Contraseña oculta y placeholder
             if (txtPassword != null)
             {
                 txtPassword.UseSystemPasswordChar = true;
                 txtPassword.PlaceholderText = "*******";
             }
 
-            // Estética del botón principal (igual que en Form1)
             if (btnLogin != null)
             {
                 btnLogin.FlatStyle = FlatStyle.Flat;
@@ -56,7 +54,6 @@ namespace Manga_Rica_P1.UI.Login
                 btnLogin.ForeColor = VerdeTexto;
             }
 
-            // Botón Salir en rojo (igual que en Form1)
             if (btnSalir != null)
             {
                 btnSalir.FlatStyle = FlatStyle.Flat;
@@ -65,14 +62,9 @@ namespace Manga_Rica_P1.UI.Login
                 btnSalir.ForeColor = Color.White;
                 btnSalir.DialogResult = DialogResult.Cancel;
             }
-
-
-
         }
 
-        // =============================
-        //  FONDO DEGRADADO (igual a Form1)
-        // =============================
+        // Fondo degradado
         protected override void OnPaint(PaintEventArgs e)
         {
             using var lg = new LinearGradientBrush(ClientRectangle, Verde1, Verde2, 45f);
@@ -80,22 +72,23 @@ namespace Manga_Rica_P1.UI.Login
             base.OnPaint(e);
         }
 
-        // =============================
-        //  EVENTOS
-        // =============================
+        // Load
         private void LoginForm_Load(object? sender, EventArgs e)
         {
             CargarUsuariosEnCombo();
-            if (comboBox1.Items.Count > 0 && comboBox1.CanFocus) comboBox1.Focus();
-            int radio = 20; // radio de las esquinas
-            var path = new GraphicsPath();
+
+            if (comboBox1.Items.Count > 0 && comboBox1.CanFocus)
+                comboBox1.Focus();
+
+            // redondear btnLogin
+            int radio = 20;
+            using var path = new GraphicsPath();
             path.StartFigure();
             path.AddArc(new Rectangle(0, 0, radio, radio), 180, 90);
             path.AddArc(new Rectangle(btnLogin.Width - radio, 0, radio, radio), 270, 90);
             path.AddArc(new Rectangle(btnLogin.Width - radio, btnLogin.Height - radio, radio, radio), 0, 90);
             path.AddArc(new Rectangle(0, btnLogin.Height - radio, radio, radio), 90, 90);
             path.CloseFigure();
-
             btnLogin.Region = new Region(path);
         }
 
@@ -104,8 +97,6 @@ namespace Manga_Rica_P1.UI.Login
             DialogResult = DialogResult.Cancel;
             Close();
         }
-
-
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
@@ -128,15 +119,19 @@ namespace Manga_Rica_P1.UI.Login
                     return;
                 }
 
-                var (ok, msg, user) = _auth.Login(usuario, pass);
+                // ⬇️ Nuevo: Login devuelve AuthUser (DTO de sesión)
+                var (ok, msg, authUser) = _auth.Login(usuario, pass);
 
-                if (!ok)
+                if (!ok || authUser is null)
                 {
                     MessageBox.Show(msg, "Login", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtPassword?.SelectAll();
                     txtPassword?.Focus();
                     return;
                 }
+
+                // ⬇️ Guardar en la sesión compartida
+                _session.CurrentUser = authUser;
 
                 // Éxito
                 DialogResult = DialogResult.OK;
@@ -145,7 +140,6 @@ namespace Manga_Rica_P1.UI.Login
             finally
             {
                 btnLogin.Enabled = true;
-
             }
         }
 
@@ -164,23 +158,14 @@ namespace Manga_Rica_P1.UI.Login
                 btnLogin.Enabled = txtPassword.TextLength > 0;
         }
 
-        private void cardPanel_Paint_1(object sender, PaintEventArgs e)
-        {
+        private void cardPanel_Paint_1(object sender, PaintEventArgs e) { }
 
-        }
-
-
-        // =============================
-        //  PANEL CON BORDE REDONDEADO Y FONDO BLANCO
-        //  (equivalente a tu panel1_Paint de Form1, adaptado)
-        // =============================
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
             if (sender is not Panel pnl) return;
 
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-            // Fondo BLANCO dentro del contorno redondeado
             var rect = pnl.ClientRectangle;
             rect.Inflate(-1, -1);
             int radius = 20;
@@ -193,9 +178,6 @@ namespace Manga_Rica_P1.UI.Login
             e.Graphics.DrawPath(pen, path);
         }
 
-        // =============================
-        //  HELPERS GRÁFICOS
-        // =============================
         private static GraphicsPath BuildRoundedRectangle(Rectangle r, int radius)
         {
             int d = radius * 2;
@@ -208,25 +190,15 @@ namespace Manga_Rica_P1.UI.Login
             return gp;
         }
 
-        private void picLogo_Click(object sender, EventArgs e)
-        {
+        private void picLogo_Click(object sender, EventArgs e) { }
+        private void label3_Click(object sender, EventArgs e) { }
 
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-
-
-
-        //Metodo para cargar los usuarios en el comboBox
+        // Cargar usuarios en el combo
         private void CargarUsuariosEnCombo()
         {
             try
             {
-                var userNames = _auth.ObtenerUsernames(); // trae la lista de strings
+                var userNames = _auth.ObtenerUsernames();
 
                 comboBox1.BeginUpdate();
                 comboBox1.Items.Clear();
