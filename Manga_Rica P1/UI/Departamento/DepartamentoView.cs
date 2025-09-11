@@ -3,61 +3,63 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Manga_Rica_P1.UI.Helpers;
-// using Manga_Rica_P1.UI.Controls; // <- usa este si PagedSearchGrid está en UI.Controls
+using Manga_Rica_P1.UI.Helpers;          // PagedSearchGrid
+using Manga_Rica_P1.Entity;              //  Entidad Departamento
+using Manga_Rica_P1.UI.Departamentos; 
 
-namespace Manga_Rica_P1.UI.User
+
+
+namespace Manga_Rica_P1.UI.Departamentos
 {
-    public partial class UserView : UserControl
+    public partial class DepartamentoView : UserControl
     {
         // Nueva implementacion: fuente demo en memoria
         private DataTable _tablaCompleta = new();
+
         // Nueva implementacion: grid reutilizable con búsqueda + paginación
         private PagedSearchGrid pagedGrid;
 
-        public UserView()
+        public DepartamentoView()
         {
-            InitializeComponent();
-
             // Nueva implementacion: limpiar y montar el control compuesto
             Controls.Clear();
 
             pagedGrid = new PagedSearchGrid
             {
                 Dock = DockStyle.Fill,
-                Title = "Listado de Usuarios" 
+                Title = "Listado de Departamentos"
             };
 
-            // DEMO: datos quemados
             BuildDemoTable();
-
-            // Nueva implementacion: modo CLIENTE (DataTable completo + filtro local)
             pagedGrid.GetAllFilteredDataTable = FiltroLocalComoDataTable;
 
-            // Nueva implementacion: eventos CRUD
             pagedGrid.NewRequested += (s, e) => Nuevo();
             pagedGrid.EditRequested += (s, e) => Editar();
             pagedGrid.DeleteRequested += (s, e) => Eliminar();
 
             Controls.Add(pagedGrid);
 
-            // Primer bind
             pagedGrid.RefreshData();
         }
+
 
         // Nueva implementacion: datos demo
         private void BuildDemoTable()
         {
             _tablaCompleta.Columns.Add("Id", typeof(int));
-            _tablaCompleta.Columns.Add("Nombre", typeof(string));
-            _tablaCompleta.Columns.Add("Usuario", typeof(string));
-            _tablaCompleta.Columns.Add("Rol", typeof(string));
+            _tablaCompleta.Columns.Add("Departamento", typeof(string));
+            _tablaCompleta.Columns.Add("Codigo", typeof(string));
 
-            _tablaCompleta.Rows.Add(1, "María Pérez", "mperez", "Admin");
-            _tablaCompleta.Rows.Add(2, "Juan Soto", "jsoto", "Empleado");
-            _tablaCompleta.Rows.Add(3, "Laura Vargas", "lvargas", "Supervisor");
-            for (int i = 4; i <= 50; i++)
-                _tablaCompleta.Rows.Add(i, $"Usuario {i}", $"user{i}", i % 2 == 0 ? "Empleado" : "Supervisor");
+            _tablaCompleta.Rows.Add(1, "Recursos Humanos", "RH-01");
+            _tablaCompleta.Rows.Add(2, "Contabilidad", "CT-02");
+            _tablaCompleta.Rows.Add(3, "Producción", "PR-03");
+            _tablaCompleta.Rows.Add(4, "Bodega", "BD-04");
+            _tablaCompleta.Rows.Add(5, "Compras", "CP-05");
+            _tablaCompleta.Rows.Add(6, "Ventas", "VT-06");
+            _tablaCompleta.Rows.Add(7, "Logística", "LG-07");
+            _tablaCompleta.Rows.Add(8, "Calidad", "CQ-08");
+            _tablaCompleta.Rows.Add(9, "Mantenimiento", "MT-09");
+            _tablaCompleta.Rows.Add(10, "Sistemas", "IT-10");
         }
 
         // Nueva implementacion: filtro local devolviendo DataTable
@@ -66,13 +68,12 @@ namespace Manga_Rica_P1.UI.User
             if (string.IsNullOrWhiteSpace(filtro))
                 return _tablaCompleta.Copy();
 
-            string f = filtro.Trim().ToLower();
+            string f = filtro.Trim().ToLowerInvariant();
 
             var query = _tablaCompleta.AsEnumerable().Where(r =>
                 r.Field<int>("Id").ToString().Contains(f) ||
-                (r.Field<string>("Nombre") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Usuario") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Rol") ?? "").ToLower().Contains(f)
+                (r.Field<string>("Departamento") ?? string.Empty).ToLowerInvariant().Contains(f) ||
+                (r.Field<string>("Codigo") ?? string.Empty).ToLowerInvariant().Contains(f)
             );
 
             var tbl = _tablaCompleta.Clone();
@@ -83,17 +84,16 @@ namespace Manga_Rica_P1.UI.User
         // ====== CRUD ======
         private void Nuevo()
         {
-            using var dlg = new AddUser(); // modal
+            // Nota: si tu AddDepartamento vive en otro namespace, ajusta el using o usa nombre calificado
+            using var dlg = new AddDepartamento(); // modal
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                var r = dlg.Resultado;
+                var r = dlg.Result; // DepartamentoResult
                 int newId = _tablaCompleta.Rows.Count == 0
                     ? 1
                     : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
 
-                // DEMO: generar "Usuario" a partir del nombre
-                string usuario = r.Nombre.ToLower().Replace(" ", "");
-                _tablaCompleta.Rows.Add(newId, r.Nombre, usuario, r.Perfil);
+                _tablaCompleta.Rows.Add(newId, r.nombre, r.codigo);
 
                 pagedGrid.RefreshData();
             }
@@ -101,28 +101,27 @@ namespace Manga_Rica_P1.UI.User
 
         private void Editar()
         {
+            // Requiere que tu PagedSearchGrid exponga SelectedId (como en tu UserView)
             var id = pagedGrid.SelectedId;
             if (id is null) return;
 
             var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id.Value);
             if (fila is null) return;
 
-            var inicial = new AddUser.UsuarioResult
+            // Seed de entidad (ENTITY) para el modal
+            var seed = new Departamento
             {
-                Id = id,
-                Nombre = fila.Field<string>("Nombre") ?? "",
-                Perfil = fila.Field<string>("Rol") ?? "",
-                FechaExpiracion = DateTime.Today
+                Id = id.Value,
+                nombre = fila.Field<string>("Departamento") ?? string.Empty,
+                codigo = fila.Field<string>("Codigo") ?? string.Empty
             };
 
-            using var dlg = new AddUser(inicial);
+            using var dlg = new AddDepartamento(seed);
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
-                var r = dlg.Resultado;
-                fila.SetField("Nombre", r.Nombre);
-                fila.SetField("Rol", r.Perfil);
-                // Si decides recalcular el alias de Usuario:
-                // fila.SetField("Usuario", r.Nombre.ToLower().Replace(" ", ""));
+                var r = dlg.Result; // DepartamentoResult
+                fila.SetField("Departamento", r.nombre);
+                fila.SetField("Codigo", r.codigo);
 
                 pagedGrid.RefreshData();
             }
@@ -130,10 +129,11 @@ namespace Manga_Rica_P1.UI.User
 
         private void Eliminar()
         {
+            // Requiere que tu PagedSearchGrid exponga SelectedIds (como en tu UserView)
             var ids = pagedGrid.SelectedIds;
             if (ids.Count == 0) return;
 
-            string detalle = ids.Count == 1 ? $"Id {ids[0]}" : $"{ids.Count} usuarios";
+            string detalle = ids.Count == 1 ? $"Id {ids[0]}" : $"{ids.Count} departamentos";
             var dr = MessageBox.Show($"Confirmar acción?\n\nSe eliminará: {detalle}",
                                      "Confirmar acción",
                                      MessageBoxButtons.YesNo,

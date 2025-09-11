@@ -39,7 +39,7 @@ namespace Manga_Rica_P1.UI.Helpers
         private Button btnFirst = new(), btnPrev = new(), btnNext = new(), btnLast = new();
         private Label lblPageInfo = new();
         private ComboBox cboPageSize = new();
-        private Label lblTam = new();              // <-- Nueva implementacion (faltaba)
+        private Label lblTam = new();             
 
         // ==== Estado ====
         public string Title { get => lblTitle.Text; set => lblTitle.Text = value; }

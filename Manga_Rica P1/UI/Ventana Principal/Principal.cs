@@ -321,5 +321,22 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panelPrincipal.Controls.Add(vista);
         }
 
+        private void btnDepartamentos_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Departamentos.DepartamentoView();
+            vista.Dock = DockStyle.Fill;
+
+            panelPrincipal.Controls.Clear();
+
+            panelPrincipal.Controls.Add(vista);
+        }
+
+        private void btnSemanas_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Semanas.SemanaView();
+            vista.Dock = DockStyle.Fill;
+            panelPrincipal.Controls.Clear();
+            panelPrincipal.Controls.Add(vista);
+        }
     }
 }

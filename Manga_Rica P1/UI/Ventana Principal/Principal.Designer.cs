@@ -263,6 +263,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnDepartamentos.Text = "       Departamentos";
             btnDepartamentos.TextAlign = ContentAlignment.MiddleLeft;
             btnDepartamentos.UseVisualStyleBackColor = false;
+            btnDepartamentos.Click += btnDepartamentos_Click;
             // 
             // panel10
             // 
@@ -288,6 +289,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSemanas.Text = "       Semanas";
             btnSemanas.TextAlign = ContentAlignment.MiddleLeft;
             btnSemanas.UseVisualStyleBackColor = false;
+            btnSemanas.Click += btnSemanas_Click;
             // 
             // panel9
             // 
