@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-
+using Manga_Rica_P1.UI.Articulos;
 namespace Manga_Rica_P1.UI.Ventana_Principal
 {
     public partial class Principal : Form
@@ -334,6 +334,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void btnSemanas_Click(object sender, EventArgs e)
         {
             var vista = new Manga_Rica_P1.UI.Semanas.SemanaView();
+            vista.Dock = DockStyle.Fill;
+            panelPrincipal.Controls.Clear();
+            panelPrincipal.Controls.Add(vista);
+        }
+
+        private void btnArticulos_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Articulos.ArticulosView();
             vista.Dock = DockStyle.Fill;
             panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);

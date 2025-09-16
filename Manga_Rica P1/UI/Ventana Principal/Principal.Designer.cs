@@ -315,6 +315,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnArticulos.Text = "       Articulos";
             btnArticulos.TextAlign = ContentAlignment.MiddleLeft;
             btnArticulos.UseVisualStyleBackColor = false;
+            btnArticulos.Click += btnArticulos_Click;
             // 
             // menuPlanillaContenedor
             // 
