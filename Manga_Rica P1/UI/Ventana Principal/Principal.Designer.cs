@@ -483,6 +483,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSolicitudesPlanilla.Text = "       Solicitudes";
             btnSolicitudesPlanilla.TextAlign = ContentAlignment.MiddleLeft;
             btnSolicitudesPlanilla.UseVisualStyleBackColor = false;
+            btnSolicitudesPlanilla.Click += btnSolicitudesPlanilla_Click;
             // 
             // menuDeduccionesContenedor
             // 

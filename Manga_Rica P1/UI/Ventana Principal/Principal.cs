@@ -346,5 +346,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
         }
+
+        private void btnSolicitudesPlanilla_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Solicitudes.SolicitudView();
+            vista.Dock = DockStyle.Fill;
+            panelPrincipal.Controls.Clear();
+            panelPrincipal.Controls.Add(vista);
+        }
     }
 }
