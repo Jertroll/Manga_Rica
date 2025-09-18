@@ -383,6 +383,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnEmpleado.Text = "       Empleados";
             btnEmpleado.TextAlign = ContentAlignment.MiddleLeft;
             btnEmpleado.UseVisualStyleBackColor = false;
+            btnEmpleado.Click += btnEmpleado_Click;
             // 
             // panel14
             // 
