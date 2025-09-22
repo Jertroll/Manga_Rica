@@ -5,6 +5,10 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
+using System.IO;
+using System.Drawing;
+using System.Drawing.Imaging;
+
 
 namespace Manga_Rica_P1.UI.Empleados.Modales
 {
@@ -13,6 +17,70 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
         // Nueva implementacion: el modal devuelve la entidad final
         // IMPORTANTE: asegúrate que ENTITY.Empleado sea public (no internal)
         public Empleado Result { get; private set; } = new Empleado();
+
+        // Ruta original seleccionada por el usuario (para copiarla al guardar)
+        private string? _selectedPhotoPath;
+
+        // Carpeta destino dentro del ejecutable: <app>\FotosEmpleados
+        private const string FotosFolderName = "FotosEmpleados";
+
+        /// <summary>
+        /// Copia/convierte la imagen a la carpeta local del proyecto y retorna la ruta RELATIVA
+        /// que luego guardarás en la BD. Si no hay imagen válida, retorna null.
+        /// </summary>
+        private string? SaveLocalPhoto(string? sourcePath)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(sourcePath) || !File.Exists(sourcePath))
+                    return null;
+
+                // Carpeta destino: <app>\FotosEmpleados
+                var root = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FotosFolderName);
+                Directory.CreateDirectory(root);
+
+                // Nombre final (si tienes cédula ya seteada, úsala para el nombre)
+                var baseName = string.IsNullOrWhiteSpace(Result?.Cedula) ? Guid.NewGuid().ToString("N") : Result.Cedula;
+                var fileName = $"{baseName}_{DateTime.Now:yyyyMMddHHmmss}.jpg";
+                var destFullPath = Path.Combine(root, fileName);
+
+                // Cargar, redimensionar y guardar como JPG (400x400, crop centrado)
+                using (var src = Image.FromFile(sourcePath))
+                using (var dst = new Bitmap(400, 400))
+                using (var g = Graphics.FromImage(dst))
+                {
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+                    g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+                    // calcular recorte centrado para “llenar” 400x400 manteniendo proporción
+                    var scale = Math.Max(400f / src.Width, 400f / src.Height);
+                    var w = (int)Math.Round(400 / scale);
+                    var h = (int)Math.Round(400 / scale);
+                    var x = (src.Width - w) / 2;
+                    var y = (src.Height - h) / 2;
+                    var srcRect = new Rectangle(x, y, w, h);
+
+                    g.Clear(Color.White);
+                    g.DrawImage(src, new Rectangle(0, 0, 400, 400), srcRect, GraphicsUnit.Pixel);
+
+                    var jpegCodec = ImageCodecInfo.GetImageEncoders().First(c => c.MimeType == "image/jpeg");
+                    var enc = new EncoderParameters(1);
+                    enc.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 85L);
+                    dst.Save(destFullPath, jpegCodec, enc);
+                }
+
+                // Ruta relativa (la que guardarás en BD más adelante)
+                return Path.Combine(FotosFolderName, fileName).Replace('\\', '/');
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
 
         // Si quieres abrir “vacío”, usa el ctor por defecto generado por el diseñador.
         public AddEmpleado()
@@ -107,7 +175,6 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             textBox1.Text = e.Puesto; // (textBox1 = Puesto según tu Designer)
             dateTimePicker1.Value = e.Fecha_Ingreso == default ? DateTime.Today : e.Fecha_Ingreso;
             dateTimePicker2.Value = e.Fecha_Salida == default ? DateTime.Today : e.Fecha_Salida;
-            textBoxFoto.Text = e.Foto ?? "";
             comboBoxActivo.SelectedIndex = e.Activo == 1 ? 1 : 0;
             textBoxMcNumero.Text = e.MC_Numero.ToString();
         }
@@ -168,11 +235,47 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             Result.Puesto = textBox1.Text.Trim(); // textBox1 = Puesto (según tu Designer)
             Result.Fecha_Ingreso = dateTimePicker1.Value.Date; // Ingreso
             Result.Fecha_Salida = dateTimePicker2.Value.Date; // Salida (puede ser default si no aplica)
-            Result.Foto = textBoxFoto.Text.Trim();
             Result.Activo = comboBoxActivo.SelectedIndex == 1 ? 1 : 0; // Sí=1, No=0
             Result.MC_Numero = mc;
 
+            // Guardar foto local y devolver ruta relativa en Result.Foto
+            var savedRelative = SaveLocalPhoto(_selectedPhotoPath);
+            if (!string.IsNullOrWhiteSpace(savedRelative))
+            {
+                Result.Foto = savedRelative; // esto es lo que luego guardarás en la BD
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(Result.Foto))
+                    Result.Foto = ""; // sin foto
+            }
+
+
             DialogResult = DialogResult.OK;
+        }
+
+        private void buttonBuscarFoto_Click(object sender, EventArgs e)
+        {
+            using var imagenSelector = new OpenFileDialog
+            {
+                Title = "Seleccione una imagen",
+                Filter = "Archivos de imagen|*.jpg;*.jpeg;*.png;*.bmp;*.gif|Todos los archivos|*.*"
+            };
+
+            if (imagenSelector.ShowDialog() == DialogResult.OK)
+            {
+                _selectedPhotoPath = imagenSelector.FileName; // guardamos la ruta original
+                try
+                {
+                    // Mostrar en el PictureBox (si tienes uno llamado fotoEmpleado)
+                    fotoEmpleado.Image = Image.FromFile(_selectedPhotoPath);
+                }
+                catch
+                {
+                    MessageBox.Show("No se pudo cargar la imagen seleccionada.", "Imagen", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _selectedPhotoPath = null;
+                }
+            }
         }
     }
 }
