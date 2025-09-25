@@ -508,11 +508,11 @@
             // 
             // buttonBuscarFoto
             // 
-            buttonBuscarFoto.Location = new Point(130, 246);
+            buttonBuscarFoto.Location = new Point(121, 246);
             buttonBuscarFoto.Name = "buttonBuscarFoto";
-            buttonBuscarFoto.Size = new Size(75, 30);
+            buttonBuscarFoto.Size = new Size(95, 30);
             buttonBuscarFoto.TabIndex = 40;
-            buttonBuscarFoto.Text = "Buscar";
+            buttonBuscarFoto.Text = "Examinar...";
             buttonBuscarFoto.UseVisualStyleBackColor = true;
             buttonBuscarFoto.Click += buttonBuscarFoto_Click;
             // 

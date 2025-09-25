@@ -277,5 +277,7 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                 }
             }
         }
+
+
     }
 }

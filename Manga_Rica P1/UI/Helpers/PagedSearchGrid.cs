@@ -18,7 +18,7 @@ namespace Manga_Rica_P1.UI.Helpers
         public event EventHandler? EditRequested;
         public event EventHandler? DeleteRequested;
 
-        // Nueva implementacion: campos UI (inicializados en la declaración)
+        // ==== Campos UI ====
         private Panel panelHeader = new();
         private Label lblTitle = new();
 
@@ -39,7 +39,7 @@ namespace Manga_Rica_P1.UI.Helpers
         private Button btnFirst = new(), btnPrev = new(), btnNext = new(), btnLast = new();
         private Label lblPageInfo = new();
         private ComboBox cboPageSize = new();
-        private Label lblTam = new();             
+        private Label lblTam = new();
 
         // ==== Estado ====
         public string Title { get => lblTitle.Text; set => lblTitle.Text = value; }
@@ -61,9 +61,13 @@ namespace Manga_Rica_P1.UI.Helpers
                 .Select(r => Convert.ToInt32(r.Cells["Id"]!.Value))
                 .ToList();
 
+        // ==== NUEVO: accesores públicos para los botones ====
+        public Button BtnNuevo => btnNuevo;
+        public Button BtnEditar => btnEditar;
+        public Button BtnEliminar => btnEliminar;
+
         public PagedSearchGrid()
         {
-            // Nueva implementacion
             DoubleBuffered = true;
             BuildUi();
             WireEvents();

@@ -51,7 +51,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel13 = new Panel();
             btnEmpleado = new Button();
             panel14 = new Panel();
-            btnEntrada = new Button();
+            btnEntradaYSalida = new Button();
             panel15 = new Panel();
             btnSalidas = new Button();
             panel16 = new Panel();
@@ -387,28 +387,29 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // panel14
             // 
-            panel14.Controls.Add(btnEntrada);
+            panel14.Controls.Add(btnEntradaYSalida);
             panel14.Location = new Point(0, 92);
             panel14.Margin = new Padding(0);
             panel14.Name = "panel14";
             panel14.Size = new Size(202, 46);
             panel14.TabIndex = 13;
             // 
-            // btnEntrada
+            // btnEntradaYSalida
             // 
-            btnEntrada.BackColor = Color.FromArgb(124, 179, 66);
-            btnEntrada.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEntrada.ForeColor = Color.White;
-            btnEntrada.Image = (Image)resources.GetObject("btnEntrada.Image");
-            btnEntrada.ImageAlign = ContentAlignment.MiddleLeft;
-            btnEntrada.Location = new Point(-32, -20);
-            btnEntrada.Name = "btnEntrada";
-            btnEntrada.Padding = new Padding(40, 0, 0, 0);
-            btnEntrada.Size = new Size(273, 89);
-            btnEntrada.TabIndex = 2;
-            btnEntrada.Text = "       Entradas";
-            btnEntrada.TextAlign = ContentAlignment.MiddleLeft;
-            btnEntrada.UseVisualStyleBackColor = false;
+            btnEntradaYSalida.BackColor = Color.FromArgb(124, 179, 66);
+            btnEntradaYSalida.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnEntradaYSalida.ForeColor = Color.White;
+            btnEntradaYSalida.Image = (Image)resources.GetObject("btnEntradaYSalida.Image");
+            btnEntradaYSalida.ImageAlign = ContentAlignment.MiddleLeft;
+            btnEntradaYSalida.Location = new Point(-32, -20);
+            btnEntradaYSalida.Name = "btnEntradaYSalida";
+            btnEntradaYSalida.Padding = new Padding(40, 0, 0, 0);
+            btnEntradaYSalida.Size = new Size(273, 89);
+            btnEntradaYSalida.TabIndex = 2;
+            btnEntradaYSalida.Text = "       Entradas y Salidas";
+            btnEntradaYSalida.TextAlign = ContentAlignment.MiddleLeft;
+            btnEntradaYSalida.UseVisualStyleBackColor = false;
+            btnEntradaYSalida.Click += btnEntradaYSalida_Click;
             // 
             // panel15
             // 
@@ -944,7 +945,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private Panel panel13;
         private Button btnEmpleado;
         private Panel panel14;
-        private Button btnEntrada;
+        private Button btnEntradaYSalida;
         private Panel panel15;
         private Button btnSalidas;
         private Panel panel16;

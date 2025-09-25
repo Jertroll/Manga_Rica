@@ -180,7 +180,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             ConfigurarHoverBoton(btnSemanas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnArticulos, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnEmpleado, hoverGreen, downGreen);
-            ConfigurarHoverBoton(btnEntrada, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnEntradaYSalida, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSalidas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnCierreDiario, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSolicitudesPlanilla, hoverGreen, downGreen);
@@ -358,6 +358,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void btnEmpleado_Click(object sender, EventArgs e)
         {
             var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView();
+            vista.Dock = DockStyle.Fill;
+            panelPrincipal.Controls.Clear();
+            panelPrincipal.Controls.Add(vista);
+        }
+
+        private void btnEntradaYSalida_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Asistencia.RegistroAsistenciaView();
             vista.Dock = DockStyle.Fill;
             panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
