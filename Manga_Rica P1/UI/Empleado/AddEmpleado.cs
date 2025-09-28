@@ -1,6 +1,5 @@
 ﻿// Nueva implementacion
 using Manga_Rica_P1.Entity;
-using Manga_Rica_P1.ENTITY;
 using System;
 using System.Globalization;
 using System.Linq;
@@ -14,9 +13,10 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
 {
     public partial class AddEmpleado : Form
     {
-        // Nueva implementacion: el modal devuelve la entidad final
-        // IMPORTANTE: asegúrate que ENTITY.Empleado sea public (no internal)
-        public Empleado Result { get; private set; } = new Empleado();
+        // Reemplaza la línea problemática por la siguiente, asegurando que el tipo Empleado se referencia correctamente.
+        // Si tienes un espacio de nombres llamado 'Empleado', debes usar el tipo completo, por ejemplo: Manga_Rica_P1.Entity.Empleado
+
+        public Manga_Rica_P1.Entity.Empleado Result { get; private set; } = new Manga_Rica_P1.Entity.Empleado();
 
         // Ruta original seleccionada por el usuario (para copiarla al guardar)
         private string? _selectedPhotoPath;
@@ -147,37 +147,65 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             comboBoxActivo.SelectedIndex = 1; // Activo = Sí
         }
 
-        // Nueva implementacion: (opcional) precarga completa desde un Empleado (para editar)
-        public void PrefillFromEmpleado(Empleado e)
+        // Cambia la firma del método PrefillFromEmpleado para usar el tipo completo
+        public void PrefillFromEmpleado(Manga_Rica_P1.Entity.Empleado e)
         {
+
             EnsureCombosLoaded();
 
+
+
             textBoxCedula.Text = e.Cedula;
+
             textBoxApellido1.Text = e.Primer_Apellido;
+
             textBoxAppelido2.Text = e.Segundo_Apellido ?? string.Empty;
+
             textBoxNombre.Text = e.Nombre;
+
             dateTimeNacimiento.Value = e.Fecha_Nacimiento == default ? DateTime.Today.AddYears(-18) : e.Fecha_Nacimiento;
 
+
+
             var matchEstado = comboBoxEstadoCivil.Items.Cast<object>()
+
                 .FirstOrDefault(x => string.Equals(x.ToString(), e.Estado_Civil, StringComparison.InvariantCultureIgnoreCase));
+
             comboBoxEstadoCivil.SelectedItem = matchEstado ?? comboBoxEstadoCivil.Items[0];
 
+
+
             textBoxCelular.Text = e.Celular;
+
             textBoxNacionalidad.Text = e.Nacionalidad;
+
             comboBoxLaboro.SelectedIndex = e.Laboro == 1 ? 1 : 0;
+
             textBoxDireccion.Text = e.Direccion;
 
+
+
             // Empleo
+
             // Nota: sin BLL/DAL usamos SelectedIndex como "Id_Departamento" demo.
+
             if (comboBoxDepartamento.Items.Count > 0)
+
                 comboBoxDepartamento.SelectedIndex = Math.Max(0, Math.Min(comboBoxDepartamento.Items.Count - 1, e.Id_Departamento));
+
             textBoxSalario.Text = e.Salario.ToString(CultureInfo.InvariantCulture);
+
             textBox1.Text = e.Puesto; // (textBox1 = Puesto según tu Designer)
+
             dateTimePicker1.Value = e.Fecha_Ingreso == default ? DateTime.Today : e.Fecha_Ingreso;
+
             dateTimePicker2.Value = e.Fecha_Salida == default ? DateTime.Today : e.Fecha_Salida;
+
             comboBoxActivo.SelectedIndex = e.Activo == 1 ? 1 : 0;
+
             textBoxMcNumero.Text = e.MC_Numero.ToString();
-        }
+
+        }
 
         // ====== Eventos ======
         private void AddEmpleado_Load(object? sender, EventArgs e)

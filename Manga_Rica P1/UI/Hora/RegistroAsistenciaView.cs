@@ -22,7 +22,7 @@ namespace Manga_Rica_P1.UI.Asistencia
         // Registros de horas (puedes reemplazar por EF/DAL después)
         private readonly DataTable _tblHoras = new();
 
-        // “BD” en memoria para lógica futura (si quisieras)
+        // “BD” en memoria para lógica futura
         private readonly List<HoraEntity> _registros = new();
         private readonly int _usuarioActualId = 1;
 
@@ -73,17 +73,14 @@ namespace Manga_Rica_P1.UI.Asistencia
             // Desde los botones del grid:
             pagedGrid.NewRequested += (_, __) =>
             {
-                // En modo Empleados: abrir tu formulario en tab de ENTRADA
-                // En modo Horas: (opcional) podrías abrir también ENTRADA; por ahora lo dejamos igual
-                if (_mode == GridMode.Empleados)
-                    AbrirFormularioRegistro(esEntrada: true);
-                else
-                    AbrirFormularioRegistro(esEntrada: true);
+                // En modo Empleados y también en Horas abrimos en tab de ENTRADA (puedes cambiarlo)
+                AbrirFormularioRegistro(esEntrada: true);
             };
+
             pagedGrid.EditRequested += (_, __) =>
             {
-                if (_mode == GridMode.Empleados) return; // deshabilitado en este modo
-                AbrirFormularioRegistro(esEntrada: false);
+                if (_mode == GridMode.Empleados) return; // no aplica
+                AbrirEdicionHora(); // <--- NUEVO: edición en modo Horas
             };
 
             // Render inicial
@@ -112,7 +109,7 @@ namespace Manga_Rica_P1.UI.Asistencia
             _tblHoras.Columns.Add("Carne", typeof(long));
             _tblHoras.Columns.Add("Fecha", typeof(DateTime));
             _tblHoras.Columns.Add("Hora_Entrada", typeof(DateTime));
-            _tblHoras.Columns.Add("Hora_Salida", typeof(DateTime));   // usaremos DBNull cuando no haya salida
+            _tblHoras.Columns.Add("Hora_Salida", typeof(DateTime));   // usar DBNull cuando no haya salida
             _tblHoras.Columns.Add("Total_Horas", typeof(double));
             _tblHoras.Columns.Add("Id_Usuario", typeof(int));
         }
@@ -138,6 +135,28 @@ namespace Manga_Rica_P1.UI.Asistencia
             var salida = hoy.AddHours(16).AddMinutes(30);
             var total = (salida - entrada).TotalHours;
             _tblHoras.Rows.Add(2, 102, 1002L, hoy, entrada, salida, Math.Round(total, 2), _usuarioActualId);
+
+            // Sincroniza lista en memoria
+            SyncListFromTable();
+        }
+
+        private void SyncListFromTable()
+        {
+            _registros.Clear();
+            foreach (DataRow r in _tblHoras.Rows)
+            {
+                _registros.Add(new HoraEntity
+                {
+                    Id = r.Field<int>("Id"),
+                    Id_Empleado = r.Field<int>("Id_Empleado"),
+                    Carne = r.Field<long>("Carne"),
+                    Fecha = r.Field<DateTime>("Fecha"),
+                    Hora_Entrada = r.Field<DateTime>("Hora_Entrada"),
+                    Hora_Salida = r.IsNull("Hora_Salida") ? (DateTime?)null : r.Field<DateTime>("Hora_Salida"),
+                    Total_Horas = r.Field<double>("Total_Horas"),
+                    Id_Usuario = r.Field<int>("Id_Usuario"),
+                });
+            }
         }
 
         // =========================
@@ -316,63 +335,282 @@ namespace Manga_Rica_P1.UI.Asistencia
             return (val("Cedula"), val("Apellido 1"), val("Apellido 2"), val("Nombre"), carne);
         }
 
+        private int? GetSelectedHoraId()
+        {
+            // En modo Horas, la grilla tiene columna "Id"
+            return pagedGrid.SelectedId;
+        }
+
         // =========================
-        //  Abrir tu formulario (reutilizable)
+        //  Abrir tu formulario (crear entrada / salida)
         // =========================
         private void AbrirFormularioRegistro(bool esEntrada)
         {
-            var id = SelectedEmpleadoId();
-            if (id is null)
+            // Si estás en vista de Empleados, necesitas una fila seleccionada
+            if (_mode == GridMode.Empleados)
             {
-                MessageBox.Show("Selecciona un registro.", "Asistencia",
+                var id = SelectedEmpleadoId();
+                if (id is null)
+                {
+                    MessageBox.Show("Selecciona un empleado.", "Asistencia",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                var (_, ape1, ape2, nom, carne) = SelectedEmpleadoDatos();
+                if (carne is null)
+                {
+                    MessageBox.Show("El empleado seleccionado no tiene carné (MC_Numero).",
+                        "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var dlg = new Manga_Rica_P1.UI.Hora.RegistroEntradaYSalida
+                {
+                    StartPosition = FormStartPosition.CenterScreen
+                };
+
+                // Seleccionar pestaña
+                var tab = dlg.Controls.Find("tabControl1", true).FirstOrDefault() as TabControl;
+                if (tab != null) tab.SelectedIndex = esEntrada ? 0 : 1;
+
+                // Helper para setear TextBox por nombre
+                void SetText(string name, string? value)
+                {
+                    var tb = dlg.Controls.Find(name, true).FirstOrDefault() as TextBox;
+                    if (tb != null) tb.Text = value ?? string.Empty;
+                }
+
+                // Prefill ENTRADA
+                SetText("textBoxCarneEntrada", carne?.ToString());
+                SetText("textBoxNombreEntrada", nom);
+                SetText("textBoxApellido1Entrada", ape1);
+                SetText("textBoxApellido2Entrada", ape2);
+
+                var dtFechaEnt = dlg.Controls.Find("dateTimePickerFechaEntrada", true).FirstOrDefault() as DateTimePicker;
+                var dtHoraEnt = dlg.Controls.Find("dateTimePickerRegistroEntrada", true).FirstOrDefault() as DateTimePicker;
+                if (dtFechaEnt != null) dtFechaEnt.Value = DateTime.Today;
+                if (dtHoraEnt != null) dtHoraEnt.Value = DateTime.Now;
+
+                // Prefill SALIDA
+                SetText("textBoxCarneSalida", carne?.ToString());
+                SetText("textBoxNombreSalida", nom);
+                SetText("textBoxApellidoSalida", ape1);
+                SetText("textBoxApellido2Salida", ape2);
+
+                var dtFechaSal = dlg.Controls.Find("dateTimePickerSalida", true).FirstOrDefault() as DateTimePicker;
+                var dtHoraSal = dlg.Controls.Find("dateTimePickerRegistroSalida", true).FirstOrDefault() as DateTimePicker;
+                if (dtFechaSal != null) dtFechaSal.Value = DateTime.Today;
+                if (dtHoraSal != null) dtHoraSal.Value = DateTime.Now;
+
+                // === Enganchar botones del diálogo (modo DEMO en memoria) ===
+                var btnRegEnt = dlg.Controls.Find("buttonRegistrarEntrada", true).FirstOrDefault() as Button;
+                var btnRegSal = dlg.Controls.Find("buttonRegistrarSalida", true).FirstOrDefault() as Button;
+
+                if (btnRegEnt != null && dtFechaEnt != null && dtHoraEnt != null)
+                {
+                    btnRegEnt.Click += (_, __) =>
+                    {
+                        var fecha = dtFechaEnt.Value.Date;
+                        var hora = dtHoraEnt.Value;
+                        AddEntradaDemo(id.Value, carne.Value, fecha, hora);
+                        MessageBox.Show("Entrada registrada.", "Asistencia",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        dlg.Close();
+                        if (_mode == GridMode.Horas) RefreshHoras();
+                    };
+                }
+
+                if (btnRegSal != null)
+                {
+                    btnRegSal.Click += (_, __) =>
+                    {
+                        var horaSalida = DateTime.Now; // o leer de dtHoraSal
+                        var ok = CerrarSalidaDemo(id.Value, carne.Value, horaSalida, out string msg);
+                        if (!ok)
+                        {
+                            MessageBox.Show(msg, "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                        MessageBox.Show("Salida registrada.", "Asistencia",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        dlg.Close();
+                        if (_mode == GridMode.Horas) RefreshHoras();
+                    };
+                }
+
+                dlg.ShowDialog(this);
+                return;
+            }
+
+            // Si estás en vista de Horas, permitir crear entrada genérica (sin empleado seleccionado)
+            // Aquí, como demo, pedimos seleccionar un empleado igualmente (puedes abrir tu mini buscador)
+            MessageBox.Show("Para registrar una entrada, cambia a la vista de Empleados y selecciona un empleado.",
+                "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // =========================
+        //  NUEVO: Edición en modo Horas
+        // =========================
+        private void AbrirEdicionHora()
+        {
+            var horaId = GetSelectedHoraId();
+            if (horaId is null)
+            {
+                MessageBox.Show("Selecciona un registro de horas.", "Asistencia",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            var (_, ape1, ape2, nom, carne) = SelectedEmpleadoDatos();
-            if (carne is null)
+            var h = _registros.FirstOrDefault(x => x.Id == horaId.Value);
+            if (h == null)
             {
-                MessageBox.Show("El empleado seleccionado no tiene carné (MC_Numero).",
-                    "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("No se encontró el registro en memoria.", "Asistencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var dlg = new Manga_Rica_P1.UI.Hora.RegistroEntradaYSalida();
-
-            // Seleccionar pestaña
-            var tab = dlg.Controls.Find("tabControl1", true).FirstOrDefault() as TabControl;
-            if (tab != null) tab.SelectedIndex = esEntrada ? 0 : 1;
-
-            // Helper para setear TextBox por nombre
-            void SetText(string name, string? value)
+            if (h.Hora_Salida != null)
             {
-                var tb = dlg.Controls.Find(name, true).FirstOrDefault() as TextBox;
-                if (tb != null) tb.Text = value ?? string.Empty;
+                MessageBox.Show("Este registro ya tiene salida. No es editable en este prototipo.",
+                    "Asistencia", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
 
-            // Prefill ENTRADA
-            SetText("textBoxCarneEntrada", carne?.ToString());
-            SetText("textBoxNombreEntrada", nom);
-            SetText("textBoxApellido1Entrada", ape1);
-            SetText("textBoxApellido2Entrada", ape2);
+            var dlg = new Manga_Rica_P1.UI.Hora.RegistroEntradaYSalida
+            {
+                StartPosition = FormStartPosition.CenterScreen
+            };
+
+            // Ir a pestaña de ENTRADA (porque estamos editando la entrada)
+            var tab = dlg.Controls.Find("tabControl1", true).FirstOrDefault() as TabControl;
+            if (tab != null) tab.SelectedIndex = 0;
+
+            // Prefill entrada
+            void Set(string name, string value)
+            {
+                var tb = dlg.Controls.Find(name, true).FirstOrDefault() as TextBox;
+                if (tb != null) tb.Text = value;
+            }
+            Set("textBoxCarneEntrada", h.Carne.ToString());
+            Set("textBoxNombreEntrada", "(demo)"); // TODO: traer nombre con JOIN DAL/BLL
+            Set("textBoxApellido1Entrada", "");
+            Set("textBoxApellido2Entrada", "");
 
             var dtFechaEnt = dlg.Controls.Find("dateTimePickerFechaEntrada", true).FirstOrDefault() as DateTimePicker;
             var dtHoraEnt = dlg.Controls.Find("dateTimePickerRegistroEntrada", true).FirstOrDefault() as DateTimePicker;
-            if (dtFechaEnt != null) dtFechaEnt.Value = DateTime.Today;
-            if (dtHoraEnt != null) dtHoraEnt.Value = DateTime.Now;
+            if (dtFechaEnt != null) dtFechaEnt.Value = h.Fecha.Date;
+            if (dtHoraEnt != null) dtHoraEnt.Value = h.Hora_Entrada;
 
-            // Prefill SALIDA
-            SetText("textBoxCarneSalida", carne?.ToString());
-            SetText("textBoxNombreSalida", nom);
-            SetText("textBoxApellidoSalida", ape1);
-            SetText("textBoxApellido2Salida", ape2);
+            // Botón Registrar Entrada actuará como "Guardar cambio"
+            var btnRegEnt = dlg.Controls.Find("buttonRegistrarEntrada", true).FirstOrDefault() as Button;
+            if (btnRegEnt != null && dtFechaEnt != null && dtHoraEnt != null)
+            {
+                btnRegEnt.Text = "Guardar";
+                btnRegEnt.Click += (_, __) =>
+                {
+                    // Validación: no permitir que la nueva hora de entrada sea > ahora + reglas si tuvieras
+                    h.Fecha = dtFechaEnt.Value.Date;
+                    h.Hora_Entrada = dtHoraEnt.Value;
+                    h.Total_Horas = 0; // sigue abierta
 
-            var dtFechaSal = dlg.Controls.Find("dateTimePickerSalida", true).FirstOrDefault() as DateTimePicker;
-            var dtHoraSal = dlg.Controls.Find("dateTimePickerRegistroSalida", true).FirstOrDefault() as DateTimePicker;
-            if (dtFechaSal != null) dtFechaSal.Value = DateTime.Today;
-            if (dtHoraSal != null) dtHoraSal.Value = DateTime.Now;
+                    ActualizarTablaDesdeRegistro(h);
+                    MessageBox.Show("Entrada actualizada.", "Asistencia",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    dlg.Close();
+                    RefreshHoras();
+                };
+            }
+
+            // Ocultar controles de Salida en esta edición (opcional)
+            var btnRegSal = dlg.Controls.Find("buttonRegistrarSalida", true).FirstOrDefault() as Button;
+            if (btnRegSal != null) btnRegSal.Enabled = false;
 
             dlg.ShowDialog(this);
+        }
+
+        // =========================
+        //  Operaciones DEMO (memoria)
+        // =========================
+        private void AddEntradaDemo(int idEmpleado, long carne, DateTime fecha, DateTime horaEntrada)
+        {
+            // Id nuevo
+            var newId = (_registros.Count == 0) ? 1 : _registros.Max(x => x.Id) + 1;
+
+            var reg = new HoraEntity
+            {
+                Id = newId,
+                Id_Empleado = idEmpleado,
+                Carne = carne,
+                Fecha = fecha.Date,
+                Hora_Entrada = horaEntrada,
+                Hora_Salida = null,
+                Total_Horas = 0,
+                Id_Usuario = _usuarioActualId
+            };
+            _registros.Add(reg);
+
+            // También a la tabla
+            _tblHoras.Rows.Add(reg.Id, reg.Id_Empleado, reg.Carne, reg.Fecha, reg.Hora_Entrada, DBNull.Value, reg.Total_Horas, reg.Id_Usuario);
+        }
+
+        private bool CerrarSalidaDemo(int idEmpleado, long carne, DateTime horaSalida, out string message)
+        {
+            // Busca abierta de hoy o de ayer (cruce medianoche)
+            var hoy = DateTime.Today;
+            var abierto = _registros
+                .Where(r => r.Id_Empleado == idEmpleado &&
+                            (r.Fecha.Date == hoy || r.Fecha.Date == hoy.AddDays(-1)) &&
+                            r.Hora_Salida == null)
+                .OrderByDescending(r => r.Hora_Entrada)
+                .FirstOrDefault();
+
+            if (abierto == null)
+            {
+                message = "No hay una entrada abierta para cerrar.";
+                return false;
+            }
+
+            try
+            {
+                abierto.CerrarJornada(horaSalida, maxHoras: 15);
+                ActualizarTablaDesdeRegistro(abierto);
+                message = "";
+                return true;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return false;
+            }
+        }
+
+        private void ActualizarTablaDesdeRegistro(HoraEntity h)
+        {
+            // Actualiza la DataTable para reflejar cambios
+            var row = _tblHoras.AsEnumerable().FirstOrDefault(r => r.Field<int>("Id") == h.Id);
+            if (row == null)
+            {
+                _tblHoras.Rows.Add(h.Id, h.Id_Empleado, h.Carne, h.Fecha,
+                    h.Hora_Entrada, h.Hora_Salida ?? (object)DBNull.Value, h.Total_Horas, h.Id_Usuario);
+                return;
+            }
+
+            row["Id_Empleado"] = h.Id_Empleado;
+            row["Carne"] = h.Carne;
+            row["Fecha"] = h.Fecha;
+            row["Hora_Entrada"] = h.Hora_Entrada;
+            row["Hora_Salida"] = h.Hora_Salida ?? (object)DBNull.Value;
+            row["Total_Horas"] = h.Total_Horas;
+            row["Id_Usuario"] = h.Id_Usuario;
+        }
+
+        private void RefreshHoras()
+        {
+            if (_mode == GridMode.Horas)
+            {
+                pagedGrid.RefreshData();
+            }
         }
 
         // Habilita/oculta los botones del panel derecho del PagedSearchGrid
@@ -380,43 +618,42 @@ namespace Manga_Rica_P1.UI.Asistencia
         {
             bool viendoEmpleados = _mode == GridMode.Empleados;
 
-            // En empleados: New = habilitado, Edit/Delete = ocultos o deshabilitados
+            // Siempre puedes crear una entrada
             pagedGrid.BtnNuevo.Enabled = true;
             pagedGrid.BtnNuevo.Visible = true;
 
-            // Opción 1: deshabilitar pero seguir mostrando
-            // pagedGrid.BtnEditar.Enabled = !viendoEmpleados;
-            // pagedGrid.BtnEliminar.Enabled = !viendoEmpleados;
+            if (viendoEmpleados)
+            {
+                // En la vista de Empleados NO se muestran Editar/Eliminar
+                pagedGrid.BtnEditar.Visible = false;
+                pagedGrid.BtnEliminar.Visible = false;
+            }
+            else
+            {
+                // En la vista de Horas: Editar visible (para ajustar ENTRADA si está abierta),
+                // Eliminar normalmente oculto
+                pagedGrid.BtnEditar.Visible = true;
+                pagedGrid.BtnEditar.Enabled = true;
+                pagedGrid.BtnEditar.Text = "Editar entrada";
 
-            // Opción 2: ocultar completamente
-            pagedGrid.BtnEditar.Visible = !viendoEmpleados;
-            pagedGrid.BtnEliminar.Visible = !viendoEmpleados;
+                pagedGrid.BtnEliminar.Visible = false;
+                pagedGrid.BtnEliminar.Enabled = false;
+            }
         }
 
-
-        // helper: intenta usar propiedades públicas si existen; si no, busca por nombre
-        private void SetPgButton(string name, bool enabled, bool visible)
+        private HoraEntity? GetAbiertaHoyOAnterior(int idEmpleado, long carne)
         {
-            // 1) si tu PagedSearchGrid expone las referencias, úsalas:
-            try
-            {
-                var pi = pagedGrid.GetType().GetProperty(name, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                if (pi != null)
-                {
-                    var btn = pi.GetValue(pagedGrid) as Control;
-                    if (btn != null) { btn.Enabled = enabled; btn.Visible = visible; return; }
-                }
-            }
-            catch { /* fallback abajo */ }
-
-            // 2) fallback: buscar por nombre dentro de los hijos del control
-            var ctrl = pagedGrid.Controls.Find(name, true).FirstOrDefault() as Control;
-            if (ctrl != null)
-            {
-                ctrl.Enabled = enabled;
-                ctrl.Visible = visible;
-            }
+            var hoy = DateTime.Today;
+            var r = _registros.FirstOrDefault(x => x.Id_Empleado == idEmpleado &&
+                                                   x.Fecha.Date == hoy &&
+                                                   x.Hora_Salida == null);
+            if (r != null) return r;
+            var ayer = hoy.AddDays(-1);
+            return _registros.FirstOrDefault(x => x.Id_Empleado == idEmpleado &&
+                                                  x.Fecha.Date == ayer &&
+                                                  x.Hora_Salida == null);
         }
 
+        private bool PuedeEditar(HoraEntity h) => h.Hora_Salida == null;
     }
 }

@@ -35,8 +35,6 @@
             labelNombreSalida = new Label();
             textBoxApellidoSalida = new TextBox();
             labelApellido1Salida = new Label();
-            textBoxApellido2Salida = new TextBox();
-            labelApellido2Salida = new Label();
             labelRegistroSalida = new Label();
             dateTimePickerRegistroSalida = new DateTimePicker();
             dateTimePickerSalida = new DateTimePicker();
@@ -54,15 +52,13 @@
             labelCarneEntrada = new Label();
             labelNombreEntrada = new Label();
             textBoxNombreEntrada = new TextBox();
-            textBoxApellido2Entrada = new TextBox();
             labelApellido1Entrada = new Label();
-            labelApellido2Entrada = new Label();
             textBoxApellido1Entrada = new TextBox();
             tabPageSalida = new TabPage();
-            BuscarEmpleado = new Button();
-            textBoxBuscarEmpleado = new TextBox();
             buttonCancelarSalida = new Button();
             buttonRegistrarSalida = new Button();
+            BttnBuscarEmpleado = new Button();
+            textBoxBuscarEmpleado = new TextBox();
             tabControl1.SuspendLayout();
             tabPageEntrada.SuspendLayout();
             tabPageSalida.SuspendLayout();
@@ -129,23 +125,6 @@
             labelApellido1Salida.TabIndex = 5;
             labelApellido1Salida.Text = "Apellido";
             // 
-            // textBoxApellido2Salida
-            // 
-            textBoxApellido2Salida.Location = new Point(115, 252);
-            textBoxApellido2Salida.Name = "textBoxApellido2Salida";
-            textBoxApellido2Salida.Size = new Size(154, 23);
-            textBoxApellido2Salida.TabIndex = 8;
-            // 
-            // labelApellido2Salida
-            // 
-            labelApellido2Salida.AutoSize = true;
-            labelApellido2Salida.Font = new Font("Segoe UI", 11F);
-            labelApellido2Salida.Location = new Point(31, 255);
-            labelApellido2Salida.Name = "labelApellido2Salida";
-            labelApellido2Salida.Size = new Size(78, 20);
-            labelApellido2Salida.TabIndex = 7;
-            labelApellido2Salida.Text = "Apellido 2";
-            // 
             // labelRegistroSalida
             // 
             labelRegistroSalida.AutoSize = true;
@@ -207,9 +186,7 @@
             tabPageEntrada.Controls.Add(labelCarneEntrada);
             tabPageEntrada.Controls.Add(labelNombreEntrada);
             tabPageEntrada.Controls.Add(textBoxNombreEntrada);
-            tabPageEntrada.Controls.Add(textBoxApellido2Entrada);
             tabPageEntrada.Controls.Add(labelApellido1Entrada);
-            tabPageEntrada.Controls.Add(labelApellido2Entrada);
             tabPageEntrada.Controls.Add(textBoxApellido1Entrada);
             tabPageEntrada.Location = new Point(4, 24);
             tabPageEntrada.Name = "tabPageEntrada";
@@ -222,7 +199,7 @@
             // buttonCancelarEntrada
             // 
             buttonCancelarEntrada.Font = new Font("Segoe UI", 11F);
-            buttonCancelarEntrada.Location = new Point(571, 253);
+            buttonCancelarEntrada.Location = new Point(376, 261);
             buttonCancelarEntrada.Name = "buttonCancelarEntrada";
             buttonCancelarEntrada.Size = new Size(85, 35);
             buttonCancelarEntrada.TabIndex = 17;
@@ -232,7 +209,7 @@
             // buttonRegistrarEntrada
             // 
             buttonRegistrarEntrada.Font = new Font("Segoe UI", 11F);
-            buttonRegistrarEntrada.Location = new Point(467, 253);
+            buttonRegistrarEntrada.Location = new Point(272, 261);
             buttonRegistrarEntrada.Name = "buttonRegistrarEntrada";
             buttonRegistrarEntrada.Size = new Size(87, 35);
             buttonRegistrarEntrada.TabIndex = 16;
@@ -320,13 +297,6 @@
             textBoxNombreEntrada.Size = new Size(154, 23);
             textBoxNombreEntrada.TabIndex = 17;
             // 
-            // textBoxApellido2Entrada
-            // 
-            textBoxApellido2Entrada.Location = new Point(116, 254);
-            textBoxApellido2Entrada.Name = "textBoxApellido2Entrada";
-            textBoxApellido2Entrada.Size = new Size(154, 23);
-            textBoxApellido2Entrada.TabIndex = 21;
-            // 
             // labelApellido1Entrada
             // 
             labelApellido1Entrada.AutoSize = true;
@@ -336,16 +306,6 @@
             labelApellido1Entrada.Size = new Size(66, 20);
             labelApellido1Entrada.TabIndex = 18;
             labelApellido1Entrada.Text = "Apellido";
-            // 
-            // labelApellido2Entrada
-            // 
-            labelApellido2Entrada.AutoSize = true;
-            labelApellido2Entrada.Font = new Font("Segoe UI", 11F);
-            labelApellido2Entrada.Location = new Point(32, 254);
-            labelApellido2Entrada.Name = "labelApellido2Entrada";
-            labelApellido2Entrada.Size = new Size(78, 20);
-            labelApellido2Entrada.TabIndex = 20;
-            labelApellido2Entrada.Text = "Apellido 2";
             // 
             // textBoxApellido1Entrada
             // 
@@ -368,9 +328,7 @@
             tabPageSalida.Controls.Add(labelCarneSalida);
             tabPageSalida.Controls.Add(labelNombreSalida);
             tabPageSalida.Controls.Add(textBoxNombreSalida);
-            tabPageSalida.Controls.Add(textBoxApellido2Salida);
             tabPageSalida.Controls.Add(labelApellido1Salida);
-            tabPageSalida.Controls.Add(labelApellido2Salida);
             tabPageSalida.Controls.Add(textBoxApellidoSalida);
             tabPageSalida.Location = new Point(4, 24);
             tabPageSalida.Name = "tabPageSalida";
@@ -380,14 +338,34 @@
             tabPageSalida.Text = "Registrar Salida";
             tabPageSalida.UseVisualStyleBackColor = true;
             // 
-            // BuscarEmpleado
+            // buttonCancelarSalida
             // 
-            BuscarEmpleado.Location = new Point(36, 13);
-            BuscarEmpleado.Name = "BuscarEmpleado";
-            BuscarEmpleado.Size = new Size(122, 23);
-            BuscarEmpleado.TabIndex = 14;
-            BuscarEmpleado.Text = "Buscar Empelado ";
-            BuscarEmpleado.UseVisualStyleBackColor = true;
+            buttonCancelarSalida.Font = new Font("Segoe UI", 11F);
+            buttonCancelarSalida.Location = new Point(375, 264);
+            buttonCancelarSalida.Name = "buttonCancelarSalida";
+            buttonCancelarSalida.Size = new Size(85, 35);
+            buttonCancelarSalida.TabIndex = 19;
+            buttonCancelarSalida.Text = "Cancelar";
+            buttonCancelarSalida.UseVisualStyleBackColor = true;
+            // 
+            // buttonRegistrarSalida
+            // 
+            buttonRegistrarSalida.Font = new Font("Segoe UI", 11F);
+            buttonRegistrarSalida.Location = new Point(271, 264);
+            buttonRegistrarSalida.Name = "buttonRegistrarSalida";
+            buttonRegistrarSalida.Size = new Size(87, 35);
+            buttonRegistrarSalida.TabIndex = 18;
+            buttonRegistrarSalida.Text = "Registrar";
+            buttonRegistrarSalida.UseVisualStyleBackColor = true;
+            // 
+            // BttnBuscarEmpleado
+            // 
+            BttnBuscarEmpleado.Location = new Point(36, 13);
+            BttnBuscarEmpleado.Name = "BttnBuscarEmpleado";
+            BttnBuscarEmpleado.Size = new Size(122, 23);
+            BttnBuscarEmpleado.TabIndex = 14;
+            BttnBuscarEmpleado.Text = "Buscar Empelado ";
+            BttnBuscarEmpleado.UseVisualStyleBackColor = true;
             // 
             // textBoxBuscarEmpleado
             // 
@@ -398,33 +376,13 @@
             textBoxBuscarEmpleado.TabIndex = 15;
             textBoxBuscarEmpleado.Text = "Num Carne";
             // 
-            // buttonCancelarSalida
-            // 
-            buttonCancelarSalida.Font = new Font("Segoe UI", 11F);
-            buttonCancelarSalida.Location = new Point(570, 252);
-            buttonCancelarSalida.Name = "buttonCancelarSalida";
-            buttonCancelarSalida.Size = new Size(85, 35);
-            buttonCancelarSalida.TabIndex = 19;
-            buttonCancelarSalida.Text = "Cancelar";
-            buttonCancelarSalida.UseVisualStyleBackColor = true;
-            // 
-            // buttonRegistrarSalida
-            // 
-            buttonRegistrarSalida.Font = new Font("Segoe UI", 11F);
-            buttonRegistrarSalida.Location = new Point(466, 252);
-            buttonRegistrarSalida.Name = "buttonRegistrarSalida";
-            buttonRegistrarSalida.Size = new Size(87, 35);
-            buttonRegistrarSalida.TabIndex = 18;
-            buttonRegistrarSalida.Text = "Registrar";
-            buttonRegistrarSalida.UseVisualStyleBackColor = true;
-            // 
             // RegistroEntradaYSalida
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(textBoxBuscarEmpleado);
-            Controls.Add(BuscarEmpleado);
+            Controls.Add(BttnBuscarEmpleado);
             Controls.Add(tabControl1);
             Name = "RegistroEntradaYSalida";
             Text = "RegistroEntradaYSalida";
@@ -446,8 +404,6 @@
         private Label labelNombreSalida;
         private TextBox textBoxApellidoSalida;
         private Label labelApellido1Salida;
-        private TextBox textBoxApellido2Salida;
-        private Label labelApellido2Salida;
         private Label labelRegistroSalida;
         private DateTimePicker dateTimePickerRegistroSalida;
         private DateTimePicker dateTimePickerSalida;
@@ -462,17 +418,15 @@
         private TextBox textBoxCarneEntrada;
         private Label labelFechaEntrada;
         private Label labelCarneEntrada;
-        private Label labelNombreEntrada;
-        private TextBox textBoxNombreEntrada;
-        private TextBox textBoxApellido2Entrada;
-        private Label labelApellido1Entrada;
-        private Label labelApellido2Entrada;
-        private TextBox textBoxApellido1Entrada;
-        private Button BuscarEmpleado;
+        private Button BttnBuscarEmpleado;
         private Button buttonCancelarEntrada;
         private Button buttonRegistrarEntrada;
         private TextBox textBoxBuscarEmpleado;
         private Button buttonCancelarSalida;
         private Button buttonRegistrarSalida;
+        private Label labelNombreEntrada;
+        private TextBox textBoxNombreEntrada;
+        private Label labelApellido1Entrada;
+        private TextBox textBoxApellido1Entrada;
     }
 }

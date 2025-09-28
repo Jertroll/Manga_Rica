@@ -460,6 +460,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnCierreDiario.Text = "       Cierre Diario";
             btnCierreDiario.TextAlign = ContentAlignment.MiddleLeft;
             btnCierreDiario.UseVisualStyleBackColor = false;
+            btnCierreDiario.Click += btnCierreDiario_Click;
             // 
             // panel6
             // 

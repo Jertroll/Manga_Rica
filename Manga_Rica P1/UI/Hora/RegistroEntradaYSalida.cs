@@ -14,6 +14,7 @@ namespace Manga_Rica_P1.UI.Hora
         public RegistroEntradaYSalida()
         {
             InitializeComponent();
+            this.StartPosition = FormStartPosition.CenterScreen;
 
             // Cuando cambias de pestaña, re-aplica los datos a los controles visibles
             tabControl1.SelectedIndexChanged += (_, __) => ApplyPrefillToBothTabs();
@@ -41,13 +42,18 @@ namespace Manga_Rica_P1.UI.Hora
             if (textBoxCarneEntrada != null) textBoxCarneEntrada.Text = _carne.Value.ToString();
             if (textBoxNombreEntrada != null) textBoxNombreEntrada.Text = _nombre;
             if (textBoxApellido1Entrada != null) textBoxApellido1Entrada.Text = _ape1;
-            if (textBoxApellido2Entrada != null) textBoxApellido2Entrada.Text = _ape2;
+
 
             // --- Tab Salida ---
             if (textBoxCarneSalida != null) textBoxCarneSalida.Text = _carne.Value.ToString();
             if (textBoxNombreSalida != null) textBoxNombreSalida.Text = _nombre;
             if (textBoxApellidoSalida != null) textBoxApellidoSalida.Text = _ape1;
-            if (textBoxApellido2Salida != null) textBoxApellido2Salida.Text = _ape2;
+
+        }
+
+        private void tabPageEntrada_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

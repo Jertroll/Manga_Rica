@@ -370,5 +370,15 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
         }
+
+        private void btnCierreDiario_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.CierreDiario.CierreDiario())
+            {
+                // para centrar respecto a la ventana principal:
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);  // <- modal con dueño
+            }
+        }
     }
 }
