@@ -1,11 +1,13 @@
 ﻿// Nueva implementacion
+using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.Entity;              //  Entidad Departamento
+using Manga_Rica_P1.UI.Departamentos;
+using Manga_Rica_P1.UI.Helpers;          // PagedSearchGrid
+using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Manga_Rica_P1.UI.Helpers;          // PagedSearchGrid
-using Manga_Rica_P1.Entity;              //  Entidad Departamento
-using Manga_Rica_P1.UI.Departamentos; 
 
 
 
@@ -17,10 +19,13 @@ namespace Manga_Rica_P1.UI.Departamentos
         private DataTable _tablaCompleta = new();
 
         // Nueva implementacion: grid reutilizable con búsqueda + paginación
+        private readonly DepartamentosService _svc;
         private PagedSearchGrid pagedGrid;
 
-        public DepartamentoView()
+
+        public DepartamentoView(DepartamentosService svc)
         {
+            _svc = svc;
             // Nueva implementacion: limpiar y montar el control compuesto
             Controls.Clear();
 
@@ -30,12 +35,15 @@ namespace Manga_Rica_P1.UI.Departamentos
                 Title = "Listado de Departamentos"
             };
 
-            BuildDemoTable();
-            pagedGrid.GetAllFilteredDataTable = FiltroLocalComoDataTable;
+            // ✅ Modo SERVIDOR: pide página al servicio
+            pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
+                _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
 
+            // CRUD → BLL
             pagedGrid.NewRequested += (s, e) => Nuevo();
             pagedGrid.EditRequested += (s, e) => Editar();
             pagedGrid.DeleteRequested += (s, e) => Eliminar();
+
 
             Controls.Add(pagedGrid);
 
@@ -84,70 +92,116 @@ namespace Manga_Rica_P1.UI.Departamentos
         // ====== CRUD ======
         private void Nuevo()
         {
-            // Nota: si tu AddDepartamento vive en otro namespace, ajusta el using o usa nombre calificado
-            using var dlg = new AddDepartamento(); // modal
-            if (dlg.ShowDialog(this) == DialogResult.OK)
+            using var dlg = new AddDepartamento();
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+            var d = dlg.Result;
+            try
             {
-                var r = dlg.Result; // DepartamentoResult
-                int newId = _tablaCompleta.Rows.Count == 0
-                    ? 1
-                    : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
-
-                _tablaCompleta.Rows.Add(newId, r.nombre, r.codigo);
-
+                _svc.Create(d);
                 pagedGrid.RefreshData();
+            }
+            catch (InvalidOperationException dupEx) // de BLL: duplicados
+            {
+                MessageBox.Show(this, dupEx.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (ArgumentException valEx) // de BLL: requeridos/longitud
+            {
+                MessageBox.Show(this, valEx.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void Editar()
         {
-            // Requiere que tu PagedSearchGrid exponga SelectedId (como en tu UserView)
             var id = pagedGrid.SelectedId;
             if (id is null) return;
 
-            var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id.Value);
-            if (fila is null) return;
+            var d = _svc.Get(id.Value);
+            if (d is null) return;
 
-            // Seed de entidad (ENTITY) para el modal
-            var seed = new Departamento
+            using var dlg = new AddDepartamento(d); // semilla = entidad actual
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+            var edited = dlg.Result;
+            d.nombre = edited.nombre;
+            d.codigo = edited.codigo;
+
+            try
             {
-                Id = id.Value,
-                nombre = fila.Field<string>("Departamento") ?? string.Empty,
-                codigo = fila.Field<string>("Codigo") ?? string.Empty
-            };
-
-            using var dlg = new AddDepartamento(seed);
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-                var r = dlg.Result; // DepartamentoResult
-                fila.SetField("Departamento", r.nombre);
-                fila.SetField("Codigo", r.codigo);
-
+                _svc.Update(d);
                 pagedGrid.RefreshData();
+            }
+   
+            catch (InvalidOperationException dupEx)
+            {
+                MessageBox.Show(this, dupEx.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (ArgumentException valEx)
+            {
+                MessageBox.Show(this, valEx.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void Eliminar()
         {
-            // Requiere que tu PagedSearchGrid exponga SelectedIds (como en tu UserView)
-            var ids = pagedGrid.SelectedIds;
-            if (ids.Count == 0) return;
+            // 1) Reunir IDs seleccionados (múltiple o simple)
+            var ids = pagedGrid.SelectedIds ?? new System.Collections.Generic.List<int>();
+            if (ids.Count == 0 && pagedGrid.SelectedId is int unico)
+                ids = new System.Collections.Generic.List<int> { unico };
 
-            string detalle = ids.Count == 1 ? $"Id {ids[0]}" : $"{ids.Count} departamentos";
-            var dr = MessageBox.Show($"Confirmar acción?\n\nSe eliminará: {detalle}",
-                                     "Confirmar acción",
-                                     MessageBoxButtons.YesNo,
-                                     MessageBoxIcon.Warning,
-                                     MessageBoxDefaultButton.Button2);
-            if (dr != DialogResult.Yes) return;
-
-            foreach (var id in ids)
+            if (ids.Count == 0)
             {
-                var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id);
-                if (fila != null) _tablaCompleta.Rows.Remove(fila);
+                MessageBox.Show(this, "Seleccione al menos un departamento.", "Eliminar",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
 
-            pagedGrid.RefreshData();
+            // 2) Confirmar
+            var detalle = ids.Count == 1 ? $"Id {ids[0]}" : $"{ids.Count} departamentos";
+            var dr = MessageBox.Show(this,
+                $"¿Confirma eliminar {detalle}?",
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
+
+            if (dr != DialogResult.Yes) return;
+
+            // 3) Ejecutar borrados uno por uno (robusto ante errores parciales)
+            int ok = 0, fail = 0;
+            foreach (var id in ids)
+            {
+                try
+                {
+                    _svc.Delete(id);  // BLL → DAL
+                    ok++;
+                }
+                catch (Exception ex)
+                {
+                    fail++;
+                    MessageBox.Show(this, ex.Message, "Error al eliminar",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            // 4) Feedback y refresh
+            if (ok > 0) pagedGrid.RefreshData();
+
+            if (fail > 0 && ok == 0)
+            {
+                // todos fallaron
+                MessageBox.Show(this, "No se pudo eliminar ningún registro.",
+                    "Eliminar", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
+
     }
 }
