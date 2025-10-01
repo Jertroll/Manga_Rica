@@ -1,11 +1,12 @@
-﻿using Manga_Rica_P1.BLL.Session;
+﻿using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.BLL.Session;
+using Manga_Rica_P1.UI.Articulos;
 using Manga_Rica_P1.UI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Manga_Rica_P1.UI.Articulos;
 namespace Manga_Rica_P1.UI.Ventana_Principal
 {
     public partial class Principal : Form
@@ -15,10 +16,12 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         // Cambia la declaración de lblUsuario para permitir nulos y suprime la advertencia donde se usa
         private Label? lblUsuario;
         private readonly IAppSession _session;
-        public Principal(IAppSession session)
+        private readonly UsuariosService _usuariosService;   // ⬅️ NUEVO
+        public Principal(IAppSession session, UsuariosService usuariosService)
         {
             InitializeComponent();
             _session = session;
+            _usuariosService = usuariosService;
 
             // Evita recálculos de layout mientras reacomodamos todo
             this.SuspendLayout();
@@ -310,16 +313,30 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void vistaUsuario()
         {
-            // Crea una nueva instancia del UserView
-            var vista = new Manga_Rica_P1.UI.User.UserView();
-            vista.Dock = DockStyle.Fill;
+            // Si ya está cargada, solo la traemos al frente
+            var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.User.UserView>().FirstOrDefault();
+            if (existente is not null)
+            {
+                existente.BringToFront();
+                return;
+            }
 
-            // Limpia lo que hubiera antes en el panel
+            panelPrincipal.SuspendLayout();
+
+            // Limpia y desecha lo que haya antes (evita fugas)
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            // Inserta la vista en el área de contenido
+            // ⚠️ ahora sí: inyecta el servicio que tienes en el form
+            var vista = new Manga_Rica_P1.UI.User.UserView(_usuariosService)
+            {
+                Dock = DockStyle.Fill
+            };
+
             panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
         }
+
 
         private void btnDepartamentos_Click(object sender, EventArgs e)
         {
@@ -379,6 +396,46 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);  // <- modal con dueño
             }
+        }
+
+        private void btnSoda_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.Soda.Soda())
+            {
+                // para centrar respecto a la ventana principal:
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);  // <- modal con dueño
+            }
+
+        }
+
+        private void btnUniforme_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.Uniforme.Uniforme())
+            {
+                // para centrar respecto a la ventana principal:
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);  // <- modal con dueño
+            }
+        }
+
+        private void btnActivarPagos_Click(object sender, EventArgs e)
+        {
+
+            using (var dlg = new Manga_Rica_P1.UI.Pagos.ActivarPagos())
+            {
+                // para centrar respecto a la ventana principal:
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);  // <- modal con dueño
+            }
+        }
+
+        private void btnPagosSubmenu_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Pagos.RegistroPagos();
+            vista.Dock = DockStyle.Fill;
+            panelPrincipal.Controls.Clear();
+            panelPrincipal.Controls.Add(vista);
         }
     }
 }

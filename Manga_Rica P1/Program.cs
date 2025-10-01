@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 
 using Manga_Rica_P1.DAL;
+using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.BLL.AutentificacionService;
 using Manga_Rica_P1.BLL.Session;                // ⬅️ NUEVO (IAppSession, AppSession)
 using Manga_Rica_P1.UI.Login;
@@ -30,6 +31,8 @@ namespace Manga_Rica_P1
             var usuarioRepository = new UsuarioRepository(connectionBd);
             var autentificacionService = new AutentificacionService(usuarioRepository);
 
+            var usuariosService = new UsuariosService(usuarioRepository);
+
             // 🔸 Sesión compartida para toda la app
             IAppSession session = new AppSession();
 
@@ -50,7 +53,7 @@ namespace Manga_Rica_P1
             }
 
             // 🔸 Abrir Principal con la misma sesión (mostrar "Usuario: ..." allí)
-            Application.Run(new Principal(session));
+            Application.Run(new Principal(session, usuariosService));
         }
     }
 }

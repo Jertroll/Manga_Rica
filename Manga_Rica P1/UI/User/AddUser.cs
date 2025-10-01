@@ -31,6 +31,9 @@ namespace Manga_Rica_P1.UI.User
         private AddUser(EditMode mode, UsuarioResult? inicial)
         {
             InitializeComponent();
+
+            textBoxClave.UseSystemPasswordChar = true;
+            textBoxClave.MaxLength = 15; // vital
             _mode = mode;
 
             // Config modal/UX

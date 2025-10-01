@@ -553,6 +553,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSoda.Text = "       Soda";
             btnSoda.TextAlign = ContentAlignment.MiddleLeft;
             btnSoda.UseVisualStyleBackColor = false;
+            btnSoda.Click += btnSoda_Click;
             // 
             // panel18
             // 
@@ -578,6 +579,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnUniforme.Text = "       Uniforme";
             btnUniforme.TextAlign = ContentAlignment.MiddleLeft;
             btnUniforme.UseVisualStyleBackColor = false;
+            btnUniforme.Click += btnUniforme_Click;
             // 
             // panel19
             // 
@@ -692,6 +694,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnActivarPagos.Text = "       Activar Pagos";
             btnActivarPagos.TextAlign = ContentAlignment.MiddleLeft;
             btnActivarPagos.UseVisualStyleBackColor = false;
+            btnActivarPagos.Click += btnActivarPagos_Click;
             // 
             // panel21
             // 
@@ -717,6 +720,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPagosSubmenu.Text = "       Pagos";
             btnPagosSubmenu.TextAlign = ContentAlignment.MiddleLeft;
             btnPagosSubmenu.UseVisualStyleBackColor = false;
+            btnPagosSubmenu.Click += btnPagosSubmenu_Click;
             // 
             // menuReportesContenedor
             // 
