@@ -18,27 +18,28 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
     {
         // Un controlador por menú
         private Dictionary<string, MenuDesplegable> _menus = new();
-        // Cambia la declaración de lblUsuario para permitir nulos y suprime la advertencia donde se usa
         private Label? lblUsuario;
 
         private readonly IAppSession _session;
+
         private readonly UsuariosService _usuariosService;
-        private readonly SemanasService _semanasService;
-
-        // ▼ NUEVO: servicio de Departamentos para toda la vida del formulario
         private readonly DepartamentosService _departamentosService;
+        private readonly SemanasService _semanasService;
+        private readonly ArticulosService _articulosService;
 
-        public Principal(IAppSession session, UsuariosService usuariosService)
+        public Principal(IAppSession session,
+            UsuariosService usuariosService,
+            DepartamentosService departamentosService,
+            SemanasService semanasService,
+            ArticulosService articulosService)
         {
             InitializeComponent();
-            _session = session;
-            _usuariosService = usuariosService;
+            _session = session ?? throw new ArgumentNullException(nameof(session));
+            _usuariosService = usuariosService ?? throw new ArgumentNullException(nameof(usuariosService));
+            _departamentosService = departamentosService ?? throw new ArgumentNullException(nameof(departamentosService));
+            _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
+            _articulosService = articulosService ?? throw new ArgumentNullException(nameof(articulosService));
 
-            // ▼ NUEVO: construir DepartamentosService leyendo appsettings.json desde Program.Configuration
-            var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
-                     ?? throw new InvalidOperationException("Falta ConnectionStrings:MangaRicaDb");
-            _departamentosService = new DepartamentosService(new DepartamentoRepository(cs));
-            _semanasService = new SemanasService(new SemanaRepository(cs));
 
             // Evita recálculos de layout mientras reacomodamos todo
             this.SuspendLayout();
@@ -367,12 +368,17 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnArticulos_Click(object sender, EventArgs e)
         {
-            var vista = new Manga_Rica_P1.UI.Articulos.ArticulosView
-            {
-                Dock = DockStyle.Fill
-            };
+            var existente = panelPrincipal.Controls.OfType<ArticulosView>().FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
+
+            // ⬅️ CORREGIDO: pasar el servicio requerido por el ctor
+            var vista = new ArticulosView(_articulosService) { Dock = DockStyle.Fill };
             panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
         }
 
         private void btnSolicitudesPlanilla_Click(object sender, EventArgs e)

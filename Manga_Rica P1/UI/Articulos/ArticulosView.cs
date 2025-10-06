@@ -1,25 +1,27 @@
-﻿// Nueva implementacion
-using Manga_Rica_P1.Entity;
-
-using Manga_Rica_P1.UI.Articulos.Modales;   // AddArticulo
-using Manga_Rica_P1.UI.Helpers;  // PagedSearchGrid
+﻿// Nueva implementación (modo servidor)
 using System;
 using System.Data;
-using System.Linq;
 using System.Windows.Forms;
+using Microsoft.Data.SqlClient;
 
-
+using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.UI.Helpers;          // PagedSearchGrid
+using Manga_Rica_P1.UI.Articulos.Modales; // AddArticulo
 using EntityArticulo = Manga_Rica_P1.Entity.Articulos;
 
 namespace Manga_Rica_P1.UI.Articulos
 {
     public partial class ArticulosView : UserControl
     {
-        private DataTable _tablaCompleta = new();
+        private readonly ArticulosService _svc;
         private PagedSearchGrid pagedGrid;
 
-        public ArticulosView()
+        // ⬅️ Recibe el servicio por inyección (lo crea Program y lo pasa Principal)
+        public ArticulosView(ArticulosService svc)
         {
+            InitializeComponent();
+            _svc = svc ?? throw new ArgumentNullException(nameof(svc));
+
             Controls.Clear();
 
             pagedGrid = new PagedSearchGrid
@@ -28,9 +30,11 @@ namespace Manga_Rica_P1.UI.Articulos
                 Title = "Listado de Artículos"
             };
 
-            BuildDemoTable();
-            pagedGrid.GetAllFilteredDataTable = FiltroLocalComoDataTable;
+            // Paginación + búsqueda en servidor
+            pagedGrid.GetPage = (pageIndex, pageSize, filtro)
+                => _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
 
+            // CRUD
             pagedGrid.NewRequested += (_, __) => Nuevo();
             pagedGrid.EditRequested += (_, __) => Editar();
             pagedGrid.DeleteRequested += (_, __) => Eliminar();
@@ -39,52 +43,19 @@ namespace Manga_Rica_P1.UI.Articulos
             pagedGrid.RefreshData();
         }
 
-        private void BuildDemoTable()
-        {
-            _tablaCompleta.Columns.Add("Id", typeof(int));
-            _tablaCompleta.Columns.Add("Descripcion", typeof(string));
-            _tablaCompleta.Columns.Add("Precio", typeof(float));
-            _tablaCompleta.Columns.Add("Existencia", typeof(int));
-            _tablaCompleta.Columns.Add("Categoria", typeof(string));
-
-            _tablaCompleta.Rows.Add(1, "Camiseta Manga Rica", 4500, 15, "UNIFORMES");
-            _tablaCompleta.Rows.Add(2, "Refresco Natural", 1200, 50, "SODA");
-            _tablaCompleta.Rows.Add(3, "Pantalón Corporativo", 9800, 8, "UNIFORMES");
-            _tablaCompleta.Rows.Add(4, "Casado con pollo", 3500, 20, "SODA");
-        }
-
-        private DataTable FiltroLocalComoDataTable(string filtro)
-        {
-            if (string.IsNullOrWhiteSpace(filtro))
-                return _tablaCompleta.Copy();
-
-            string f = filtro.Trim().ToLower();
-            var query = _tablaCompleta.AsEnumerable().Where(r =>
-                r.Field<int>("Id").ToString().Contains(f) ||
-                (r.Field<string>("Descripcion") ?? "").ToLower().Contains(f) ||
-                r.Field<float>("Precio").ToString().Contains(f) ||
-                r.Field<int>("Existencia").ToString().Contains(f) ||
-                (r.Field<string>("Categoria") ?? "").ToLower().Contains(f)
-            );
-
-            var tbl = _tablaCompleta.Clone();
-            foreach (var row in query) tbl.ImportRow(row);
-            return tbl;
-        }
-
         private void Nuevo()
         {
-            using var dlg = new AddArticulo();
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-                var r = dlg.Result;
-                int newId = _tablaCompleta.Rows.Count == 0
-                    ? 1
-                    : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
+            using var dlg = new AddArticulo();            // combo solo SODA/UNIFORMES
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
-                _tablaCompleta.Rows.Add(newId, r.descripcion, r.precio, r.existencia, r.categoria);
+            try
+            {
+                _svc.Create(dlg.Result);                  // valida longitudes/requeridos
                 pagedGrid.RefreshData();
             }
+            catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
+            catch (ArgumentException ve) { MessageBox.Show(this, ve.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception ex) { MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void Editar()
@@ -92,52 +63,59 @@ namespace Manga_Rica_P1.UI.Articulos
             var id = pagedGrid.SelectedId;
             if (id is null) return;
 
-            var fila = _tablaCompleta.AsEnumerable()
-                        .FirstOrDefault(x => x.Field<int>("Id") == id.Value);
-            if (fila is null) return;
+            var art = _svc.Get(id.Value);
+            if (art is null) return;
 
-           
-            var seed = new EntityArticulo
-            {
-                Id = id.Value,
-                descripcion = fila.Field<string>("Descripcion") ?? "",
-                precio = fila.Field<float>("Precio"),
-                existencia = fila.Field<int>("Existencia"),
-                categoria = fila.Field<string>("Categoria") ?? ""
-            };
+            using var dlg = new AddArticulo(art);
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
-            
-            using var dlg = new AddArticulo(seed);
-            if (dlg.ShowDialog(this) == DialogResult.OK)
+            try
             {
-                var r = dlg.Result; // EntityArticulo
-                fila.SetField("Descripcion", r.descripcion);
-                fila.SetField("Precio", r.precio);
-                fila.SetField("Existencia", r.existencia);
-                fila.SetField("Categoria", r.categoria);
+                // dlg.Result ya conserva el Id del seed
+                _svc.Update(dlg.Result);
                 pagedGrid.RefreshData();
             }
+            catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
+            catch (ArgumentException ve) { MessageBox.Show(this, ve.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+            catch (Exception ex) { MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         private void Eliminar()
         {
             var ids = pagedGrid.SelectedIds;
+            if (ids.Count == 0 && pagedGrid.SelectedId is int unico) ids.Add(unico);
             if (ids.Count == 0) return;
 
-            string detalle = ids.Count == 1 ? $"Id {ids[0]}" : $"{ids.Count} artículos";
-            var dr = MessageBox.Show($"¿Eliminar {detalle}?",
-                                     "Confirmar acción",
-                                     MessageBoxButtons.YesNo,
-                                     MessageBoxIcon.Warning,
-                                     MessageBoxDefaultButton.Button2);
+            var dr = MessageBox.Show(
+                ids.Count == 1 ? $"¿Eliminar Id {ids[0]}?" : $"¿Eliminar {ids.Count} artículos?",
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+
             if (dr != DialogResult.Yes) return;
 
-            foreach (var id in ids)
+            int ok = 0, fail = 0;
+            foreach (var _id in ids)
             {
-                var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id);
-                if (fila != null) _tablaCompleta.Rows.Remove(fila);
+                try { _svc.Delete(_id); ok++; }
+                catch (SqlException sqlEx) { fail++; ShowSqlError(sqlEx); }
+                catch (Exception ex) { fail++; MessageBox.Show(this, ex.Message, "Error al eliminar", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
-            pagedGrid.RefreshData();
+            if (ok > 0) pagedGrid.RefreshData();
         }
+
+        private void ShowSqlError(SqlException ex)
+        {
+            string msg = ex.Number switch
+            {
+                547 => "No se puede eliminar/modificar por tener datos relacionados (FK).",
+                515 => "Hay un campo requerido en blanco.",
+                2628 => "Texto excede la longitud permitida por la columna.",
+                _ => $"Error de base de datos ({ex.Number}): {ex.Message}"
+            };
+            MessageBox.Show(this, msg, "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        // Si no usas designer, deja el stub para evitar CS0103
+        private void InitializeComponent() { }
     }
 }
