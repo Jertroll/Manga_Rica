@@ -1,11 +1,13 @@
-﻿// Nueva implementacion
+﻿
 using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+
+
 using Manga_Rica_P1.Entity;
 
-// ✅ Alias para la entidad, así evitamos choques con namespaces
+
 using EntitySemana = Manga_Rica_P1.Entity.Semana;
 
 namespace Manga_Rica_P1.UI.Semanas.Modales
@@ -18,13 +20,13 @@ namespace Manga_Rica_P1.UI.Semanas.Modales
         private readonly Button btnGuardar = new Button();
         private readonly Button btnCancelar = new Button();
 
-        // ✅ El modal devuelve directamente la entidad (alias)
-        public EntitySemana Result { get; private set; }
+        // ✅ El modal devuelve directamente la entidad (usando el ALIAS)
+        public EntitySemana Result { get; private set; } = new EntitySemana();  // <-- NUEVO: inicializar
 
-        // ✅ Usa el alias en la firma
-        public AddSemana(EntitySemana seed = null)
+        // ✅ Usa el alias y NULLABLE para evitar choques (antes: Semana? -> provocaba el error)
+        public AddSemana(EntitySemana? seed = null)  // <-- CAMBIO CLAVE
         {
-            var esEdicion = seed != null;
+            var esEdicion = seed is not null;       // <-- CAMBIO: patrón “is not null” evita el error del operador !=
             Text = esEdicion ? "Editar Semana" : "Nueva Semana";
 
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -33,10 +35,11 @@ namespace Manga_Rica_P1.UI.Semanas.Modales
             StartPosition = FormStartPosition.CenterParent;
             ClientSize = new Size(460, 230);
 
-            var lblSemana = new Label { Text = "Semana (1–20)", AutoSize = true, Left = 20, Top = 20 };
+            // ===== Controles =====
+            var lblSemana = new Label { Text = "Semana (1–53)", AutoSize = true, Left = 20, Top = 20 };
             cboSemana.Left = 20; cboSemana.Top = 45; cboSemana.Width = 120;
             cboSemana.DropDownStyle = ComboBoxStyle.DropDownList;
-            cboSemana.Items.AddRange(Enumerable.Range(1, 20).Cast<object>().ToArray());
+            cboSemana.Items.AddRange(Enumerable.Range(1, 53).Cast<object>().ToArray()); // <-- 1..53
 
             var lblInicio = new Label { Text = "Fecha inicio", AutoSize = true, Left = 160, Top = 20 };
             dtInicio.Left = 160; dtInicio.Top = 45; dtInicio.Width = 260; dtInicio.Format = DateTimePickerFormat.Short;
@@ -50,24 +53,36 @@ namespace Manga_Rica_P1.UI.Semanas.Modales
             btnCancelar.Text = "Cancelar";
             btnCancelar.Left = 350; btnCancelar.Top = 170; btnCancelar.Width = 80;
 
+            AcceptButton = btnGuardar;   // <-- NUEVO: Enter guarda
+            CancelButton = btnCancelar;  // <-- NUEVO: Esc cancela
+
             btnGuardar.Click += (_, __) => OnSave();
             btnCancelar.Click += (_, __) => DialogResult = DialogResult.Cancel;
 
             Controls.AddRange(new Control[] { lblSemana, cboSemana, lblInicio, dtInicio, lblFinal, dtFinal, btnGuardar, btnCancelar });
 
-            // Inicializar Result
-            Result = esEdicion
-                ? new EntitySemana { Id = seed.Id, semana = seed.semana, fecha_Inicio = seed.fecha_Inicio, fecha_Final = seed.fecha_Final }
-                : new EntitySemana();
-
+            // ===== Precarga en edición =====
             if (esEdicion)
             {
-                cboSemana.SelectedItem = seed.semana;
+                // seed! indica al compilador que no es null aquí
+                Result = new EntitySemana
+                {
+                    Id = seed!.Id,                 // <-- usar alias y null-forgiving
+                    semana = seed.semana,
+                    fecha_Inicio = seed.fecha_Inicio,
+                    fecha_Final = seed.fecha_Final
+                };
+
+                // Seleccionar el valor de semana si existe en el combo
+                var item = cboSemana.Items.Cast<object>().FirstOrDefault(x => (int)x == seed.semana);
+                cboSemana.SelectedItem = item ?? cboSemana.Items[0];
+
                 dtInicio.Value = seed.fecha_Inicio == default ? DateTime.Today : seed.fecha_Inicio;
                 dtFinal.Value = seed.fecha_Final == default ? DateTime.Today : seed.fecha_Final;
             }
             else
             {
+                // Valores por defecto en nuevo
                 cboSemana.SelectedIndex = 0; // semana 1
                 dtInicio.Value = DateTime.Today;
                 dtFinal.Value = DateTime.Today;
@@ -76,9 +91,10 @@ namespace Manga_Rica_P1.UI.Semanas.Modales
 
         private void OnSave()
         {
-            if (cboSemana.SelectedItem == null)
+            if (cboSemana.SelectedItem is null)
             {
-                MessageBox.Show("Seleccione un número de semana (1–20).", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Seleccione un número de semana (1–53).", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 cboSemana.DroppedDown = true;
                 return;
             }
@@ -87,12 +103,13 @@ namespace Manga_Rica_P1.UI.Semanas.Modales
             var final = dtFinal.Value.Date;
             if (final < inicio)
             {
-                MessageBox.Show("La fecha final no puede ser menor que la fecha de inicio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("La fecha final no puede ser menor que la fecha de inicio.", "Validación",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 dtFinal.Focus();
                 return;
             }
 
-            // Asignar directamente sobre la entidad (alias)
+            // ✅ Asignar directamente sobre la entidad (alias)
             Result.semana = (int)cboSemana.SelectedItem;
             Result.fecha_Inicio = inicio;
             Result.fecha_Final = final;

@@ -1,24 +1,23 @@
-﻿// Nueva implementacion
-using System;
-using System.Data;
-using System.Linq;
+﻿using System;
 using System.Windows.Forms;
-using Manga_Rica_P1.UI.Helpers;               // PagedSearchGrid
-using Manga_Rica_P1.UI.Semanas.Modales;       
-using Manga_Rica_P1.Entity;                   
-
-// Alias opcional (si te gusta dejar claro que es Entity)
-using EntitySemana = Manga_Rica_P1.Entity.Semana;
+using Microsoft.Data.SqlClient;
+using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.Entity;
+using Manga_Rica_P1.UI.Helpers;
+using Manga_Rica_P1.UI.Semanas.Modales;
 
 namespace Manga_Rica_P1.UI.Semanas
 {
     public partial class SemanaView : UserControl
     {
-        private DataTable _tablaCompleta = new();
+        private readonly SemanasService _svc;
         private PagedSearchGrid pagedGrid;
 
-        public SemanaView()
+        public SemanaView(SemanasService svc)
         {
+            InitializeComponent();
+            _svc = svc ?? throw new ArgumentNullException(nameof(svc));
+
             Controls.Clear();
 
             pagedGrid = new PagedSearchGrid
@@ -27,9 +26,10 @@ namespace Manga_Rica_P1.UI.Semanas
                 Title = "Listado de Semanas"
             };
 
-            BuildDemoTable();
+            // Modo servidor: paginación desde BLL
+            pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
+                _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
 
-            pagedGrid.GetAllFilteredDataTable = FiltroLocalComoDataTable;
             pagedGrid.NewRequested += (_, __) => Nuevo();
             pagedGrid.EditRequested += (_, __) => Editar();
             pagedGrid.DeleteRequested += (_, __) => Eliminar();
@@ -38,54 +38,24 @@ namespace Manga_Rica_P1.UI.Semanas
             pagedGrid.RefreshData();
         }
 
-        private void BuildDemoTable()
-        {
-            _tablaCompleta.Columns.Add("Id", typeof(int));
-            _tablaCompleta.Columns.Add("Semana", typeof(int));
-            _tablaCompleta.Columns.Add("Fecha_Inicio", typeof(DateTime));
-            _tablaCompleta.Columns.Add("Fecha_Final", typeof(DateTime));
-
-            _tablaCompleta.Rows.Add(1, 1, new DateTime(2025, 01, 06), new DateTime(2025, 01, 12));
-            _tablaCompleta.Rows.Add(2, 2, new DateTime(2025, 01, 13), new DateTime(2025, 01, 19));
-            _tablaCompleta.Rows.Add(3, 3, new DateTime(2025, 01, 20), new DateTime(2025, 01, 26));
-            _tablaCompleta.Rows.Add(4, 4, new DateTime(2025, 01, 27), new DateTime(2025, 02, 02));
-            _tablaCompleta.Rows.Add(5, 5, new DateTime(2025, 02, 03), new DateTime(2025, 02, 09));
-        }
-
-        private DataTable FiltroLocalComoDataTable(string filtro)
-        {
-            if (string.IsNullOrWhiteSpace(filtro))
-                return _tablaCompleta.Copy();
-
-            string f = filtro.Trim().ToLowerInvariant();
-
-            var query = _tablaCompleta.AsEnumerable().Where(r =>
-                r.Field<int>("Id").ToString().Contains(f) ||
-                r.Field<int>("Semana").ToString().Contains(f) ||
-                r.Field<DateTime>("Fecha_Inicio").ToString("yyyy-MM-dd").Contains(f) ||
-                r.Field<DateTime>("Fecha_Final").ToString("yyyy-MM-dd").Contains(f)
-            );
-
-            var tbl = _tablaCompleta.Clone();
-            foreach (var row in query) tbl.ImportRow(row);
-            return tbl;
-        }
-
         private void Nuevo()
         {
-            using var dlg = new AddSemana();   // devuelve ENTITY.Semana
-            if (dlg.ShowDialog(this) == DialogResult.OK)
+            using var dlg = new AddSemana();
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+            try
             {
-                var s = dlg.Result;
-
-                int newId = _tablaCompleta.Rows.Count == 0
-                    ? 1
-                    : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
-
-                s.Id = newId; // en BD lo haría el IDENTITY
-                _tablaCompleta.Rows.Add(s.Id, s.semana, s.fecha_Inicio, s.fecha_Final);
-
+                _svc.Create(dlg.Result);
                 pagedGrid.RefreshData();
+            }
+            catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
+            catch (ArgumentException valEx)
+            {
+                MessageBox.Show(this, valEx.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -94,49 +64,75 @@ namespace Manga_Rica_P1.UI.Semanas
             var id = pagedGrid.SelectedId;
             if (id is null) return;
 
-            var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id.Value);
-            if (fila is null) return;
+            var s = _svc.Get(id.Value);
+            if (s is null) return;
 
-            var seed = new EntitySemana
+            using var dlg = new AddSemana(s);
+            if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+            s.semana = dlg.Result.semana;
+            s.fecha_Inicio = dlg.Result.fecha_Inicio;
+            s.fecha_Final = dlg.Result.fecha_Final;
+
+            try
             {
-                Id = id.Value,
-                semana = fila.Field<int>("Semana"),
-                fecha_Inicio = fila.Field<DateTime>("Fecha_Inicio"),
-                fecha_Final = fila.Field<DateTime>("Fecha_Final")
-            };
-
-            using var dlg = new AddSemana(seed);
-            if (dlg.ShowDialog(this) == DialogResult.OK)
-            {
-                var s = dlg.Result;
-                fila.SetField("Semana", s.semana);
-                fila.SetField("Fecha_Inicio", s.fecha_Inicio);
-                fila.SetField("Fecha_Final", s.fecha_Final);
-
+                _svc.Update(s);
                 pagedGrid.RefreshData();
+            }
+            catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
+            catch (ArgumentException valEx)
+            {
+                MessageBox.Show(this, valEx.Message, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error inesperado", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void Eliminar()
         {
             var ids = pagedGrid.SelectedIds;
+            if (ids.Count == 0 && pagedGrid.SelectedId is int unico)
+                ids.Add(unico);
             if (ids.Count == 0) return;
 
             var dr = MessageBox.Show(
                 ids.Count == 1 ? $"¿Eliminar Id {ids[0]}?" : $"¿Eliminar {ids.Count} semanas?",
-                "Confirmar acción",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2);
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 
             if (dr != DialogResult.Yes) return;
 
+            int ok = 0, fail = 0;
             foreach (var _id in ids)
             {
-                var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == _id);
-                if (fila != null) _tablaCompleta.Rows.Remove(fila);
+                try { _svc.Delete(_id); ok++; }
+                catch (SqlException sqlEx) { fail++; ShowSqlError(sqlEx); }
+                catch (Exception ex) { fail++; MessageBox.Show(this, ex.Message, "Error al eliminar", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
-            pagedGrid.RefreshData();
+            if (ok > 0) pagedGrid.RefreshData();
+        }
+
+        private void ShowSqlError(SqlException ex)
+        {
+            string msg = ex.Number switch
+            {
+                547 => "No se puede eliminar/modificar por tener datos relacionados (restricción de llave foránea).",
+                515 => "Hay un campo requerido en blanco.",
+                2628 => "Texto excede la longitud permitida por la columna.",
+                _ => $"Error de base de datos ({ex.Number}): {ex.Message}"
+            };
+            MessageBox.Show(this, msg, "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        // Agrega este método parcial para resolver CS0103 si el archivo .Designer.cs no existe
+        // o si SemanaView no es un control de Windows Forms generado por diseñador.
+        // Si el archivo .Designer.cs existe, asegúrate de que esté correctamente vinculado al archivo principal.
+
+        private void InitializeComponent()
+        {
+            // Si usas controles agregados manualmente, este método puede estar vacío.
+            // Si usas el diseñador de Visual Studio, asegúrate de que el archivo .Designer.cs esté presente y correcto.
         }
     }
 }

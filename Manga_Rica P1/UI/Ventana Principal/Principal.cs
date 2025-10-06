@@ -23,6 +23,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private readonly IAppSession _session;
         private readonly UsuariosService _usuariosService;
+        private readonly SemanasService _semanasService;
 
         // ▼ NUEVO: servicio de Departamentos para toda la vida del formulario
         private readonly DepartamentosService _departamentosService;
@@ -37,6 +38,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
                      ?? throw new InvalidOperationException("Falta ConnectionStrings:MangaRicaDb");
             _departamentosService = new DepartamentosService(new DepartamentoRepository(cs));
+            _semanasService = new SemanasService(new SemanaRepository(cs));
 
             // Evita recálculos de layout mientras reacomodamos todo
             this.SuspendLayout();
@@ -351,12 +353,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSemanas_Click(object sender, EventArgs e)
         {
-            var vista = new Manga_Rica_P1.UI.Semanas.SemanaView
-            {
-                Dock = DockStyle.Fill
-            };
+            var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.Semanas.SemanaView>().FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
+
+            var vista = new Manga_Rica_P1.UI.Semanas.SemanaView(_semanasService) { Dock = DockStyle.Fill };
             panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
         }
 
         private void btnArticulos_Click(object sender, EventArgs e)
