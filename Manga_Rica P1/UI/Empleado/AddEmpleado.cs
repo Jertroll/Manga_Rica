@@ -117,7 +117,7 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
         }
 
         // Nueva implementacion: autocompleta desde una Solicitud seleccionada
-        public void PrefillFromSolicitud(Solicitud s)
+        public void PrefillFromSolicitud(Entity.Solicitudes s)
         {
             // Asegura que los combos tengan ítems (si llaman esto antes de Load)
             EnsureCombosLoaded();

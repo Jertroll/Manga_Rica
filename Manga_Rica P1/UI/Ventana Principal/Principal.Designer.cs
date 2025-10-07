@@ -883,7 +883,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             Controls.Add(flowLayoutPanelSideBar);
             Controls.Add(panel1);
             Name = "Principal";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = " ";
+            WindowState = FormWindowState.Maximized;
             Load += Principal_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();

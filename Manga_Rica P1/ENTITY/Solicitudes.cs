@@ -8,8 +8,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Manga_Rica_P1.Entity
 {
-    [Table("Solicitud", Schema = "dbo")]
-    public class Solicitud
+    [Table("Solicitudes", Schema = "dbo")]
+    public class Solicitudes
     {
         [Key]
         [Column("Id")]
@@ -38,6 +38,9 @@ namespace Manga_Rica_P1.Entity
         [Column("Estado_Civil")]
         [Required(ErrorMessage = "El campo de Estado_Civil es requerido")]
         public string Estado_Civil { get; set; } = "";
+
+        [Column("Telefono")]
+        public string Telefono { get; set; } = "";
 
         [Column("Celular")]
         [Required(ErrorMessage = "El campo de Celular es requerido")]

@@ -1,25 +1,32 @@
-﻿// Nueva implementacion
-using System;
+﻿using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using Manga_Rica_P1.UI.Helpers;                 // PagedSearchGrid
-using Manga_Rica_P1.UI.Solicitudes.Modales;     // AddSolicitud
-using Manga_Rica_P1.ENTITY;
-// Alias de la entidad (asegúrate que tu Solicitud esté en este namespace)
-using EntitySolicitud = Manga_Rica_P1.Entity.Solicitud;
+using Microsoft.Data.SqlClient;
+using System.Drawing;
+
+using Manga_Rica_P1.BLL;                       // ✅ SolicitudesService
+using Manga_Rica_P1.Entity;                    // ✅ Entity.Solicitud
+using Manga_Rica_P1.UI.Helpers;                // PagedSearchGrid
+using Manga_Rica_P1.UI.Solicitudes.Modales;    // AddSolicitud
+
+// Alias opcional (si quieres dejar claro que es la entidad)
+using EntitySolicitud = Manga_Rica_P1.Entity.Solicitudes;
 
 namespace Manga_Rica_P1.UI.Solicitudes
 {
     public partial class SolicitudView : UserControl
     {
-        // Nueva implementacion: datos quemados en memoria
-        private DataTable _tablaCompleta = new();
+        // ✅ Servicio BLL inyectado
+        private readonly SolicitudesService _svc;
         private PagedSearchGrid pagedGrid;
 
-        public SolicitudView()
+        // ✅ Recibe el servicio por ctor (como SemanaView/DepartamentoView)
+        public SolicitudView(SolicitudesService svc)
         {
-            // Nueva implementacion: montar grid compuesto
+            InitializeComponent();
+            _svc = svc ?? throw new ArgumentNullException(nameof(svc));
+
             Controls.Clear();
 
             pagedGrid = new PagedSearchGrid
@@ -28,108 +35,74 @@ namespace Manga_Rica_P1.UI.Solicitudes
                 Title = "Listado de Solicitudes"
             };
 
-            BuildDemoTable();
+            // ↓↓↓ AJUSTE DE FUENTES (poner ANTES de Add/Refresh) ↓↓↓
+            var g = pagedGrid.Grid;
 
-            // Nueva implementacion: modo CLIENTE (DataTable completo + filtro local)
-            pagedGrid.GetAllFilteredDataTable = FiltroLocalComoDataTable;
+            // Fuente de las celdas (filas)
+            g.DefaultCellStyle.Font = new Font(g.Font.FontFamily, 9f);
 
-            // Nueva implementacion: eventos CRUD
+            // Fuente de encabezados de columna
+            g.ColumnHeadersDefaultCellStyle.Font =
+                new Font((g.ColumnHeadersDefaultCellStyle.Font ?? g.Font).FontFamily, 9.5f, FontStyle.Bold);
+
+            // (Opcional) encabezados de fila
+            g.RowHeadersDefaultCellStyle.Font =
+                new Font((g.RowHeadersDefaultCellStyle.Font ?? g.Font).FontFamily, 9f);
+
+            // Alturas acordes al tamaño de fuente
+            g.RowTemplate.Height = 24;
+            g.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
+            // ✅ MODO SERVIDOR: página desde BLL (DataTable + total en el propio control)
+            pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
+                _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+
+            // ✅ Acciones CRUD
             pagedGrid.NewRequested += (_, __) => Nuevo();
             pagedGrid.EditRequested += (_, __) => Editar();
             pagedGrid.DeleteRequested += (_, __) => Eliminar();
 
-            Controls.Add(pagedGrid);
-
+            // Formateo de columna Laboro como “Sí/No”
             pagedGrid.Grid.CellFormatting += (s, e) =>
             {
-                if (pagedGrid.Grid.Columns[e.ColumnIndex].Name == "Laboro" && e.Value is int val)
-                {
-                    e.Value = val == 1 ? "Sí" : "No";
-                    e.FormattingApplied = true;
-                }
+                var name = pagedGrid.Grid.Columns[e.ColumnIndex].Name;
+                if (!string.Equals(name, "Laboro", StringComparison.OrdinalIgnoreCase)) return;
+
+                if (e.Value is bool b) { e.Value = b ? "Sí" : "No"; e.FormattingApplied = true; }
+                else if (e.Value is int n) { e.Value = n == 1 ? "Sí" : "No"; e.FormattingApplied = true; }
+                else if (e.Value is byte by) { e.Value = by == 1 ? "Sí" : "No"; e.FormattingApplied = true; }
             };
+
+            Controls.Add(pagedGrid);
 
             // Primer bind
             pagedGrid.RefreshData();
         }
 
-        // Nueva implementacion: columnas con encabezados visibles “como los pusiste”
-        private void BuildDemoTable()
-        {
-            _tablaCompleta.Columns.Add("Id", typeof(int));
-            _tablaCompleta.Columns.Add("Cedula", typeof(string));
-            _tablaCompleta.Columns.Add("Apellido 1", typeof(string));
-            _tablaCompleta.Columns.Add("Apellido 2", typeof(string));
-            _tablaCompleta.Columns.Add("Nombre", typeof(string));
-            _tablaCompleta.Columns.Add("Fecha Nacimiento", typeof(DateTime));
-            _tablaCompleta.Columns.Add("Estado Civil", typeof(string));
-            _tablaCompleta.Columns.Add("Celular", typeof(string));
-            _tablaCompleta.Columns.Add("Nacionalidad", typeof(string));
-            _tablaCompleta.Columns.Add("Laboro", typeof(int));     // 0/1
-            _tablaCompleta.Columns.Add("Direccion", typeof(string));
-
-            _tablaCompleta.Rows.Add(1, "1-1234-5678", "Soto", "Vargas", "Juan",
-                new DateTime(1995, 5, 10), "Soltero", "8888-1111", "Costarricense", 1, "San José, Centro");
-
-            _tablaCompleta.Rows.Add(2, "1-8765-4321", "Pérez", null, "María",
-                new DateTime(1990, 11, 2), "Casado", "7777-2222", "Nicaragüense", 0, "Heredia, San Francisco");
-        }
-
-        // Nueva implementacion: filtro local usando exactamente esos encabezados
-        private DataTable FiltroLocalComoDataTable(string filtro)
-        {
-            if (string.IsNullOrWhiteSpace(filtro))
-                return _tablaCompleta.Copy();
-
-            string f = filtro.Trim().ToLowerInvariant();
-
-            var query = _tablaCompleta.AsEnumerable().Where(r =>
-                r.Field<int>("Id").ToString().Contains(f) ||
-                (r.Field<string>("Cedula") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Apellido 1") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Apellido 2") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Nombre") ?? "").ToLower().Contains(f) ||
-                r.Field<DateTime>("Fecha Nacimiento").ToString("yyyy-MM-dd").Contains(f) ||
-                (r.Field<string>("Estado Civil") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Celular") ?? "").ToLower().Contains(f) ||
-                (r.Field<string>("Nacionalidad") ?? "").ToLower().Contains(f) ||
-                r.Field<int>("Laboro").ToString().Contains(f) ||
-                (r.Field<string>("Direccion") ?? "").ToLower().Contains(f)
-            );
-
-            var tbl = _tablaCompleta.Clone();
-            foreach (var row in query) tbl.ImportRow(row);
-            return tbl;
-        }
-
-        // ===== CRUD =====
+        // =========================
+        // CRUD
+        // =========================
         private void Nuevo()
         {
             using var dlg = new AddSolicitud();
             if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
-            var s = dlg.Result;
-
-            int newId = _tablaCompleta.Rows.Count == 0
-                ? 1
-                : _tablaCompleta.AsEnumerable().Max(x => x.Field<int>("Id")) + 1;
-
-            // Importante: mapear entity -> columnas con los nombres visibles
-            _tablaCompleta.Rows.Add(
-                newId,
-                s.Cedula,
-                s.Primer_Apellido,
-                s.Segundo_Apellido,
-                s.Nombre,
-                s.Fecha_Nacimiento,
-                s.Estado_Civil,
-                s.Celular,
-                s.Nacionalidad,
-                s.Laboro,
-                s.Direccion
-            );
-
-            pagedGrid.RefreshData();
+            try
+            {
+                _svc.Create(dlg.Result); 
+                pagedGrid.RefreshData();
+            }
+            catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
+            catch (ArgumentException valEx)
+            {
+                MessageBox.Show(this, valEx.Message, "Validación",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error inesperado",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Editar()
@@ -137,65 +110,93 @@ namespace Manga_Rica_P1.UI.Solicitudes
             var id = pagedGrid.SelectedId;
             if (id is null) return;
 
-            var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == id.Value);
-            if (fila is null) return;
+            // Carga la entidad real desde BLL
+            var s = _svc.Get(id.Value);
+            if (s is null) return;
 
-            // Mapear columnas visibles -> entity (seed)
-            var seed = new EntitySolicitud
-            {
-                Id = id.Value,
-                Cedula = fila.Field<string>("Cedula") ?? "",
-                Primer_Apellido = fila.Field<string>("Apellido 1") ?? "",
-                Segundo_Apellido = fila.Field<string>("Apellido 2"),
-                Nombre = fila.Field<string>("Nombre") ?? "",
-                Fecha_Nacimiento = fila.Field<DateTime>("Fecha Nacimiento"),
-                Estado_Civil = fila.Field<string>("Estado Civil") ?? "",
-                Celular = fila.Field<string>("Celular") ?? "",
-                Nacionalidad = fila.Field<string>("Nacionalidad") ?? "",
-                Laboro = fila.Field<int>("Laboro"),
-                Direccion = fila.Field<string>("Direccion") ?? ""
-            };
-
-            using var dlg = new AddSolicitud(seed);
+            using var dlg = new AddSolicitud(s);
             if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
-            var s = dlg.Result;
+            // Actualiza campos editables
+            s.Cedula = dlg.Result.Cedula;
+            s.Primer_Apellido = dlg.Result.Primer_Apellido;
+            s.Segundo_Apellido = dlg.Result.Segundo_Apellido;
+            s.Nombre = dlg.Result.Nombre;
+            s.Fecha_Nacimiento = dlg.Result.Fecha_Nacimiento;
+            s.Estado_Civil = dlg.Result.Estado_Civil;
+            s.Celular = dlg.Result.Celular;
+            s.Nacionalidad = dlg.Result.Nacionalidad;
+            s.Laboro = dlg.Result.Laboro;
+            s.Direccion = dlg.Result.Direccion;
 
-            // Mapear entity -> columnas visibles
-            fila.SetField("Cedula", s.Cedula);
-            fila.SetField("Apellido 1", s.Primer_Apellido);
-            fila.SetField("Apellido 2", s.Segundo_Apellido);
-            fila.SetField("Nombre", s.Nombre);
-            fila.SetField("Fecha Nacimiento", s.Fecha_Nacimiento);
-            fila.SetField("Estado Civil", s.Estado_Civil);
-            fila.SetField("Celular", s.Celular);
-            fila.SetField("Nacionalidad", s.Nacionalidad);
-            fila.SetField("Laboro", s.Laboro);
-            fila.SetField("Direccion", s.Direccion);
-
-            pagedGrid.RefreshData();
+            try
+            {
+                _svc.Update(s);
+                pagedGrid.RefreshData();
+            }
+            catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
+            catch (ArgumentException valEx)
+            {
+                MessageBox.Show(this, valEx.Message, "Validación",
+                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, "Error inesperado",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Eliminar()
         {
             var ids = pagedGrid.SelectedIds;
+            if (ids.Count == 0 && pagedGrid.SelectedId is int unico)
+                ids.Add(unico);
             if (ids.Count == 0) return;
 
             var dr = MessageBox.Show(
                 ids.Count == 1 ? $"¿Eliminar Id {ids[0]}?" : $"¿Eliminar {ids.Count} solicitudes?",
-                "Confirmar acción",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning,
-                MessageBoxDefaultButton.Button2);
+                "Confirmar eliminación",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
 
             if (dr != DialogResult.Yes) return;
 
+            int ok = 0, fail = 0;
             foreach (var _id in ids)
             {
-                var fila = _tablaCompleta.AsEnumerable().FirstOrDefault(x => x.Field<int>("Id") == _id);
-                if (fila != null) _tablaCompleta.Rows.Remove(fila);
+                try { _svc.Delete(_id); ok++; }
+                catch (SqlException sqlEx) { fail++; ShowSqlError(sqlEx); }
+                catch (Exception ex)
+                {
+                    fail++;
+                    MessageBox.Show(this, ex.Message, "Error al eliminar",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-            pagedGrid.RefreshData();
+            if (ok > 0) pagedGrid.RefreshData();
+        }
+
+        // =========================
+        // Utilidad errores SQL
+        // =========================
+        private void ShowSqlError(SqlException ex)
+        {
+            string msg = ex.Number switch
+            {
+                547 => "No se puede eliminar/modificar por tener datos relacionados (llave foránea).",
+                515 => "Hay un campo requerido en blanco.",
+                2627 => "Violación de clave única (duplicado).",
+                2601 => "Violación de índice único (duplicado).",
+                2628 => "Texto excede la longitud permitida por la columna.",
+                _ => $"Error de base de datos ({ex.Number}): {ex.Message}"
+            };
+            MessageBox.Show(this, msg, "Error de base de datos", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        // Si este control no tiene .Designer.cs, deja este stub.
+        private void InitializeComponent()
+        {
+            // vacío a propósito (evita CS0103 si no usas diseñador)
         }
     }
 }

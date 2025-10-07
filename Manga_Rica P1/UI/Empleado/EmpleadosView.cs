@@ -10,7 +10,7 @@ using Manga_Rica_P1.UI.Empleados.Modales;    // AddEmpleado (modal simple de dem
 
 // ENTITIES
 using Manga_Rica_P1.ENTITY;
-using EntitySolicitud = Manga_Rica_P1.Entity.Solicitud;
+using EntitySolicitud = Manga_Rica_P1.Entity.Solicitudes;
 using EntityEmpleado = Manga_Rica_P1.Entity.Empleado;
 
 namespace Manga_Rica_P1.UI.Empleados

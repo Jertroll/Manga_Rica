@@ -31,15 +31,15 @@ namespace Manga_Rica_P1
             var usuarioRepo = new UsuarioRepository(cs);
             var departamentoRepo = new DepartamentoRepository(cs);
             var semanaRepo = new SemanaRepository(cs);
-
-            // OJO: usa el nombre real de tu repo. Si tu clase es ArticulosRepository (plural), deja esto así.
             var articulosRepo = new ArticulosRepository(cs);
+            var solicitudRepo = new SolicitudRepository(cs);
 
             // Servicios (BLL)
             var usuariosService = new UsuariosService(usuarioRepo);
             var departamentosService = new DepartamentosService(departamentoRepo);
             var semanasService = new SemanasService(semanaRepo);
             var articulosService = new ArticulosService(articulosRepo);
+            var solicitudesService = new SolicitudesService(solicitudRepo);
 
             // Autenticación + sesión
             var autentificacionService = new AutentificacionService(usuarioRepo);
@@ -64,7 +64,8 @@ namespace Manga_Rica_P1
                 usuariosService,
                 departamentosService,
                 semanasService,
-                articulosService
+                articulosService, 
+                solicitudesService
             ));
         }
     }

@@ -5,6 +5,7 @@ using Manga_Rica_P1.DAL;
 using Manga_Rica_P1.UI.Articulos;
 using Manga_Rica_P1.UI.Departamentos;
 using Manga_Rica_P1.UI.Helpers;
+using Manga_Rica_P1.UI.Solicitudes;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -26,12 +27,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly DepartamentosService _departamentosService;
         private readonly SemanasService _semanasService;
         private readonly ArticulosService _articulosService;
+        private readonly SolicitudesService _solicitudesService;
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
             DepartamentosService departamentosService,
             SemanasService semanasService,
-            ArticulosService articulosService)
+            ArticulosService articulosService, 
+            SolicitudesService solicitudesService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -39,6 +42,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _departamentosService = departamentosService ?? throw new ArgumentNullException(nameof(departamentosService));
             _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
             _articulosService = articulosService ?? throw new ArgumentNullException(nameof(articulosService));
+            _solicitudesService = solicitudesService ?? throw new ArgumentNullException(nameof(solicitudesService));
 
 
             // Evita recálculos de layout mientras reacomodamos todo
@@ -383,12 +387,17 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSolicitudesPlanilla_Click(object sender, EventArgs e)
         {
-            var vista = new Manga_Rica_P1.UI.Solicitudes.SolicitudView
-            {
-                Dock = DockStyle.Fill
-            };
+          
+            var existente = panelPrincipal.Controls.OfType<SolicitudView>().FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
+
+            var vista = new SolicitudView(_solicitudesService) { Dock = DockStyle.Fill }; // ✅ pasar servicio
             panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
         }
 
         private void btnEmpleado_Click(object sender, EventArgs e)
