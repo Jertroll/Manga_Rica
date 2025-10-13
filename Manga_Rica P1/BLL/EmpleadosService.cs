@@ -27,6 +27,17 @@ namespace Manga_Rica_P1.BLL
         // Auxiliares
         public Empleado? GetById(int id) => _repo.GetById(id);
         public Empleado? GetByCedula(string cedula) => _repo.GetByCedula(cedula);
+        
+        /// <summary>
+        /// Verifica si existe un empleado activo (Activo = 1) con la cédula especificada.
+        /// </summary>
+        public bool ExistsActiveByCedula(string cedula)
+        {
+            if (string.IsNullOrWhiteSpace(cedula)) return false;
+            
+            var empleado = _repo.GetByCedula(cedula.Trim());
+            return empleado != null && empleado.Activo == 1;
+        }
 
         // =========================================================
         //  Comandos

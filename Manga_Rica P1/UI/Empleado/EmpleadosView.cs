@@ -131,7 +131,39 @@ namespace Manga_Rica_P1.UI.Empleados
                     var s = _solSvc.Get(id.Value);
                     if (s is null) return;
 
-                    // ⬇️ Prefill incluye Telefono si viene en la solicitud
+                    // Verificar si ya existe un empleado activo con esa cédula
+                    if (!string.IsNullOrWhiteSpace(s.Cedula))
+                    {
+                        var empleadoExistente = _empSvc.GetByCedula(s.Cedula);
+                        if (empleadoExistente != null && empleadoExistente.Activo == 1)
+                        {
+                            var message = $"Ya existe un empleado ACTIVO con esa cédula.\n\n" +
+                                         $"Id: {empleadoExistente.Id}\n" +
+                                         $"Nombre: {empleadoExistente.Nombre} {empleadoExistente.Primer_Apellido}\n\n" +
+                                         $"¿Desea abrirlo para edición?";
+
+                            var result = MessageBox.Show(message, "Empleado Existente", 
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                            if (result == DialogResult.Yes)
+                            {
+                                // Abrir para edición
+                                using var editDlg = new AddEmpleado(_depSvc);
+                                editDlg.PrefillFromEmpleado(empleadoExistente);
+                                if (editDlg.ShowDialog(this) == DialogResult.OK)
+                                {
+                                    _empSvc.Update(editDlg.Result);
+                                    // Cambiar a vista de empleados y refrescar
+                                    chkVerEmpleados.Checked = true;
+                                    pagedGrid.RefreshData();
+                                }
+                            }
+                            // Si elige No, simplemente retorna sin crear nada
+                            return;
+                        }
+                    }
+
+                    // Si no existe empleado activo con esa cédula, continuar con el flujo normal
                     var seed = MapSolicitudToEmpleadoSeed(s);
 
                     using var dlg = new AddEmpleado(_depSvc);
