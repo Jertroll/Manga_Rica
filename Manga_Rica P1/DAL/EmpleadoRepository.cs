@@ -341,5 +341,70 @@ WHERE Cedula=@ced AND (@id IS NULL OR Id<>@id);";
 
             return emp;
         }
+
+        public bool ExisteActivoPorCarne(long carne)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"SELECT TOP (1) 1 
+                        FROM dbo.Empleados 
+                        WHERE Activo = 1 AND Carne = @carne;";
+            cmd.Parameters.Add("@carne", SqlDbType.BigInt).Value = carne;
+
+            cn.Open();
+            var x = cmd.ExecuteScalar();
+            return x != null;
+        }
+
+        // Nueva implementacion
+        /// <summary>
+        /// Devuelve Id (BIGINT) y el NombreCompleto de un empleado ACTIVO por carné.
+        /// Retorna null si no existe o está inactivo.
+        /// </summary>
+        public (long Id, string NombreCompleto)? GetIdentidadBasica(long carne)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"
+SELECT TOP (1) 
+       CAST(Id AS bigint) AS Id,
+       (Nombre + ' ' + Primer_Apellido + ' ' + ISNULL(Segundo_Apellido,'')) AS NombreCompleto
+FROM dbo.Empleados
+WHERE Activo = 1 AND Carne = @carne;";
+            cmd.Parameters.Add("@carne", SqlDbType.BigInt).Value = carne;
+
+            cn.Open();
+            using var rd = cmd.ExecuteReader(CommandBehavior.SingleRow);
+            if (!rd.Read()) return null;
+
+            var id = rd.GetInt64(0);                 // BIGINT → long
+            var nom = rd.GetString(1);
+            return (id, nom);
+        }
+
+        // Nueva implementacion
+        /// <summary>
+        /// (Opcional) Obtiene el empleado ACTIVO por carné (objeto completo).
+        /// Útil si más adelante necesitas más campos en BLL/UI.
+        /// </summary>
+        public Empleado? GetActivoByCarne(long carne)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"
+SELECT TOP(1) Id, Carne, Cedula, Primer_Apellido, Segundo_Apellido, Nombre, 
+       Fecha_Nacimiento, Estado_Civil, Telefono, Celular, Nacionalidad, Laboro, 
+       Direccion, Id_Departamento, Salario, Puesto, Fecha_Ingreso, Fecha_Salida, 
+       Foto, Activo, MC_Numero
+FROM dbo.Empleados
+WHERE Activo = 1 AND Carne = @carne;";
+            cmd.Parameters.Add("@carne", SqlDbType.BigInt).Value = carne;
+
+            cn.Open();
+            using var rd = cmd.ExecuteReader(CommandBehavior.SingleRow);
+            if (!rd.Read()) return null;
+
+            return MapEmpleado(rd);  // reutiliza tu mapeador existente
+        }
     }
 }

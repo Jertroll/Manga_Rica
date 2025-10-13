@@ -39,7 +39,7 @@
             dateTimePickerRegistroSalida = new DateTimePicker();
             dateTimePickerSalida = new DateTimePicker();
             labelFechaSalida = new Label();
-            tabControl1 = new TabControl();
+            tabControlSalida = new TabControl();
             tabPageEntrada = new TabPage();
             buttonCancelarEntrada = new Button();
             buttonRegistrarEntrada = new Button();
@@ -59,7 +59,7 @@
             buttonRegistrarSalida = new Button();
             BttnBuscarEmpleado = new Button();
             textBoxBuscarEmpleado = new TextBox();
-            tabControl1.SuspendLayout();
+            tabControlSalida.SuspendLayout();
             tabPageEntrada.SuspendLayout();
             tabPageSalida.SuspendLayout();
             SuspendLayout();
@@ -162,15 +162,15 @@
             labelFechaSalida.TabIndex = 11;
             labelFechaSalida.Text = "Fecha";
             // 
-            // tabControl1
+            // tabControlSalida
             // 
-            tabControl1.Controls.Add(tabPageEntrada);
-            tabControl1.Controls.Add(tabPageSalida);
-            tabControl1.Location = new Point(32, 54);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(737, 359);
-            tabControl1.TabIndex = 13;
+            tabControlSalida.Controls.Add(tabPageEntrada);
+            tabControlSalida.Controls.Add(tabPageSalida);
+            tabControlSalida.Location = new Point(32, 54);
+            tabControlSalida.Name = "tabControlSalida";
+            tabControlSalida.SelectedIndex = 0;
+            tabControlSalida.Size = new Size(737, 359);
+            tabControlSalida.TabIndex = 13;
             // 
             // tabPageEntrada
             // 
@@ -383,10 +383,10 @@
             ClientSize = new Size(800, 450);
             Controls.Add(textBoxBuscarEmpleado);
             Controls.Add(BttnBuscarEmpleado);
-            Controls.Add(tabControl1);
+            Controls.Add(tabControlSalida);
             Name = "RegistroEntradaYSalida";
             Text = "RegistroEntradaYSalida";
-            tabControl1.ResumeLayout(false);
+            tabControlSalida.ResumeLayout(false);
             tabPageEntrada.ResumeLayout(false);
             tabPageEntrada.PerformLayout();
             tabPageSalida.ResumeLayout(false);
@@ -408,7 +408,7 @@
         private DateTimePicker dateTimePickerRegistroSalida;
         private DateTimePicker dateTimePickerSalida;
         private Label labelFechaSalida;
-        private TabControl tabControl1;
+        private TabControl tabControlSalida;
         private TabPage tabPageEntrada;
         private TabPage tabPageSalida;
         private Label labelTituloEntrada;
