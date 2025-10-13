@@ -52,6 +52,10 @@ namespace Manga_Rica_P1.BLL
             d.codigo = (d.codigo ?? "").Trim();
         }
 
+        public IReadOnlyList<Departamento> GetAll() =>
+       _repo.GetAllOrdered().ToList();
+
+
         private void Validate(Departamento d, bool isCreate)
         {
             // Requeridos

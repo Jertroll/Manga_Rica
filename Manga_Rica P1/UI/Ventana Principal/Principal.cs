@@ -28,13 +28,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly SemanasService _semanasService;
         private readonly ArticulosService _articulosService;
         private readonly SolicitudesService _solicitudesService;
+        private readonly EmpleadosService _empleadoService;
+
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
             DepartamentosService departamentosService,
             SemanasService semanasService,
             ArticulosService articulosService, 
-            SolicitudesService solicitudesService)
+            SolicitudesService solicitudesService,
+            EmpleadosService empleadosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -43,6 +46,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
             _articulosService = articulosService ?? throw new ArgumentNullException(nameof(articulosService));
             _solicitudesService = solicitudesService ?? throw new ArgumentNullException(nameof(solicitudesService));
+            _empleadoService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
 
 
             // Evita recálculos de layout mientras reacomodamos todo
@@ -402,12 +406,21 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnEmpleado_Click(object sender, EventArgs e)
         {
-            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView
+            var existente = panelPrincipal.Controls
+         .OfType<Manga_Rica_P1.UI.Empleados.EmpleadosView>()
+         .FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView(_empleadoService, _solicitudesService, _departamentosService)
             {
                 Dock = DockStyle.Fill
             };
-            panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
         }
 
         private void btnEntradaYSalida_Click(object sender, EventArgs e)

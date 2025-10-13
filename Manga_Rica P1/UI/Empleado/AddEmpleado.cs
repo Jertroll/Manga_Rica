@@ -1,32 +1,42 @@
-﻿// Nueva implementacion
+﻿using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.Entity;
 using System;
-using System.Globalization;
-using System.Linq;
-using System.Windows.Forms;
-using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+using EmpleadoEntity = Manga_Rica_P1.Entity.Empleado;
+using SolicitudEntity = Manga_Rica_P1.Entity.Solicitudes;
 
 namespace Manga_Rica_P1.UI.Empleados.Modales
 {
     public partial class AddEmpleado : Form
     {
-        // Reemplaza la línea problemática por la siguiente, asegurando que el tipo Empleado se referencia correctamente.
-        // Si tienes un espacio de nombres llamado 'Empleado', debes usar el tipo completo, por ejemplo: Manga_Rica_P1.Entity.Empleado
+        // Resultado que leerá el caller después de DialogResult.OK
+        public EmpleadoEntity Result { get; private set; } = new EmpleadoEntity();
 
-        public Manga_Rica_P1.Entity.Empleado Result { get; private set; } = new Manga_Rica_P1.Entity.Empleado();
-
-        // Ruta original seleccionada por el usuario (para copiarla al guardar)
+        private readonly DepartamentosService _departamentosService;
         private string? _selectedPhotoPath;
-
-        // Carpeta destino dentro del ejecutable: <app>\FotosEmpleados
         private const string FotosFolderName = "FotosEmpleados";
 
+        // Si se hace PrefillFromEmpleado antes de cargar DataSource, guardamos el Id pendiente
+        private int? _pendingDepartamentoId;
+
+        // ===== Constructor =====
+        // OBLIGATORIO pasar DepartamentosService para llenar el combo desde la BD.
+        public AddEmpleado(DepartamentosService departamentosService)
+        {
+            InitializeComponent();
+            _departamentosService = departamentosService
+             ?? throw new ArgumentNullException(nameof(departamentosService));
+            this.Load += AddEmpleado_Load;
+        }
+
+        // ===== Helpers =====
         /// <summary>
-        /// Copia/convierte la imagen a la carpeta local del proyecto y retorna la ruta RELATIVA
-        /// que luego guardarás en la BD. Si no hay imagen válida, retorna null.
+        /// Copia/convierte la imagen a &lt;app&gt;\FotosEmpleados (JPG 400x400) y retorna la ruta RELATIVA para la BD.
         /// </summary>
         private string? SaveLocalPhoto(string? sourcePath)
         {
@@ -35,16 +45,13 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                 if (string.IsNullOrWhiteSpace(sourcePath) || !File.Exists(sourcePath))
                     return null;
 
-                // Carpeta destino: <app>\FotosEmpleados
                 var root = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, FotosFolderName);
                 Directory.CreateDirectory(root);
 
-                // Nombre final (si tienes cédula ya seteada, úsala para el nombre)
                 var baseName = string.IsNullOrWhiteSpace(Result?.Cedula) ? Guid.NewGuid().ToString("N") : Result.Cedula;
                 var fileName = $"{baseName}_{DateTime.Now:yyyyMMddHHmmss}.jpg";
                 var destFullPath = Path.Combine(root, fileName);
 
-                // Cargar, redimensionar y guardar como JPG (400x400, crop centrado)
                 using (var src = Image.FromFile(sourcePath))
                 using (var dst = new Bitmap(400, 400))
                 using (var g = Graphics.FromImage(dst))
@@ -54,7 +61,7 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                     g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
                     g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
 
-                    // calcular recorte centrado para “llenar” 400x400 manteniendo proporción
+                    // Crop centrado para llenar 400x400
                     var scale = Math.Max(400f / src.Width, 400f / src.Height);
                     var w = (int)Math.Round(400 / scale);
                     var h = (int)Math.Round(400 / scale);
@@ -66,12 +73,11 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                     g.DrawImage(src, new Rectangle(0, 0, 400, 400), srcRect, GraphicsUnit.Pixel);
 
                     var jpegCodec = ImageCodecInfo.GetImageEncoders().First(c => c.MimeType == "image/jpeg");
-                    var enc = new EncoderParameters(1);
-                    enc.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 85L);
-                    dst.Save(destFullPath, jpegCodec, enc);
+                    using var encParams = new EncoderParameters(1);
+                    encParams.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 85L);
+                    dst.Save(destFullPath, jpegCodec, encParams);
                 }
 
-                // Ruta relativa (la que guardarás en BD más adelante)
                 return Path.Combine(FotosFolderName, fileName).Replace('\\', '/');
             }
             catch
@@ -80,147 +86,170 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             }
         }
 
-
-
-        // Si quieres abrir “vacío”, usa el ctor por defecto generado por el diseñador.
-        public AddEmpleado()
-        {
-            InitializeComponent();
-            // Nueva implementacion: enganchamos eventos y cargamos combos en Load
-            this.Load += AddEmpleado_Load;
-        }
-
-        // Nueva implementacion: utilidad para cargar listas por defecto (cuando no haya BLL/DAL)
         private void EnsureCombosLoaded()
         {
-            // Estado civil
+            // Estado civil (constante)
             if (comboBoxEstadoCivil.Items.Count == 0)
                 comboBoxEstadoCivil.Items.AddRange(new object[] { "Soltero", "Casado", "Unión Libre", "Divorciado", "Viudo" });
 
-            // Departamento (por ahora quemado)
-            if (comboBoxDepartamento.Items.Count == 0)
-                comboBoxDepartamento.Items.AddRange(new object[] { "Administración", "Ventas", "Producción", "RRHH", "TI" });
-
-            // Laboró (0/1 mostrado como texto)
+            // Laboró (constante)
             if (comboBoxLaboro.Items.Count == 0)
-                comboBoxLaboro.Items.AddRange(new object[] { "No", "Sí" }); // 0,1
+                comboBoxLaboro.Items.AddRange(new object[] { "No", "Sí" });
 
-            // Activo (0/1 mostrado como texto)
+            // Activo (constante)
             if (comboBoxActivo.Items.Count == 0)
-                comboBoxActivo.Items.AddRange(new object[] { "No", "Sí" }); // 0,1
+                comboBoxActivo.Items.AddRange(new object[] { "No", "Sí" });
 
             // Selecciones por defecto
             if (comboBoxEstadoCivil.SelectedIndex < 0 && comboBoxEstadoCivil.Items.Count > 0) comboBoxEstadoCivil.SelectedIndex = 0;
-            if (comboBoxDepartamento.SelectedIndex < 0 && comboBoxDepartamento.Items.Count > 0) comboBoxDepartamento.SelectedIndex = 0;
             if (comboBoxLaboro.SelectedIndex < 0 && comboBoxLaboro.Items.Count > 0) comboBoxLaboro.SelectedIndex = 0;
             if (comboBoxActivo.SelectedIndex < 0 && comboBoxActivo.Items.Count > 0) comboBoxActivo.SelectedIndex = 1; // Activo = Sí
         }
 
-        // Nueva implementacion: autocompleta desde una Solicitud seleccionada
-        public void PrefillFromSolicitud(Entity.Solicitudes s)
+        private void LoadDepartamentosDesdeBD()
         {
-            // Asegura que los combos tengan ítems (si llaman esto antes de Load)
+            // Consulta SIEMPRE a la BD (sin fallback a items quemados)
+            var lista = _departamentosService.GetAll()
+                        .OrderBy(d => d.nombre)   // si tu entidad usa "Nombre" cambia a d.Nombre
+                        .Select(d => new { d.Id, Nombre = d.nombre })
+                        .ToList();
+
+            comboBoxDepartamento.DataSource = null;
+            comboBoxDepartamento.Items.Clear();
+
+            comboBoxDepartamento.DataSource = lista;
+            comboBoxDepartamento.DisplayMember = "Nombre";
+            comboBoxDepartamento.ValueMember = "Id";
+
+            if (lista.Count == 0)
+            {
+                buttonGuardar.Enabled = false;
+                MessageBox.Show("No hay departamentos en la base de datos. No es posible continuar.", "Departamentos", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                buttonGuardar.Enabled = true;
+
+             
+                if (_pendingDepartamentoId.HasValue)
+                {
+                    comboBoxDepartamento.SelectedValue = _pendingDepartamentoId.Value;
+                    _pendingDepartamentoId = null;
+                }
+                else
+                {
+                    comboBoxDepartamento.SelectedIndex = 0;
+                }
+            }
+        }
+
+        // ===== Prefills =====
+        public void PrefillFromSolicitud(Manga_Rica_P1.Entity.Solicitudes s)
+        {
             EnsureCombosLoaded();
 
-            // Personales
+            // Carné no viene en Solicitud: lo dejamos vacío para que lo ingrese el usuario
+            if (textBoxCarnet != null) textBoxCarnet.Text = string.Empty;
+
             textBoxCedula.Text = s.Cedula;
             textBoxApellido1.Text = s.Primer_Apellido;
             textBoxAppelido2.Text = s.Segundo_Apellido ?? string.Empty;
             textBoxNombre.Text = s.Nombre;
             dateTimeNacimiento.Value = s.Fecha_Nacimiento == default ? DateTime.Today.AddYears(-18) : s.Fecha_Nacimiento;
 
-            // Estado civil: intenta coincidir con el texto; si no, deja el índice 0
             var matchEstado = comboBoxEstadoCivil.Items.Cast<object>()
                 .FirstOrDefault(x => string.Equals(x.ToString(), s.Estado_Civil, StringComparison.InvariantCultureIgnoreCase));
             comboBoxEstadoCivil.SelectedItem = matchEstado ?? comboBoxEstadoCivil.Items[0];
 
+            textBoxTelefono.Text = s.Telefono ?? string.Empty;
             textBoxCelular.Text = s.Celular;
             textBoxNacionalidad.Text = s.Nacionalidad;
-            comboBoxLaboro.SelectedIndex = s.Laboro == 1 ? 1 : 0; // 1 = Sí, 0 = No
+            comboBoxLaboro.SelectedIndex = s.Laboro == 1 ? 1 : 0;
             textBoxDireccion.Text = s.Direccion;
 
-            // Empleo: sugerencias por defecto, el usuario completa
-            if (string.IsNullOrWhiteSpace(textBox1.Text)) textBox1.Text = "";      // Puesto
+            if (string.IsNullOrWhiteSpace(textBoxPuestoLaboro.Text)) textBoxPuestoLaboro.Text = "";
             if (string.IsNullOrWhiteSpace(textBoxSalario.Text)) textBoxSalario.Text = "0";
-            dateTimePicker1.Value = DateTime.Today;              // Ingreso
-            // dateTimePicker2 (Salida) lo puede dejar en la fecha mostrada
-            comboBoxActivo.SelectedIndex = 1; // Activo = Sí
+            dateTimePicker1.Value = DateTime.Today;
+            comboBoxActivo.SelectedIndex = 1;
         }
 
-        // Cambia la firma del método PrefillFromEmpleado para usar el tipo completo
         public void PrefillFromEmpleado(Manga_Rica_P1.Entity.Empleado e)
         {
-
             EnsureCombosLoaded();
 
-
+            if (textBoxCarnet != null) textBoxCarnet.Text = e.Carne.ToString();
 
             textBoxCedula.Text = e.Cedula;
-
             textBoxApellido1.Text = e.Primer_Apellido;
-
             textBoxAppelido2.Text = e.Segundo_Apellido ?? string.Empty;
-
             textBoxNombre.Text = e.Nombre;
-
             dateTimeNacimiento.Value = e.Fecha_Nacimiento == default ? DateTime.Today.AddYears(-18) : e.Fecha_Nacimiento;
 
-
-
             var matchEstado = comboBoxEstadoCivil.Items.Cast<object>()
-
                 .FirstOrDefault(x => string.Equals(x.ToString(), e.Estado_Civil, StringComparison.InvariantCultureIgnoreCase));
-
             comboBoxEstadoCivil.SelectedItem = matchEstado ?? comboBoxEstadoCivil.Items[0];
 
-
-
+            textBoxTelefono.Text = e.Telefono ?? string.Empty;
             textBoxCelular.Text = e.Celular;
-
             textBoxNacionalidad.Text = e.Nacionalidad;
-
             comboBoxLaboro.SelectedIndex = e.Laboro == 1 ? 1 : 0;
-
             textBoxDireccion.Text = e.Direccion;
 
-
-
-            // Empleo
-
-            // Nota: sin BLL/DAL usamos SelectedIndex como "Id_Departamento" demo.
-
-            if (comboBoxDepartamento.Items.Count > 0)
-
-                comboBoxDepartamento.SelectedIndex = Math.Max(0, Math.Min(comboBoxDepartamento.Items.Count - 1, e.Id_Departamento));
+            // El DataSource se configura en Load; guardamos el Id para aplicarlo luego
+            _pendingDepartamentoId = e.Id_Departamento;
+            if (comboBoxDepartamento.DataSource != null)
+            {
+                comboBoxDepartamento.SelectedValue = e.Id_Departamento;
+                _pendingDepartamentoId = null;
+            }
 
             textBoxSalario.Text = e.Salario.ToString(CultureInfo.InvariantCulture);
-
-            textBox1.Text = e.Puesto; // (textBox1 = Puesto según tu Designer)
-
+            textBoxPuestoLaboro.Text = e.Puesto;
             dateTimePicker1.Value = e.Fecha_Ingreso == default ? DateTime.Today : e.Fecha_Ingreso;
-
             dateTimePicker2.Value = e.Fecha_Salida == default ? DateTime.Today : e.Fecha_Salida;
-
             comboBoxActivo.SelectedIndex = e.Activo == 1 ? 1 : 0;
-
             textBoxMcNumero.Text = e.MC_Numero.ToString();
 
-        }
+            // Foto existente (sin bloquear el archivo)
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            if (!string.IsNullOrWhiteSpace(e.Foto))
+            {
+                var full = Path.Combine(baseDir, e.Foto.Replace('/', Path.DirectorySeparatorChar));
+                if (File.Exists(full))
+                {
+                    try
+                    {
+                        using var fs = new FileStream(full, FileMode.Open, FileAccess.Read);
+                        using var temp = Image.FromStream(fs);
+                        fotoEmpleado.Image = new Bitmap(temp);
+                    }
+                    catch { /* ignorar errores de imagen */ }
+                }
+            }
 
-        // ====== Eventos ======
+            Result.Foto = e.Foto; // conservar ruta existente si no se reemplaza
+        }
+
+        // ===== Load / Botones =====
         private void AddEmpleado_Load(object? sender, EventArgs e)
         {
             EnsureCombosLoaded();
+            LoadDepartamentosDesdeBD(); // SIEMPRE desde BD
 
-            // Nueva implementacion: botones
             buttonGuardar.Click += (_, __) => GuardarYSalir();
             buttonCancelar.Click += (_, __) => DialogResult = DialogResult.Cancel;
         }
 
-        // ====== Guardar ======
+        // ===== Guardar =====
         private void GuardarYSalir()
         {
-            // Validaciones mínimas
+            // Validaciones
+            if (comboBoxDepartamento.DataSource == null || comboBoxDepartamento.Items.Count == 0)
+            {
+                MessageBox.Show("No hay departamentos cargados. Verifique la tabla de Departamentos.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(textBoxCedula.Text))
             {
                 MessageBox.Show("Cédula requerida.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -237,6 +266,13 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                 textBoxApellido1.Focus(); return;
             }
 
+            // Carné (obligatorio)
+            if (textBoxCarnet == null || string.IsNullOrWhiteSpace(textBoxCarnet.Text) || !long.TryParse(textBoxCarnet.Text, out var carne) || carne <= 0)
+            {
+                MessageBox.Show("Número de carné inválido u obligatorio.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBoxCarnet?.Focus(); return;
+            }
+
             if (!float.TryParse(textBoxSalario.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out float salario))
             {
                 MessageBox.Show("Salario inválido.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -245,43 +281,41 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
 
             long.TryParse(textBoxMcNumero.Text, out var mc);
 
-            // Nueva implementacion: mapear controles -> entidad Result
+            // Mapear controles -> entidad
+            Result.Carne = carne;
             Result.Cedula = textBoxCedula.Text.Trim();
             Result.Primer_Apellido = textBoxApellido1.Text.Trim();
             Result.Segundo_Apellido = string.IsNullOrWhiteSpace(textBoxAppelido2.Text) ? null : textBoxAppelido2.Text.Trim();
             Result.Nombre = textBoxNombre.Text.Trim();
             Result.Fecha_Nacimiento = dateTimeNacimiento.Value.Date;
             Result.Estado_Civil = comboBoxEstadoCivil.SelectedItem?.ToString() ?? "";
+            Result.Telefono = textBoxTelefono.Text.Trim();
             Result.Celular = textBoxCelular.Text.Trim();
             Result.Nacionalidad = textBoxNacionalidad.Text.Trim();
-            Result.Laboro = comboBoxLaboro.SelectedIndex == 1 ? 1 : 0; // Sí=1, No=0
+            Result.Laboro = comboBoxLaboro.SelectedIndex == 1 ? 1 : 0;
             Result.Direccion = textBoxDireccion.Text.Trim();
 
-            // Por ahora usamos SelectedIndex como Id_Departamento (cuando tengas DAL, mapea Id real)
-            Result.Id_Departamento = Math.Max(0, comboBoxDepartamento.SelectedIndex);
+            // Departamento: SIEMPRE desde DataSource
+            Result.Id_Departamento = Convert.ToInt32(comboBoxDepartamento.SelectedValue ?? 0);
+
             Result.Salario = salario;
-            Result.Puesto = textBox1.Text.Trim(); // textBox1 = Puesto (según tu Designer)
-            Result.Fecha_Ingreso = dateTimePicker1.Value.Date; // Ingreso
-            Result.Fecha_Salida = dateTimePicker2.Value.Date; // Salida (puede ser default si no aplica)
-            Result.Activo = comboBoxActivo.SelectedIndex == 1 ? 1 : 0; // Sí=1, No=0
+            Result.Puesto = textBoxPuestoLaboro.Text.Trim();
+            Result.Fecha_Ingreso = dateTimePicker1.Value.Date;
+            Result.Fecha_Salida = dateTimePicker2.Value.Date;
+            Result.Activo = comboBoxActivo.SelectedIndex == 1 ? 1 : 0;
             Result.MC_Numero = mc;
 
-            // Guardar foto local y devolver ruta relativa en Result.Foto
+            // Foto
             var savedRelative = SaveLocalPhoto(_selectedPhotoPath);
             if (!string.IsNullOrWhiteSpace(savedRelative))
-            {
-                Result.Foto = savedRelative; // esto es lo que luego guardarás en la BD
-            }
-            else
-            {
-                if (string.IsNullOrWhiteSpace(Result.Foto))
-                    Result.Foto = ""; // sin foto
-            }
-
+                Result.Foto = savedRelative;
+            else if (string.IsNullOrWhiteSpace(Result.Foto))
+                Result.Foto = "";
 
             DialogResult = DialogResult.OK;
         }
 
+        // ===== UI: Buscar foto =====
         private void buttonBuscarFoto_Click(object sender, EventArgs e)
         {
             using var imagenSelector = new OpenFileDialog
@@ -292,11 +326,13 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
 
             if (imagenSelector.ShowDialog() == DialogResult.OK)
             {
-                _selectedPhotoPath = imagenSelector.FileName; // guardamos la ruta original
+                _selectedPhotoPath = imagenSelector.FileName;
                 try
                 {
-                    // Mostrar en el PictureBox (si tienes uno llamado fotoEmpleado)
-                    fotoEmpleado.Image = Image.FromFile(_selectedPhotoPath);
+                    // Carga sin bloquear el archivo seleccionado
+                    using var fs = new FileStream(_selectedPhotoPath, FileMode.Open, FileAccess.Read);
+                    using var temp = Image.FromStream(fs);
+                    fotoEmpleado.Image = new Bitmap(temp);
                 }
                 catch
                 {
@@ -305,7 +341,5 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                 }
             }
         }
-
-
     }
 }

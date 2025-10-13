@@ -124,6 +124,28 @@ WHERE Id=@Id;";
             cmd.ExecuteNonQuery();
         }
 
+        public IEnumerable<Departamento> GetAllOrdered()
+        {
+            var items = new List<Departamento>();
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"SELECT Id, Codigo, Departamento
+                        FROM dbo.Departamentos
+                        ORDER BY Departamento;";
+            cn.Open();
+            using var rd = cmd.ExecuteReader();
+            while (rd.Read())
+            {
+                items.Add(new Departamento
+                {
+                    Id = rd.GetInt32(0),
+                    codigo = rd.IsDBNull(1) ? "" : rd.GetString(1),
+                    nombre = rd.GetString(2)            // ← mapea a la columna Departamento
+                });
+            }
+            return items;
+        }
+
         // ===== Unicidades =====
         public bool ExistsByNombre(string nombre, int? excludingId = null)
         {

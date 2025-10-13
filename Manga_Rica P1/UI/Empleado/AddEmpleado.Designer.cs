@@ -52,7 +52,7 @@
             labelDepartamento = new Label();
             textBoxSalario = new TextBox();
             labelSalario = new Label();
-            textBox1 = new TextBox();
+            textBoxPuestoLaboro = new TextBox();
             labelPuesto = new Label();
             dateTimePicker1 = new DateTimePicker();
             labelFechaIngreso = new Label();
@@ -67,7 +67,11 @@
             buttonCancelar = new Button();
             tabControlEmpleado = new TabControl();
             TabSolicitud = new TabPage();
+            labelTelefono = new Label();
+            textBoxTelefono = new TextBox();
             TabEmpleado = new TabPage();
+            textBoxCarnet = new TextBox();
+            labelCarne = new Label();
             buttonBuscarFoto = new Button();
             fotoEmpleado = new PictureBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
@@ -87,7 +91,6 @@
             labelCedula.Size = new Size(51, 19);
             labelCedula.TabIndex = 0;
             labelCedula.Text = "Cedula";
-            labelCedula.UseWaitCursor = true;
             // 
             // textBoxCedula
             // 
@@ -95,7 +98,6 @@
             textBoxCedula.Name = "textBoxCedula";
             textBoxCedula.Size = new Size(128, 29);
             textBoxCedula.TabIndex = 1;
-            textBoxCedula.UseWaitCursor = true;
             // 
             // textBoxApellido1
             // 
@@ -103,7 +105,6 @@
             textBoxApellido1.Name = "textBoxApellido1";
             textBoxApellido1.Size = new Size(128, 29);
             textBoxApellido1.TabIndex = 3;
-            textBoxApellido1.UseWaitCursor = true;
             // 
             // labelApellido1
             // 
@@ -114,7 +115,6 @@
             labelApellido1.Size = new Size(70, 19);
             labelApellido1.TabIndex = 2;
             labelApellido1.Text = "Apellido 1";
-            labelApellido1.UseWaitCursor = true;
             // 
             // textBoxAppelido2
             // 
@@ -122,7 +122,6 @@
             textBoxAppelido2.Name = "textBoxAppelido2";
             textBoxAppelido2.Size = new Size(128, 29);
             textBoxAppelido2.TabIndex = 5;
-            textBoxAppelido2.UseWaitCursor = true;
             // 
             // labelApellido2
             // 
@@ -133,7 +132,6 @@
             labelApellido2.Size = new Size(70, 19);
             labelApellido2.TabIndex = 4;
             labelApellido2.Text = "Apellido 2";
-            labelApellido2.UseWaitCursor = true;
             // 
             // textBoxNombre
             // 
@@ -141,7 +139,6 @@
             textBoxNombre.Name = "textBoxNombre";
             textBoxNombre.Size = new Size(128, 29);
             textBoxNombre.TabIndex = 7;
-            textBoxNombre.UseWaitCursor = true;
             // 
             // labelNombre
             // 
@@ -152,7 +149,6 @@
             labelNombre.Size = new Size(59, 19);
             labelNombre.TabIndex = 6;
             labelNombre.Text = "Nombre";
-            labelNombre.UseWaitCursor = true;
             // 
             // labelNacimiento
             // 
@@ -163,7 +159,6 @@
             labelNacimiento.Size = new Size(78, 19);
             labelNacimiento.TabIndex = 8;
             labelNacimiento.Text = "Nacimiento";
-            labelNacimiento.UseWaitCursor = true;
             // 
             // dateTimeNacimiento
             // 
@@ -173,7 +168,6 @@
             dateTimeNacimiento.Name = "dateTimeNacimiento";
             dateTimeNacimiento.Size = new Size(128, 25);
             dateTimeNacimiento.TabIndex = 10;
-            dateTimeNacimiento.UseWaitCursor = true;
             // 
             // labelEstadoCivil
             // 
@@ -184,7 +178,6 @@
             labelEstadoCivil.Size = new Size(79, 19);
             labelEstadoCivil.TabIndex = 11;
             labelEstadoCivil.Text = "Estado Civil";
-            labelEstadoCivil.UseWaitCursor = true;
             // 
             // comboBoxEstadoCivil
             // 
@@ -193,85 +186,76 @@
             comboBoxEstadoCivil.Name = "comboBoxEstadoCivil";
             comboBoxEstadoCivil.Size = new Size(128, 29);
             comboBoxEstadoCivil.TabIndex = 13;
-            comboBoxEstadoCivil.UseWaitCursor = true;
             // 
             // textBoxCelular
             // 
-            textBoxCelular.Location = new Point(380, 184);
+            textBoxCelular.Location = new Point(380, 236);
             textBoxCelular.Name = "textBoxCelular";
             textBoxCelular.Size = new Size(128, 29);
             textBoxCelular.TabIndex = 15;
-            textBoxCelular.UseWaitCursor = true;
             // 
             // labelCeular
             // 
             labelCeular.AutoSize = true;
             labelCeular.Font = new Font("Segoe UI", 10F);
-            labelCeular.Location = new Point(289, 190);
+            labelCeular.Location = new Point(289, 242);
             labelCeular.Name = "labelCeular";
             labelCeular.Size = new Size(85, 19);
             labelCeular.TabIndex = 14;
             labelCeular.Text = "Num Celular";
-            labelCeular.UseWaitCursor = true;
             // 
             // textBoxNacionalidad
             // 
-            textBoxNacionalidad.Location = new Point(668, 80);
+            textBoxNacionalidad.Location = new Point(646, 129);
             textBoxNacionalidad.Name = "textBoxNacionalidad";
-            textBoxNacionalidad.Size = new Size(177, 29);
+            textBoxNacionalidad.Size = new Size(199, 29);
             textBoxNacionalidad.TabIndex = 17;
-            textBoxNacionalidad.UseWaitCursor = true;
             // 
             // labelNacionalidad
             // 
             labelNacionalidad.AutoSize = true;
             labelNacionalidad.Font = new Font("Segoe UI", 10F);
-            labelNacionalidad.Location = new Point(575, 86);
+            labelNacionalidad.Location = new Point(553, 135);
             labelNacionalidad.Name = "labelNacionalidad";
             labelNacionalidad.Size = new Size(87, 19);
             labelNacionalidad.TabIndex = 16;
             labelNacionalidad.Text = "Nacionalidad";
-            labelNacionalidad.UseWaitCursor = true;
             // 
             // labelLaboro
             // 
             labelLaboro.AutoSize = true;
             labelLaboro.Font = new Font("Segoe UI", 10F);
-            labelLaboro.Location = new Point(310, 236);
+            labelLaboro.Location = new Point(576, 75);
             labelLaboro.Name = "labelLaboro";
             labelLaboro.Size = new Size(64, 19);
             labelLaboro.TabIndex = 18;
             labelLaboro.Text = "¿Laboro?";
-            labelLaboro.UseWaitCursor = true;
             // 
             // comboBoxLaboro
             // 
             comboBoxLaboro.FormattingEnabled = true;
-            comboBoxLaboro.Location = new Point(380, 229);
+            comboBoxLaboro.Location = new Point(646, 69);
             comboBoxLaboro.Name = "comboBoxLaboro";
-            comboBoxLaboro.Size = new Size(128, 29);
+            comboBoxLaboro.Size = new Size(199, 29);
             comboBoxLaboro.TabIndex = 20;
-            comboBoxLaboro.UseWaitCursor = true;
             // 
             // textBoxDireccion
             // 
-            textBoxDireccion.Location = new Point(646, 134);
+            textBoxDireccion.Location = new Point(646, 176);
             textBoxDireccion.Multiline = true;
             textBoxDireccion.Name = "textBoxDireccion";
-            textBoxDireccion.Size = new Size(199, 125);
+            textBoxDireccion.Size = new Size(199, 79);
             textBoxDireccion.TabIndex = 22;
-            textBoxDireccion.UseWaitCursor = true;
             // 
             // labelDireccion
             // 
             labelDireccion.AutoSize = true;
             labelDireccion.Font = new Font("Segoe UI", 10F);
-            labelDireccion.Location = new Point(575, 139);
+            labelDireccion.Location = new Point(575, 181);
             labelDireccion.Name = "labelDireccion";
             labelDireccion.Size = new Size(65, 19);
             labelDireccion.TabIndex = 21;
             labelDireccion.Text = "Direccion";
-            labelDireccion.UseWaitCursor = true;
             // 
             // comboBoxDepartamento
             // 
@@ -308,12 +292,12 @@
             labelSalario.TabIndex = 25;
             labelSalario.Text = "Monto de Salario";
             // 
-            // textBox1
+            // textBoxPuestoLaboro
             // 
-            textBox1.Location = new Point(448, 71);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(177, 29);
-            textBox1.TabIndex = 28;
+            textBoxPuestoLaboro.Location = new Point(448, 71);
+            textBoxPuestoLaboro.Name = "textBoxPuestoLaboro";
+            textBoxPuestoLaboro.Size = new Size(177, 29);
+            textBoxPuestoLaboro.TabIndex = 28;
             // 
             // labelPuesto
             // 
@@ -393,16 +377,16 @@
             // 
             // textBoxMcNumero
             // 
-            textBoxMcNumero.Location = new Point(580, 231);
+            textBoxMcNumero.Location = new Point(448, 216);
             textBoxMcNumero.Name = "textBoxMcNumero";
-            textBoxMcNumero.Size = new Size(128, 29);
+            textBoxMcNumero.Size = new Size(176, 29);
             textBoxMcNumero.TabIndex = 38;
             // 
             // labelMcNumero
             // 
             labelMcNumero.AutoSize = true;
             labelMcNumero.Font = new Font("Segoe UI", 10F);
-            labelMcNumero.Location = new Point(489, 231);
+            labelMcNumero.Location = new Point(357, 222);
             labelMcNumero.Name = "labelMcNumero";
             labelMcNumero.Size = new Size(85, 19);
             labelMcNumero.TabIndex = 37;
@@ -448,6 +432,8 @@
             // 
             TabSolicitud.BackColor = Color.WhiteSmoke;
             TabSolicitud.BorderStyle = BorderStyle.FixedSingle;
+            TabSolicitud.Controls.Add(labelTelefono);
+            TabSolicitud.Controls.Add(textBoxTelefono);
             TabSolicitud.Controls.Add(textBoxCedula);
             TabSolicitud.Controls.Add(labelCedula);
             TabSolicitud.Controls.Add(labelApellido1);
@@ -476,11 +462,29 @@
             TabSolicitud.Size = new Size(877, 422);
             TabSolicitud.TabIndex = 0;
             TabSolicitud.Text = "Solicitud";
-            TabSolicitud.UseWaitCursor = true;
+            // 
+            // labelTelefono
+            // 
+            labelTelefono.AutoSize = true;
+            labelTelefono.Font = new Font("Segoe UI", 10F);
+            labelTelefono.Location = new Point(289, 191);
+            labelTelefono.Name = "labelTelefono";
+            labelTelefono.Size = new Size(60, 19);
+            labelTelefono.TabIndex = 23;
+            labelTelefono.Text = "Telefono";
+            // 
+            // textBoxTelefono
+            // 
+            textBoxTelefono.Location = new Point(380, 185);
+            textBoxTelefono.Name = "textBoxTelefono";
+            textBoxTelefono.Size = new Size(128, 29);
+            textBoxTelefono.TabIndex = 24;
             // 
             // TabEmpleado
             // 
             TabEmpleado.BackColor = Color.WhiteSmoke;
+            TabEmpleado.Controls.Add(textBoxCarnet);
+            TabEmpleado.Controls.Add(labelCarne);
             TabEmpleado.Controls.Add(buttonBuscarFoto);
             TabEmpleado.Controls.Add(fotoEmpleado);
             TabEmpleado.Controls.Add(labelDepartamento);
@@ -491,7 +495,7 @@
             TabEmpleado.Controls.Add(labelMcNumero);
             TabEmpleado.Controls.Add(labelPuesto);
             TabEmpleado.Controls.Add(comboBoxActivo);
-            TabEmpleado.Controls.Add(textBox1);
+            TabEmpleado.Controls.Add(textBoxPuestoLaboro);
             TabEmpleado.Controls.Add(labelActivo);
             TabEmpleado.Controls.Add(labelFechaIngreso);
             TabEmpleado.Controls.Add(dateTimePicker1);
@@ -505,6 +509,23 @@
             TabEmpleado.Size = new Size(877, 422);
             TabEmpleado.TabIndex = 1;
             TabEmpleado.Text = "Empleado";
+            // 
+            // textBoxCarnet
+            // 
+            textBoxCarnet.Location = new Point(721, 216);
+            textBoxCarnet.Name = "textBoxCarnet";
+            textBoxCarnet.Size = new Size(128, 29);
+            textBoxCarnet.TabIndex = 42;
+            // 
+            // labelCarne
+            // 
+            labelCarne.AutoSize = true;
+            labelCarne.Font = new Font("Segoe UI", 10F);
+            labelCarne.Location = new Point(661, 221);
+            labelCarne.Name = "labelCarne";
+            labelCarne.Size = new Size(50, 19);
+            labelCarne.TabIndex = 41;
+            labelCarne.Text = "Carnet";
             // 
             // buttonBuscarFoto
             // 
@@ -544,6 +565,7 @@
             Controls.Add(flowLayoutPanel1);
             Controls.Add(tabControlEmpleado);
             Name = "AddEmpleado";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "AddEmpleado";
             tabControlEmpleado.ResumeLayout(false);
             TabSolicitud.ResumeLayout(false);
@@ -581,7 +603,7 @@
         private Label labelDepartamento;
         private TextBox textBoxSalario;
         private Label labelSalario;
-        private TextBox textBox1;
+        private TextBox textBoxPuestoLaboro;
         private Label labelPuesto;
         private DateTimePicker dateTimePicker1;
         private Label labelFechaIngreso;
@@ -600,5 +622,9 @@
         private FlowLayoutPanel flowLayoutPanel1;
         private Button buttonBuscarFoto;
         private PictureBox fotoEmpleado;
+        private Label labelTelefono;
+        private TextBox textBoxTelefono;
+        private TextBox textBoxCarnet;
+        private Label labelCarne;
     }
 }

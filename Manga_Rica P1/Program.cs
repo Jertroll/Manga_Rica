@@ -33,6 +33,9 @@ namespace Manga_Rica_P1
             var semanaRepo = new SemanaRepository(cs);
             var articulosRepo = new ArticulosRepository(cs);
             var solicitudRepo = new SolicitudRepository(cs);
+            var empleadoRepo = new EmpleadoRepository(cs);
+
+           
 
             // Servicios (BLL)
             var usuariosService = new UsuariosService(usuarioRepo);
@@ -40,6 +43,7 @@ namespace Manga_Rica_P1
             var semanasService = new SemanasService(semanaRepo);
             var articulosService = new ArticulosService(articulosRepo);
             var solicitudesService = new SolicitudesService(solicitudRepo);
+            var empleadosService = new EmpleadosService(empleadoRepo);
 
             // Autenticación + sesión
             var autentificacionService = new AutentificacionService(usuarioRepo);
@@ -65,7 +69,8 @@ namespace Manga_Rica_P1
                 departamentosService,
                 semanasService,
                 articulosService, 
-                solicitudesService
+                solicitudesService,
+                empleadosService
             ));
         }
     }
