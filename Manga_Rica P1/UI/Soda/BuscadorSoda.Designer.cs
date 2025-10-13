@@ -35,6 +35,8 @@
             ColumnaNombre = new DataGridViewTextBoxColumn();
             ColumnaIdSoda = new DataGridViewTextBoxColumn();
             ColumnaFecha = new DataGridViewTextBoxColumn();
+            ColumnaTotal = new DataGridViewTextBoxColumn();
+            ColumnaAnulada = new DataGridViewCheckBoxColumn();
             textBox1 = new TextBox();
             buttonBuscar = new Button();
             buttonAceptar = new Button();
@@ -47,7 +49,7 @@
             labelTitulo.AutoSize = true;
             labelTitulo.Font = new Font("Segoe UI", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelTitulo.ForeColor = Color.Green;
-            labelTitulo.Location = new Point(154, 25);
+            labelTitulo.Location = new Point(236, 25);
             labelTitulo.Name = "labelTitulo";
             labelTitulo.Size = new Size(188, 30);
             labelTitulo.TabIndex = 3;
@@ -64,10 +66,10 @@
             dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ColumnaCarnet, ColumnaNombre, ColumnaIdSoda, ColumnaFecha });
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ColumnaCarnet, ColumnaNombre, ColumnaIdSoda, ColumnaFecha, ColumnaTotal, ColumnaAnulada });
             dataGridView1.Location = new Point(28, 123);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(438, 150);
+            dataGridView1.Size = new Size(600, 150);
             dataGridView1.TabIndex = 4;
             // 
             // ColumnaCarnet
@@ -89,6 +91,16 @@
             // 
             ColumnaFecha.HeaderText = "Fecha";
             ColumnaFecha.Name = "ColumnaFecha";
+            // 
+            // ColumnaTotal
+            // 
+            ColumnaTotal.HeaderText = "Total";
+            ColumnaTotal.Name = "ColumnaTotal";
+            // 
+            // ColumnaAnulada
+            // 
+            ColumnaAnulada.HeaderText = "Anulada";
+            ColumnaAnulada.Name = "ColumnaAnulada";
             // 
             // textBox1
             // 
@@ -135,7 +147,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(499, 383);
+            ClientSize = new Size(660, 383);
             Controls.Add(buttonCancelar);
             Controls.Add(buttonAceptar);
             Controls.Add(buttonBuscar);
@@ -159,6 +171,8 @@
         private DataGridViewTextBoxColumn ColumnaNombre;
         private DataGridViewTextBoxColumn ColumnaIdSoda;
         private DataGridViewTextBoxColumn ColumnaFecha;
+        private DataGridViewTextBoxColumn ColumnaTotal;
+        private DataGridViewCheckBoxColumn ColumnaAnulada;
         private TextBox textBox1;
         private Button buttonBuscar;
         private Button buttonAceptar;

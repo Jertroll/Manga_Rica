@@ -34,8 +34,8 @@ namespace Manga_Rica_P1
             var articulosRepo = new ArticulosRepository(cs);
             var solicitudRepo = new SolicitudRepository(cs);
             var empleadoRepo = new EmpleadoRepository(cs);
-
-           
+            var sodaRepo = new SodaRepository(cs);
+            var sodaDetallesRepo = new SodaDetallesRepository(cs);
 
             // Servicios (BLL)
             var usuariosService = new UsuariosService(usuarioRepo);
@@ -44,6 +44,7 @@ namespace Manga_Rica_P1
             var articulosService = new ArticulosService(articulosRepo);
             var solicitudesService = new SolicitudesService(solicitudRepo);
             var empleadosService = new EmpleadosService(empleadoRepo);
+            var sodaService = new SodaService(sodaRepo, sodaDetallesRepo, articulosRepo, empleadoRepo);
 
             // Autenticación + sesión
             var autentificacionService = new AutentificacionService(usuarioRepo);
@@ -62,7 +63,7 @@ namespace Manga_Rica_P1
                 }
             }
 
-            // Inyecta todos los servicios al form principal (5 args)
+            // Inyecta todos los servicios al form principal
             Application.Run(new Principal(
                 session,
                 usuariosService,
@@ -70,7 +71,8 @@ namespace Manga_Rica_P1
                 semanasService,
                 articulosService, 
                 solicitudesService,
-                empleadosService
+                empleadosService,
+                sodaService
             ));
         }
     }

@@ -150,7 +150,7 @@ WHERE (
         // =========================================================
         //  Getters
         // =========================================================
-        public Empleado? GetById(int id)
+        public Empleado? GetById(long id)
         {
             using var cn = new SqlConnection(_cs);
             using var cmd = cn.CreateCommand();
@@ -179,6 +179,24 @@ SELECT TOP(1) Id, Carne, Cedula, Primer_Apellido, Segundo_Apellido, Nombre, Fech
        Salario, Puesto, Fecha_Ingreso, Fecha_Salida, Foto, Activo, MC_Numero
 FROM dbo.Empleados WHERE Cedula=@ced;";
             cmd.Parameters.Add("@ced", SqlDbType.NVarChar, 50).Value = cedula;
+
+            cn.Open();
+            using var rd = cmd.ExecuteReader(CommandBehavior.SingleRow);
+            if (!rd.Read()) return null;
+
+            return MapEmpleado(rd);
+        }
+
+        public Empleado? GetByCarne(long carne)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"
+SELECT TOP(1) Id, Carne, Cedula, Primer_Apellido, Segundo_Apellido, Nombre, Fecha_Nacimiento,
+       Estado_Civil, Telefono, Celular, Nacionalidad, Laboro, Direccion, Id_Departamento,
+       Salario, Puesto, Fecha_Ingreso, Fecha_Salida, Foto, Activo, MC_Numero
+FROM dbo.Empleados WHERE Carne=@carne AND Carne <> 0;";
+            cmd.Parameters.Add("@carne", SqlDbType.BigInt).Value = carne;
 
             cn.Open();
             using var rd = cmd.ExecuteReader(CommandBehavior.SingleRow);
@@ -289,7 +307,7 @@ WHERE Id=@Id;";
         // =========================================================
         //  Unicidad por cédula
         // =========================================================
-        public bool ExistsByCedula(string cedula, int? exceptId = null)
+        public bool ExistsByCedula(string cedula, long? exceptId = null)
         {
             using var cn = new SqlConnection(_cs);
             using var cmd = cn.CreateCommand();

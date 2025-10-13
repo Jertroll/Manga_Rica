@@ -29,7 +29,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly ArticulosService _articulosService;
         private readonly SolicitudesService _solicitudesService;
         private readonly EmpleadosService _empleadoService;
-
+        private readonly SodaService _sodaService;
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
@@ -37,7 +37,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             SemanasService semanasService,
             ArticulosService articulosService, 
             SolicitudesService solicitudesService,
-            EmpleadosService empleadosService)
+            EmpleadosService empleadosService,
+            SodaService sodaService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -47,6 +48,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _articulosService = articulosService ?? throw new ArgumentNullException(nameof(articulosService));
             _solicitudesService = solicitudesService ?? throw new ArgumentNullException(nameof(solicitudesService));
             _empleadoService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
+            _sodaService = sodaService ?? throw new ArgumentNullException(nameof(sodaService));
 
 
             // Evita recálculos de layout mientras reacomodamos todo
@@ -444,7 +446,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSoda_Click(object sender, EventArgs e)
         {
-            using (var dlg = new Manga_Rica_P1.UI.Soda.Soda())
+            using (var dlg = new Manga_Rica_P1.UI.Soda.Soda(_sodaService, _session))
             {
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);

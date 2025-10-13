@@ -1,7 +1,6 @@
 ﻿// Nueva implementacion
 using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.Entity;              //  Entidad Departamento
-using Manga_Rica_P1.UI.Departamentos;
 using Manga_Rica_P1.UI.Helpers;          // PagedSearchGrid
 using Microsoft.Data.SqlClient;
 using System;
