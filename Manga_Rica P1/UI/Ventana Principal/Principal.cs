@@ -29,6 +29,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly ArticulosService _articulosService;
         private readonly SolicitudesService _solicitudesService;
         private readonly EmpleadosService _empleadoService;
+        private readonly HorasService _horasService;
 
 
         public Principal(IAppSession session,
@@ -37,7 +38,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             SemanasService semanasService,
             ArticulosService articulosService, 
             SolicitudesService solicitudesService,
-            EmpleadosService empleadosService)
+            EmpleadosService empleadosService,
+            HorasService horasService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -47,6 +49,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _articulosService = articulosService ?? throw new ArgumentNullException(nameof(articulosService));
             _solicitudesService = solicitudesService ?? throw new ArgumentNullException(nameof(solicitudesService));
             _empleadoService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
+            _horasService = horasService ?? throw new ArgumentNullException(nameof(horasService));
 
 
             // Evita recálculos de layout mientras reacomodamos todo
@@ -425,7 +428,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnEntradaYSalida_Click(object sender, EventArgs e)
         {
-            var vista = new Manga_Rica_P1.UI.Asistencia.RegistroAsistenciaView
+            if (_session.CurrentUser is null)
+            {
+                MessageBox.Show("No hay un usuario autenticado.", "Asistencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var uid = _session.CurrentUser.Id; // si no es int: var uid = Convert.ToInt32(_session.CurrentUser.Id);
+
+            var vista = new Manga_Rica_P1.UI.Asistencia.RegistroAsistenciaView(_horasService, uid)
             {
                 Dock = DockStyle.Fill
             };
