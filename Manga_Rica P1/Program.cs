@@ -77,7 +77,7 @@ namespace Manga_Rica_P1
                 articulosService, 
                 solicitudesService,
                 empleadosService,
-                horasService
+                horasService,
                 sodaService,
                 deduccionesService
             ));
