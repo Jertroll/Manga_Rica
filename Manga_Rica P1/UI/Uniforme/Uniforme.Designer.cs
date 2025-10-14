@@ -45,6 +45,7 @@
             flowLayoutPanel1 = new FlowLayoutPanel();
             btnBuscar = new Button();
             buttonGuardar = new Button();
+            buttonAnular = new Button();
             buttonAgregar = new Button();
             labelSubTotal = new Label();
             textBoxSubTotal = new TextBox();
@@ -55,6 +56,7 @@
             textBoxNombre = new TextBox();
             labelNombreCompleto = new Label();
             textBoxCarnet = new TextBox();
+            buttonBuscarEmpleado = new Button();
             labelTitulo = new Label();
             pictureBoxEmpleado = new PictureBox();
             labelCarnet = new Label();
@@ -171,6 +173,7 @@
             flowLayoutPanel1.BackColor = Color.Green;
             flowLayoutPanel1.Controls.Add(btnBuscar);
             flowLayoutPanel1.Controls.Add(buttonGuardar);
+            flowLayoutPanel1.Controls.Add(buttonAnular);
             flowLayoutPanel1.Dock = DockStyle.Top;
             flowLayoutPanel1.ForeColor = Color.Lime;
             flowLayoutPanel1.Location = new Point(0, 0);
@@ -196,6 +199,19 @@
             buttonGuardar.Size = new Size(30, 25);
             buttonGuardar.TabIndex = 15;
             buttonGuardar.UseVisualStyleBackColor = true;
+            // 
+            // buttonAnular
+            // 
+            buttonAnular.BackColor = Color.IndianRed;
+            buttonAnular.ForeColor = Color.White;
+            buttonAnular.Location = new Point(75, 3);
+            buttonAnular.Name = "buttonAnular";
+            buttonAnular.Size = new Size(60, 25);
+            buttonAnular.TabIndex = 16;
+            buttonAnular.Text = "ANULAR";
+            buttonAnular.UseVisualStyleBackColor = false;
+            buttonAnular.Visible = false;
+            buttonAnular.Click += buttonAnular_Click;
             // 
             // buttonAgregar
             // 
@@ -292,6 +308,21 @@
             textBoxCarnet.Size = new Size(143, 23);
             textBoxCarnet.TabIndex = 24;
             // 
+            // buttonBuscarEmpleado
+            // 
+            buttonBuscarEmpleado.BackColor = Color.FromArgb(0, 122, 204);
+            buttonBuscarEmpleado.FlatAppearance.BorderSize = 0;
+            buttonBuscarEmpleado.FlatStyle = FlatStyle.Flat;
+            buttonBuscarEmpleado.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            buttonBuscarEmpleado.ForeColor = Color.White;
+            buttonBuscarEmpleado.Location = new Point(271, 151);
+            buttonBuscarEmpleado.Name = "buttonBuscarEmpleado";
+            buttonBuscarEmpleado.Size = new Size(28, 23);
+            buttonBuscarEmpleado.TabIndex = 25;
+            buttonBuscarEmpleado.Text = "🔍";
+            buttonBuscarEmpleado.UseVisualStyleBackColor = false;
+            buttonBuscarEmpleado.Click += buttonBuscarEmpleado_Click;
+            // 
             // labelTitulo
             // 
             labelTitulo.AutoSize = true;
@@ -367,6 +398,7 @@
             Controls.Add(textBoxNombre);
             Controls.Add(labelNombreCompleto);
             Controls.Add(textBoxCarnet);
+            Controls.Add(buttonBuscarEmpleado);
             Controls.Add(labelTitulo);
             Controls.Add(pictureBoxEmpleado);
             Controls.Add(labelCarnet);
@@ -397,6 +429,7 @@
         private FlowLayoutPanel flowLayoutPanel1;
         private Button btnBuscar;
         private Button buttonGuardar;
+        private Button buttonAnular;
         private Button buttonAgregar;
         private Label labelSubTotal;
         private TextBox textBoxSubTotal;
@@ -407,6 +440,7 @@
         private TextBox textBoxNombre;
         private Label labelNombreCompleto;
         private TextBox textBoxCarnet;
+        private Button buttonBuscarEmpleado;
         private Label labelTitulo;
         private PictureBox pictureBoxEmpleado;
         private Label labelCarnet;

@@ -31,6 +31,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly EmpleadosService _empleadoService;
         private readonly HorasService _horasService;
 
+        private readonly SodaService _sodaService;
+        private readonly DeduccionesService _deduccionesService;
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
@@ -39,7 +41,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             ArticulosService articulosService, 
             SolicitudesService solicitudesService,
             EmpleadosService empleadosService,
-            HorasService horasService)
+            HorasService horasService,
+            SodaService sodaService,
+            DeduccionesService deduccionesService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -50,6 +54,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _solicitudesService = solicitudesService ?? throw new ArgumentNullException(nameof(solicitudesService));
             _empleadoService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
             _horasService = horasService ?? throw new ArgumentNullException(nameof(horasService));
+            _sodaService = sodaService ?? throw new ArgumentNullException(nameof(sodaService));
+            _deduccionesService = deduccionesService ?? throw new ArgumentNullException(nameof(deduccionesService));
 
 
             // Evita recálculos de layout mientras reacomodamos todo
@@ -456,7 +462,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSoda_Click(object sender, EventArgs e)
         {
-            using (var dlg = new Manga_Rica_P1.UI.Soda.Soda())
+            using (var dlg = new Manga_Rica_P1.UI.Soda.Soda(_sodaService, _session))
             {
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);
@@ -465,7 +471,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnUniforme_Click(object sender, EventArgs e)
         {
-            using (var dlg = new Manga_Rica_P1.UI.Uniforme.Uniforme())
+            using (var dlg = new Manga_Rica_P1.UI.Uniforme.Uniforme(_deduccionesService, _session))
             {
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);
