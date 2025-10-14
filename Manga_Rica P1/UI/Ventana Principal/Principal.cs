@@ -1,5 +1,12 @@
-﻿using Manga_Rica_P1.BLL.Session;
+﻿using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.BLL.Session;
+// ▼ NUEVO
+using Manga_Rica_P1.DAL;
+using Manga_Rica_P1.UI.Articulos;
+using Manga_Rica_P1.UI.Departamentos;
 using Manga_Rica_P1.UI.Helpers;
+using Manga_Rica_P1.UI.Solicitudes;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,13 +19,44 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
     {
         // Un controlador por menú
         private Dictionary<string, MenuDesplegable> _menus = new();
-        // Cambia la declaración de lblUsuario para permitir nulos y suprime la advertencia donde se usa
         private Label? lblUsuario;
+
         private readonly IAppSession _session;
-        public Principal(IAppSession session)
+
+        private readonly UsuariosService _usuariosService;
+        private readonly DepartamentosService _departamentosService;
+        private readonly SemanasService _semanasService;
+        private readonly ArticulosService _articulosService;
+        private readonly SolicitudesService _solicitudesService;
+        private readonly EmpleadosService _empleadoService;
+        private readonly HorasService _horasService;
+
+        private readonly SodaService _sodaService;
+        private readonly DeduccionesService _deduccionesService;
+
+        public Principal(IAppSession session,
+            UsuariosService usuariosService,
+            DepartamentosService departamentosService,
+            SemanasService semanasService,
+            ArticulosService articulosService, 
+            SolicitudesService solicitudesService,
+            EmpleadosService empleadosService,
+            HorasService horasService,
+            SodaService sodaService,
+            DeduccionesService deduccionesService)
         {
             InitializeComponent();
-            _session = session;
+            _session = session ?? throw new ArgumentNullException(nameof(session));
+            _usuariosService = usuariosService ?? throw new ArgumentNullException(nameof(usuariosService));
+            _departamentosService = departamentosService ?? throw new ArgumentNullException(nameof(departamentosService));
+            _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
+            _articulosService = articulosService ?? throw new ArgumentNullException(nameof(articulosService));
+            _solicitudesService = solicitudesService ?? throw new ArgumentNullException(nameof(solicitudesService));
+            _empleadoService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
+            _horasService = horasService ?? throw new ArgumentNullException(nameof(horasService));
+            _sodaService = sodaService ?? throw new ArgumentNullException(nameof(sodaService));
+            _deduccionesService = deduccionesService ?? throw new ArgumentNullException(nameof(deduccionesService));
+
 
             // Evita recálculos de layout mientras reacomodamos todo
             this.SuspendLayout();
@@ -86,8 +124,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
             // ====== 6) Z-order: el Fill al fondo, luego Left, luego Top ======
             this.Controls.SetChildIndex(panelPrincipal, 0); // fondo (el Fill se calcula primero)
-            this.Controls.SetChildIndex(sideBarHost, 1);  // izquierda por encima del Fill
-            this.Controls.SetChildIndex(panel1, 2);  // top por encima de todo
+            this.Controls.SetChildIndex(sideBarHost, 1);    // izquierda por encima del Fill
+            this.Controls.SetChildIndex(panel1, 2);         // top por encima de todo
 
             // Reactivar layout
             this.ResumeLayout();
@@ -101,8 +139,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             InicializarMenus();
             WireUpHeaderClicks();
             AplicarEstilosHover();
-
-
         }
 
         private void InicializarMenus()
@@ -171,16 +207,16 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             ConfigurarHoverBoton(btnPagosPrincipal, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
             ConfigurarHoverBoton(btnReporte, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
 
-            // VERDES (submenús, combinan con el fondo de tu screenshot)
+            // VERDES (submenús)
             var hoverGreen = Color.FromArgb(139, 195, 74);  // Verde lima claro (#8BC34A)
-            var downGreen = Color.FromArgb(104, 159, 56);  // Verde oliva (#689F38)
+            var downGreen = Color.FromArgb(104, 159, 56);   // Verde oliva (#689F38)
 
             ConfigurarHoverBoton(btnUsuarios, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnDepartamentos, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSemanas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnArticulos, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnEmpleado, hoverGreen, downGreen);
-            ConfigurarHoverBoton(btnEntrada, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnEntradaYSalida, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSalidas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnCierreDiario, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSolicitudesPlanilla, hoverGreen, downGreen);
@@ -197,21 +233,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void ConfigurarHoverBoton(Button btn, Color hoverBack, Color downBack, Color? hoverFore = null)
         {
-            // Fondo personalizado
             btn.UseVisualStyleBackColor = false;
-
-            // Necesario para que funcionen los colores de hover integrados
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
-
-            // Colores nativos de hover/click
             btn.FlatAppearance.MouseOverBackColor = hoverBack;
             btn.FlatAppearance.MouseDownBackColor = downBack;
-
-            // Cursor de mano
             btn.Cursor = Cursors.Hand;
 
-            // Si quieres cambiar también el color del texto en hover
             if (hoverFore.HasValue)
             {
                 var normalFore = btn.ForeColor;
@@ -222,7 +250,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void ColocarLabelUsuario()
         {
-            // Panel contenedor para juntar icono + label
             var panelUsuario = new Panel
             {
                 AutoSize = true,
@@ -231,34 +258,26 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 BackColor = Color.Transparent
             };
 
-            // Imagen (puedes controlar el tamaño aquí mismo)
             var picUser = new PictureBox
             {
-                Size = new Size(16, 16),                      // 👈 tamaño de la imagen reducido
-                SizeMode = PictureBoxSizeMode.StretchImage,  // ajusta la imagen al tamaño
-                Image = Properties.Resources.usuarioNegro,      // 👈 ícono agregado a Resources
-                Location = new Point(0, 9)                   // leve ajuste vertical
+                Size = new Size(16, 16),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Image = Properties.Resources.usuarioNegro,
+                Location = new Point(0, 9)
             };
 
-            // Texto
             lblUsuario = new Label
             {
                 AutoSize = true,
                 Font = new Font("Segoe UI", 10F, FontStyle.Bold),
-                Location = new Point(picUser.Right + 5, 9),  // 👈 lo coloca a la derecha del icono
+                Location = new Point(picUser.Right + 5, 9),
                 Text = "Usuario: —"
             };
 
-            // Agregar controles al panel
             panelUsuario.Controls.Add(picUser);
             panelUsuario.Controls.Add(lblUsuario);
-
-            // Agregar el panel al topbar
             panel1.Controls.Add(panelUsuario);
         }
-
-
-        // ...resto del código...
 
         private void ActualizarUsuario()
         {
@@ -270,15 +289,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
-        private void lblUsuario_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void Principal_Load(object sender, EventArgs e)
-        {
-
-        }
+        private void lblUsuario_Click(object sender, EventArgs e) { }
+        private void Principal_Load(object sender, EventArgs e) { }
 
         private void btnSalir_Click(object sender, EventArgs e)
         {
@@ -289,17 +301,15 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         {
             PopupMenus.ShowEmpleadosMenu(
                 btnEmpleado
-   // listado: () => ShowView<UI.Vistas.EmpleadosView>(),
-   //  nuevo: () => ShowView<UI.Vistas.EmpleadoNuevoView>(),
-   //  importar: () => ShowView<UI.Vistas.ImportarEmpleadosView>()
-   );
+            // listado: () => ShowView<UI.Vistas.EmpleadosView>(),
+            // nuevo: () => ShowView<UI.Vistas.EmpleadoNuevoView>(),
+            // importar: () => ShowView<UI.Vistas.ImportarEmpleadosView>()
+            );
         }
 
         private void btnPlanillaReportes_Click(object sender, EventArgs e)
         {
-            PopupMenus.ShowPlanillaMenu(
-                btnPlanillaReportes
-                );
+            PopupMenus.ShowPlanillaMenu(btnPlanillaReportes);
         }
 
         private void btnUsuarios_Click(object sender, EventArgs e)
@@ -307,19 +317,184 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             vistaUsuario();
         }
 
-
         private void vistaUsuario()
         {
-            // Crea una nueva instancia del UserView
-            var vista = new Manga_Rica_P1.UI.User.UserView();
-            vista.Dock = DockStyle.Fill;
+            var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.User.UserView>().FirstOrDefault();
+            if (existente is not null)
+            {
+                existente.BringToFront();
+                return;
+            }
 
-            // Limpia lo que hubiera antes en el panel
+            panelPrincipal.SuspendLayout();
+
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            // Inserta la vista en el área de contenido
+            var vista = new Manga_Rica_P1.UI.User.UserView(_usuariosService)
+            {
+                Dock = DockStyle.Fill
+            };
+
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
+        private void btnDepartamentos_Click(object sender, EventArgs e)
+        {
+            vistaDepartamentos();
+        }
+
+        // ▼ NUEVO: vista de Departamentos con inyección del servicio y evitando duplicados
+        private void vistaDepartamentos()
+        {
+            var existente = panelPrincipal.Controls.OfType<DepartamentoView>().FirstOrDefault();
+            if (existente is not null)
+            {
+                existente.BringToFront();
+                return;
+            }
+
+            panelPrincipal.SuspendLayout();
+
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            var vista = new DepartamentoView(_departamentosService)
+            {
+                Dock = DockStyle.Fill
+            };
+
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
+        private void btnSemanas_Click(object sender, EventArgs e)
+        {
+            var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.Semanas.SemanaView>().FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            var vista = new Manga_Rica_P1.UI.Semanas.SemanaView(_semanasService) { Dock = DockStyle.Fill };
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
+        private void btnArticulos_Click(object sender, EventArgs e)
+        {
+            var existente = panelPrincipal.Controls.OfType<ArticulosView>().FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            // ⬅️ CORREGIDO: pasar el servicio requerido por el ctor
+            var vista = new ArticulosView(_articulosService) { Dock = DockStyle.Fill };
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
+        private void btnSolicitudesPlanilla_Click(object sender, EventArgs e)
+        {
+          
+            var existente = panelPrincipal.Controls.OfType<SolicitudView>().FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            var vista = new SolicitudView(_solicitudesService) { Dock = DockStyle.Fill }; // ✅ pasar servicio
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
+        private void btnEmpleado_Click(object sender, EventArgs e)
+        {
+            var existente = panelPrincipal.Controls
+         .OfType<Manga_Rica_P1.UI.Empleados.EmpleadosView>()
+         .FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            panelPrincipal.SuspendLayout();
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView(_empleadoService, _solicitudesService, _departamentosService)
+            {
+                Dock = DockStyle.Fill
+            };
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
+        private void btnEntradaYSalida_Click(object sender, EventArgs e)
+        {
+            if (_session.CurrentUser is null)
+            {
+                MessageBox.Show("No hay un usuario autenticado.", "Asistencia",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var uid = _session.CurrentUser.Id; // si no es int: var uid = Convert.ToInt32(_session.CurrentUser.Id);
+
+            var vista = new Manga_Rica_P1.UI.Asistencia.RegistroAsistenciaView(_horasService, uid)
+            {
+                Dock = DockStyle.Fill
+            };
+            panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
         }
 
+        private void btnCierreDiario_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.CierreDiario.CierreDiario())
+            {
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+        }
+
+        private void btnSoda_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.Soda.Soda(_sodaService, _session))
+            {
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+        }
+
+        private void btnUniforme_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.Uniforme.Uniforme(_deduccionesService, _session))
+            {
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+        }
+
+        private void btnActivarPagos_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new Manga_Rica_P1.UI.Pagos.ActivarPagos())
+            {
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+        }
+
+        private void btnPagosSubmenu_Click(object sender, EventArgs e)
+        {
+            var vista = new Manga_Rica_P1.UI.Pagos.RegistroPagos
+            {
+                Dock = DockStyle.Fill
+            };
+            panelPrincipal.Controls.Clear();
+            panelPrincipal.Controls.Add(vista);
+        }
     }
 }

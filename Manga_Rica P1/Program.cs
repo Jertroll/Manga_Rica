@@ -3,8 +3,9 @@ using System.Windows.Forms;
 using Microsoft.Extensions.Configuration;
 
 using Manga_Rica_P1.DAL;
+using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.BLL.AutentificacionService;
-using Manga_Rica_P1.BLL.Session;                // ⬅️ NUEVO (IAppSession, AppSession)
+using Manga_Rica_P1.BLL.Session;
 using Manga_Rica_P1.UI.Login;
 using Manga_Rica_P1.UI.Ventana_Principal;
 
@@ -23,25 +24,43 @@ namespace Manga_Rica_P1
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                .Build();
 
-            string connectionBd = Configuration.GetConnectionString("MangaRicaDb")
-                ?? throw new InvalidOperationException("Cadena de conexión 'Manga Rica' no está configurada");
+            string cs = Configuration.GetConnectionString("MangaRicaDb")
+                ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no está configurada");
 
-            // Infra
-            var usuarioRepository = new UsuarioRepository(connectionBd);
-            var autentificacionService = new AutentificacionService(usuarioRepository);
+            // Infra (Repos)
+            var usuarioRepo = new UsuarioRepository(cs);
+            var departamentoRepo = new DepartamentoRepository(cs);
+            var semanaRepo = new SemanaRepository(cs);
+            var articulosRepo = new ArticulosRepository(cs);
+            var solicitudRepo = new SolicitudRepository(cs);
+            var empleadoRepo = new EmpleadoRepository(cs);
+            var horaRepo = new HorasRepository(cs);
+            var sodaRepo = new SodaRepository(cs);
+            var sodaDetallesRepo = new SodaDetallesRepository(cs);
+            var deduccionesRepo = new DeduccionesRepository(cs);
+            var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
 
-            // 🔸 Sesión compartida para toda la app
+            // Servicios (BLL)
+            var usuariosService = new UsuariosService(usuarioRepo);
+            var departamentosService = new DepartamentosService(departamentoRepo);
+            var semanasService = new SemanasService(semanaRepo);
+            var articulosService = new ArticulosService(articulosRepo);
+            var solicitudesService = new SolicitudesService(solicitudRepo);
+            var empleadosService = new EmpleadosService(empleadoRepo);
+            var horasService = new HorasService(horaRepo, empleadoRepo);
+            var sodaService = new SodaService(sodaRepo, sodaDetallesRepo, articulosRepo, empleadoRepo);
+            var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
+
+            // Autenticación + sesión
+            var autentificacionService = new AutentificacionService(usuarioRepo);
             IAppSession session = new AppSession();
 
             // UI
             ApplicationConfiguration.Initialize();
 
-            // 🔸 Mostrar login modal (inyectando auth + session)
             using (var login = new LoginForm(autentificacionService, session))
             {
                 var result = login.ShowDialog();
-
-                // Si canceló o no hay usuario en sesión, salimos
                 if (result != DialogResult.OK || session.CurrentUser is null)
                 {
                     Application.Exit();
@@ -49,8 +68,19 @@ namespace Manga_Rica_P1
                 }
             }
 
-            // 🔸 Abrir Principal con la misma sesión (mostrar "Usuario: ..." allí)
-            Application.Run(new Principal(session));
+            // Inyecta todos los servicios al form principal
+            Application.Run(new Principal(
+                session,
+                usuariosService,
+                departamentosService,
+                semanasService,
+                articulosService, 
+                solicitudesService,
+                empleadosService,
+                horasService,
+                sodaService,
+                deduccionesService
+            ));
         }
     }
 }
