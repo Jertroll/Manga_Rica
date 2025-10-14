@@ -34,6 +34,7 @@
             pictureBoxEmpleado = new PictureBox();
             labelTitulo = new Label();
             textBoxCarnet = new TextBox();
+            buttonBuscarEmpleado = new Button();
             labelNombreCompleto = new Label();
             textBoxNombre = new TextBox();
             textBoxCantidad = new TextBox();
@@ -45,6 +46,7 @@
             buttonAgregar = new Button();
             flowLayoutPanel1 = new FlowLayoutPanel();
             btnBuscar = new Button();
+            buttonAnular = new Button();
             buttonGuardar = new Button();
             dataGridView1 = new DataGridView();
             CantidadColumna = new DataGridViewTextBoxColumn();
@@ -99,8 +101,24 @@
             textBoxCarnet.BackColor = Color.DarkGray;
             textBoxCarnet.Location = new Point(122, 132);
             textBoxCarnet.Name = "textBoxCarnet";
-            textBoxCarnet.Size = new Size(143, 23);
+            textBoxCarnet.Size = new Size(110, 23);
             textBoxCarnet.TabIndex = 3;
+            textBoxCarnet.KeyDown += textBoxCarnet_KeyDown;
+            // 
+            // buttonBuscarEmpleado
+            // 
+            buttonBuscarEmpleado.BackColor = Color.FromArgb(0, 122, 204);
+            buttonBuscarEmpleado.FlatAppearance.BorderSize = 0;
+            buttonBuscarEmpleado.FlatStyle = FlatStyle.Flat;
+            buttonBuscarEmpleado.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            buttonBuscarEmpleado.ForeColor = Color.White;
+            buttonBuscarEmpleado.Location = new Point(237, 132);
+            buttonBuscarEmpleado.Name = "buttonBuscarEmpleado";
+            buttonBuscarEmpleado.Size = new Size(28, 23);
+            buttonBuscarEmpleado.TabIndex = 4;
+            buttonBuscarEmpleado.Text = "🔍";
+            buttonBuscarEmpleado.UseVisualStyleBackColor = false;
+            buttonBuscarEmpleado.Click += buttonBuscarEmpleado_Click;
             // 
             // labelNombreCompleto
             // 
@@ -128,6 +146,10 @@
             textBoxCantidad.Name = "textBoxCantidad";
             textBoxCantidad.Size = new Size(142, 23);
             textBoxCantidad.TabIndex = 7;
+            textBoxCantidad.TextChanged += textBoxCantidad_TextChanged;
+            textBoxCantidad.KeyDown += textBoxCantidad_KeyDown;
+            textBoxCantidad.KeyPress += textBoxCantidad_KeyPress;
+            textBoxCantidad.Leave += textBoxCantidad_Leave;
             // 
             // labelConcepto
             // 
@@ -148,6 +170,8 @@
             comboBoxArticulos.Name = "comboBoxArticulos";
             comboBoxArticulos.Size = new Size(171, 23);
             comboBoxArticulos.TabIndex = 8;
+            comboBoxArticulos.SelectedIndexChanged += comboBoxArticulos_SelectedIndexChanged;
+            comboBoxArticulos.KeyDown += comboBoxArticulos_KeyDown;
             // 
             // labelCantidad
             // 
@@ -188,12 +212,14 @@
             buttonAgregar.TabIndex = 12;
             buttonAgregar.Text = "Agregar Producto";
             buttonAgregar.UseVisualStyleBackColor = true;
+            buttonAgregar.Click += buttonAgregar_Click;
             // 
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.BackColor = Color.Green;
             flowLayoutPanel1.Controls.Add(btnBuscar);
             flowLayoutPanel1.Controls.Add(buttonGuardar);
+            flowLayoutPanel1.Controls.Add(buttonAnular);
             flowLayoutPanel1.Dock = DockStyle.Top;
             flowLayoutPanel1.ForeColor = Color.Lime;
             flowLayoutPanel1.Location = new Point(0, 0);
@@ -219,6 +245,20 @@
             buttonGuardar.Size = new Size(30, 25);
             buttonGuardar.TabIndex = 15;
             buttonGuardar.UseVisualStyleBackColor = true;
+            buttonGuardar.Click += buttonGuardar_Click;
+            // 
+            // buttonAnular
+            // 
+            buttonAnular.BackColor = Color.IndianRed;
+            buttonAnular.Font = new Font("Microsoft Sans Serif", 9F, FontStyle.Bold);
+            buttonAnular.ForeColor = Color.White;
+            buttonAnular.Location = new Point(75, 3);
+            buttonAnular.Name = "buttonAnular";
+            buttonAnular.Size = new Size(70, 25);
+            buttonAnular.TabIndex = 16;
+            buttonAnular.Text = "ANULAR";
+            buttonAnular.UseVisualStyleBackColor = false;
+            buttonAnular.Click += buttonAnular_Click;
             // 
             // dataGridView1
             // 
@@ -343,6 +383,7 @@
             Controls.Add(labelConcepto);
             Controls.Add(textBoxNombre);
             Controls.Add(labelNombreCompleto);
+            Controls.Add(buttonBuscarEmpleado);
             Controls.Add(textBoxCarnet);
             Controls.Add(labelTitulo);
             Controls.Add(pictureBoxEmpleado);
@@ -418,6 +459,7 @@
         private PictureBox pictureBoxEmpleado;
         private Label labelTitulo;
         private TextBox textBoxCarnet;
+        private Button buttonBuscarEmpleado;
         private Label labelNombreCompleto;
         private TextBox textBoxNombre;
         private TextBox textBoxCantidad;
@@ -429,6 +471,7 @@
         private Button buttonAgregar;
         private FlowLayoutPanel flowLayoutPanel1;
         private Button btnBuscar;
+        private Button buttonAnular;
         private DataGridView dataGridView1;
         private DataGridViewTextBoxColumn CantidadColumna;
         private DataGridViewTextBoxColumn CodigoColumna;

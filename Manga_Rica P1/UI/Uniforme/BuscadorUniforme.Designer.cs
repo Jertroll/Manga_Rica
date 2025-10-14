@@ -36,8 +36,10 @@
             dataGridView1 = new DataGridView();
             ColumnaCarnet = new DataGridViewTextBoxColumn();
             ColumnaNombre = new DataGridViewTextBoxColumn();
-            ColumnaIdSoda = new DataGridViewTextBoxColumn();
+            ColumnaIdUniforme = new DataGridViewTextBoxColumn();
             ColumnaFecha = new DataGridViewTextBoxColumn();
+            ColumnaTotal = new DataGridViewTextBoxColumn();
+            ColumnaAnulada = new DataGridViewCheckBoxColumn();
             labelTitulo = new Label();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
             SuspendLayout();
@@ -94,10 +96,10 @@
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ColumnaCarnet, ColumnaNombre, ColumnaIdSoda, ColumnaFecha });
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ColumnaCarnet, ColumnaNombre, ColumnaIdUniforme, ColumnaFecha, ColumnaTotal, ColumnaAnulada });
             dataGridView1.Location = new Point(34, 159);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(438, 150);
+            dataGridView1.Size = new Size(600, 150);
             dataGridView1.TabIndex = 10;
             // 
             // ColumnaCarnet
@@ -110,21 +112,31 @@
             ColumnaNombre.HeaderText = "Nombre";
             ColumnaNombre.Name = "ColumnaNombre";
             // 
-            // ColumnaIdSoda
+            // ColumnaIdUniforme
             // 
-            ColumnaIdSoda.HeaderText = "Id Factura";
-            ColumnaIdSoda.Name = "ColumnaIdSoda";
+            ColumnaIdUniforme.HeaderText = "Id Factura";
+            ColumnaIdUniforme.Name = "ColumnaIdUniforme";
             // 
             // ColumnaFecha
             // 
             ColumnaFecha.HeaderText = "Fecha";
             ColumnaFecha.Name = "ColumnaFecha";
             // 
+            // ColumnaTotal
+            // 
+            ColumnaTotal.HeaderText = "Total";
+            ColumnaTotal.Name = "ColumnaTotal";
+            // 
+            // ColumnaAnulada
+            // 
+            ColumnaAnulada.HeaderText = "Anulada";
+            ColumnaAnulada.Name = "ColumnaAnulada";
+            // 
             // labelTitulo
             // 
             labelTitulo.AutoSize = true;
             labelTitulo.Font = new Font("Segoe UI", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelTitulo.ForeColor = Color.Green;
+            labelTitulo.ForeColor = Color.Blue;
             labelTitulo.Location = new Point(150, 55);
             labelTitulo.Name = "labelTitulo";
             labelTitulo.Size = new Size(232, 30);
@@ -159,8 +171,10 @@
         private DataGridView dataGridView1;
         private DataGridViewTextBoxColumn ColumnaCarnet;
         private DataGridViewTextBoxColumn ColumnaNombre;
-        private DataGridViewTextBoxColumn ColumnaIdSoda;
+        private DataGridViewTextBoxColumn ColumnaIdUniforme;
         private DataGridViewTextBoxColumn ColumnaFecha;
+        private DataGridViewTextBoxColumn ColumnaTotal;
+        private DataGridViewCheckBoxColumn ColumnaAnulada;
         private Label labelTitulo;
     }
 }

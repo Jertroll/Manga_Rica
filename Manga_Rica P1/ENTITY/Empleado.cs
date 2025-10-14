@@ -7,7 +7,7 @@ namespace Manga_Rica_P1.Entity
     [Table("Empleados", Schema = "dbo")]   // <-- plural
     public class Empleado
     {
-        [Key][Column("Id")] public int Id { get; set; }       // BIGINT -> int en app
+        [Key][Column("Id")] public long Id { get; set; }       // BIGINT -> long en app
 
         [Column("Carne")] public long Carne { get; set; }    
         [Column("Cedula")][Required] public string Cedula { get; set; } = "";

@@ -13,22 +13,22 @@ namespace Manga_Rica_P1.Entity
     {
         [Key]
         [Column("Id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("Id_Empleado")]
         [Required(ErrorMessage = "El campo de Id_Empleado es requerido")]
-        public int Id_Empleado { get; set; }
+        public long Id_Empleado { get; set; }
 
         [Column("Total")]
         [Required(ErrorMessage = "El campo de Total es requerido")]
-        public float Total { get; set; }
+        public double Total { get; set; }
 
         [Column("Id_Usuario")]
         [Required(ErrorMessage = "El campo de Id_Usuario es requerido")]
         public int Id_Usuario { get; set; }
 
         [Column("Anulada")]
-        public int Anulada { get; set; }
+        public bool Anulada { get; set; }
 
         [Column("Fecha")]
         [Required(ErrorMessage = "El campo de Fecha es requerido")]

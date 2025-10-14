@@ -13,11 +13,11 @@ namespace Manga_Rica_P1.ENTITY
     {
         [Key]
         [Column("Id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         [Column("Id_Deduccion")]
-        [Required(ErrorMessage = "El campo de Id_Soda es requerido")]
-        public int Id_Soda { get; set; }
+        [Required(ErrorMessage = "El campo de Id_Deduccion es requerido")]
+        public long Id_Deduccion { get; set; }
 
         [Column("Codigo_Articulo")]
         [Required(ErrorMessage = "El campo de Codigo_Articulo es requerido")]
@@ -29,10 +29,10 @@ namespace Manga_Rica_P1.ENTITY
 
         [Column("Precio")]
         [Required(ErrorMessage = "El campo de Precio es requerido")]
-        public float Precio { get; set; }
+        public double Precio { get; set; }
 
         [Column("Total")]
         [Required(ErrorMessage = "El campo de Total es requerido")]
-        public float Total { get; set; }
+        public double Total { get; set; }
     }
 }
