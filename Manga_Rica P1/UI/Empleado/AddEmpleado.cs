@@ -106,6 +106,80 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             if (comboBoxActivo.SelectedIndex < 0 && comboBoxActivo.Items.Count > 0) comboBoxActivo.SelectedIndex = 1; // Activo = Sí
         }
 
+        // Nueva implementacion
+        private void LimpiarFotoEmpleado()
+        {
+            if (fotoEmpleado == null) return;
+            if (fotoEmpleado.Image != null)
+            {
+                fotoEmpleado.Image.Dispose();
+                fotoEmpleado.Image = null;
+            }
+        }
+
+        // Nueva implementacion
+        private void CargarFotoEmpleadoDesdeRuta(string? rutaFoto)
+        {
+            try
+            {
+                if (fotoEmpleado == null) return;
+
+                // libera imagen previa para evitar locks
+                LimpiarFotoEmpleado();
+
+                if (string.IsNullOrWhiteSpace(rutaFoto))
+                {
+                    // opcional: placeholder
+                    // fotoEmpleado.Image = Properties.Resources.placeholder_user;
+                    return;
+                }
+
+                string? rutaEncontrada = null;
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                // mismas heurísticas que en Uniforme
+                string[] rutasAProbar =
+                {
+                    rutaFoto,                                                     // ruta directa
+                    Path.Combine(baseDir, rutaFoto),                              // relativa a la app
+                    Path.Combine(baseDir, "Imagenes", rutaFoto),                  // /Imagenes
+                    Path.Combine(baseDir, "Imagenes", "Empleados", rutaFoto),     // /Imagenes/Empleados
+                    Path.Combine(baseDir, rutaFoto.Replace('/', Path.DirectorySeparatorChar)) // normalizada
+                };
+
+                foreach (var r in rutasAProbar)
+                {
+                    if (File.Exists(r))
+                    {
+                        rutaEncontrada = r;
+                        break;
+                    }
+                }
+
+                if (rutaEncontrada == null)
+                {
+                    // opcional: placeholder
+                    // fotoEmpleado.Image = Properties.Resources.placeholder_user;
+                    return;
+                }
+
+                // carga sin bloquear el archivo
+                using (var fs = new FileStream(rutaEncontrada, FileMode.Open, FileAccess.Read))
+                {
+                    fotoEmpleado.Image = new Bitmap(fs);
+                }
+
+                // dimensionado igual que Uniforme (yo recomiendo Zoom para no deformar)
+                fotoEmpleado.SizeMode = PictureBoxSizeMode.Zoom; // usa StretchImage si quieres paridad exacta
+                // fotoEmpleado.BorderStyle = BorderStyle.FixedSingle; // opcional
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error cargando foto empleado: {ex.Message}");
+                LimpiarFotoEmpleado();
+            }
+        }
+
         private void LoadDepartamentosDesdeBD()
         {
             // Consulta SIEMPRE a la BD (sin fallback a items quemados)
@@ -130,7 +204,6 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             {
                 buttonGuardar.Enabled = true;
 
-             
                 if (_pendingDepartamentoId.HasValue)
                 {
                     comboBoxDepartamento.SelectedValue = _pendingDepartamentoId.Value;
@@ -210,24 +283,9 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
             comboBoxActivo.SelectedIndex = e.Activo == 1 ? 1 : 0;
             textBoxMcNumero.Text = e.MC_Numero.ToString();
 
-            // Foto existente (sin bloquear el archivo)
-            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            if (!string.IsNullOrWhiteSpace(e.Foto))
-            {
-                var full = Path.Combine(baseDir, e.Foto.Replace('/', Path.DirectorySeparatorChar));
-                if (File.Exists(full))
-                {
-                    try
-                    {
-                        using var fs = new FileStream(full, FileMode.Open, FileAccess.Read);
-                        using var temp = Image.FromStream(fs);
-                        fotoEmpleado.Image = new Bitmap(temp);
-                    }
-                    catch { /* ignorar errores de imagen */ }
-                }
-            }
-
+            // Nueva implementacion: usar el helper para cargar la foto (mismas heurísticas que Uniforme)
             Result.Foto = e.Foto; // conservar ruta existente si no se reemplaza
+            CargarFotoEmpleadoDesdeRuta(e.Foto);
         }
 
         // ===== Load / Botones =====
@@ -238,6 +296,12 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
 
             buttonGuardar.Click += (_, __) => GuardarYSalir();
             buttonCancelar.Click += (_, __) => DialogResult = DialogResult.Cancel;
+
+            // Nueva implementacion: asegurar dimensionado coherente del PictureBox
+            if (fotoEmpleado != null)
+            {
+                fotoEmpleado.SizeMode = PictureBoxSizeMode.Zoom; // usa StretchImage si quieres paridad exacta con Uniforme
+            }
         }
 
         // ===== Guardar =====
@@ -333,6 +397,9 @@ namespace Manga_Rica_P1.UI.Empleados.Modales
                     using var fs = new FileStream(_selectedPhotoPath, FileMode.Open, FileAccess.Read);
                     using var temp = Image.FromStream(fs);
                     fotoEmpleado.Image = new Bitmap(temp);
+
+                    // Nueva implementacion: asegurar dimensionado coherente al previsualizar
+                    fotoEmpleado.SizeMode = PictureBoxSizeMode.Zoom; // o StretchImage si quieres paridad exacta
                 }
                 catch
                 {

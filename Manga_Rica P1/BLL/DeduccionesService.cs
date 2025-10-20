@@ -299,15 +299,10 @@ namespace Manga_Rica_P1.BLL
         /// </summary>
         public void ActualizarSaldo(int deduccionId, float nuevoSaldo)
         {
-            var deduccion = _repo.GetById(deduccionId);
-            if (deduccion == null)
-                throw new InvalidOperationException("Deducción no encontrada");
-
-            if (deduccion.Anulada)
-                throw new InvalidOperationException("No se puede modificar una deducción anulada");
-
-            if (nuevoSaldo < 0)
-                throw new ArgumentException("El saldo no puede ser negativo");
+            var d = _repo.GetById(deduccionId) ?? throw new InvalidOperationException("Deducción no encontrada");
+            if (d.Anulada) throw new InvalidOperationException("No se puede modificar una deducción anulada");
+            if (nuevoSaldo < 0) throw new ArgumentException("El saldo no puede ser negativo");
+            if (nuevoSaldo > d.Total) throw new ArgumentException("El saldo no puede exceder el total");
 
             _repo.ActualizarSaldo(deduccionId, nuevoSaldo);
         }
