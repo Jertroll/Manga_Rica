@@ -200,7 +200,7 @@ namespace Manga_Rica_P1.UI.Uniforme
             textBoxSaldo.Text = "";
             if (pictureBoxEmpleado != null)
                 pictureBoxEmpleado.Image = null;
-            checkBoxAnulada.Checked = false;
+
             comboBoxFecha.Text = DateTime.Now.ToString("dd/MM/yyyy");
             
             _detallesTemporales.Clear();
@@ -610,7 +610,7 @@ namespace Manga_Rica_P1.UI.Uniforme
                 textBoxNumFactura.Text = deduccion.Id.ToString();
                 textBoxTotal.Text = deduccion.Total.ToString("N2");
                 textBoxSaldo.Text = deduccion.Saldo.ToString("N2");
-                checkBoxAnulada.Checked = deduccion.Anulada;
+
                 comboBoxFecha.Text = deduccion.Fecha.ToString("dd/MM/yyyy");
 
                 // Cargar detalles

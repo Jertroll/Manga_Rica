@@ -1,27 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Manga_Rica_P1.BLL;
 
 namespace Manga_Rica_P1.UI.CierreDiario
 {
     public partial class CierreDiario : Form
     {
-        public CierreDiario()
+        private readonly CierreDiarioService _service;
+
+        // <- Recibe el servicio como los otros módulos
+        public CierreDiario(CierreDiarioService service)
         {
             InitializeComponent();
-            this.StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterScreen;
+            _service = service ?? throw new ArgumentNullException(nameof(service));
+
+            buttonCierreDiario.Click += buttonCierreDiario_Click;
         }
 
-        private void buttonCierreDiario_Click(object sender, EventArgs e)
+        private void buttonCierreDiario_Click(object? sender, EventArgs e)
         {
-            // Lógica para manejar el cierre diario
-            MessageBox.Show("Cierre diario realizado.");
+            var fecha = monthCalendarCierreDiario.SelectionStart.Date;
+            var feriado = checkBoxFeriado.Checked;
+            var domingo = checkBoxDomingo.Checked;
+
+            try
+            {
+                var (insertados, total) = _service.CerrarDia(fecha, feriado, domingo);
+                MessageBox.Show(
+                    $"Cierre diario registrado para {fecha:d}.\n" +
+                    $"Empleados procesados: {total}\n" +
+                    $"Filas insertadas: {insertados}",
+                    "Cierre Diario",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Cierre Diario",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
     }
 }

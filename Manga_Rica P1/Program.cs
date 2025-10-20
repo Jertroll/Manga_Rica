@@ -39,6 +39,7 @@ namespace Manga_Rica_P1
             var sodaDetallesRepo = new SodaDetallesRepository(cs);
             var deduccionesRepo = new DeduccionesRepository(cs);
             var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
+            var acumuladoRepo = new AcumuladoDiarioRepository(cs);
 
             // Servicios (BLL)
             var usuariosService = new UsuariosService(usuarioRepo);
@@ -50,6 +51,7 @@ namespace Manga_Rica_P1
             var horasService = new HorasService(horaRepo, empleadoRepo);
             var sodaService = new SodaService(sodaRepo, sodaDetallesRepo, articulosRepo, empleadoRepo);
             var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
+            var cierreService = new CierreDiarioService(acumuladoRepo);
 
             // Autenticación + sesión
             var autentificacionService = new AutentificacionService(usuarioRepo);
@@ -79,7 +81,8 @@ namespace Manga_Rica_P1
                 empleadosService,
                 horasService,
                 sodaService,
-                deduccionesService
+                deduccionesService,
+                cierreService
             ));
         }
     }

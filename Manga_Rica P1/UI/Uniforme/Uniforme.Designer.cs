@@ -35,7 +35,6 @@
             comboBoxFecha = new ComboBox();
             textBoxNumFactura = new TextBox();
             labelNumFactura = new Label();
-            checkBoxAnulada = new CheckBox();
             dataGridView1 = new DataGridView();
             CantidadColumna = new DataGridViewTextBoxColumn();
             CodigoColumna = new DataGridViewTextBoxColumn();
@@ -113,18 +112,6 @@
             labelNumFactura.Size = new Size(61, 20);
             labelNumFactura.TabIndex = 37;
             labelNumFactura.Text = "Factura";
-            // 
-            // checkBoxAnulada
-            // 
-            checkBoxAnulada.AutoSize = true;
-            checkBoxAnulada.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            checkBoxAnulada.ForeColor = SystemColors.HotTrack;
-            checkBoxAnulada.Location = new Point(598, 60);
-            checkBoxAnulada.Name = "checkBoxAnulada";
-            checkBoxAnulada.Size = new Size(78, 21);
-            checkBoxAnulada.TabIndex = 36;
-            checkBoxAnulada.Text = "Anulada";
-            checkBoxAnulada.UseVisualStyleBackColor = true;
             // 
             // dataGridView1
             // 
@@ -305,7 +292,7 @@
             textBoxCarnet.BackColor = Color.DarkGray;
             textBoxCarnet.Location = new Point(122, 151);
             textBoxCarnet.Name = "textBoxCarnet";
-            textBoxCarnet.Size = new Size(143, 23);
+            textBoxCarnet.Size = new Size(106, 23);
             textBoxCarnet.TabIndex = 24;
             // 
             // buttonBuscarEmpleado
@@ -315,7 +302,7 @@
             buttonBuscarEmpleado.FlatStyle = FlatStyle.Flat;
             buttonBuscarEmpleado.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             buttonBuscarEmpleado.ForeColor = Color.White;
-            buttonBuscarEmpleado.Location = new Point(271, 151);
+            buttonBuscarEmpleado.Location = new Point(237, 151);
             buttonBuscarEmpleado.Name = "buttonBuscarEmpleado";
             buttonBuscarEmpleado.Size = new Size(28, 23);
             buttonBuscarEmpleado.TabIndex = 25;
@@ -348,7 +335,7 @@
             labelCarnet.AutoSize = true;
             labelCarnet.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             labelCarnet.ForeColor = Color.Green;
-            labelCarnet.Location = new Point(161, 127);
+            labelCarnet.Location = new Point(143, 127);
             labelCarnet.Name = "labelCarnet";
             labelCarnet.Size = new Size(60, 21);
             labelCarnet.TabIndex = 21;
@@ -385,7 +372,6 @@
             Controls.Add(comboBoxFecha);
             Controls.Add(textBoxNumFactura);
             Controls.Add(labelNumFactura);
-            Controls.Add(checkBoxAnulada);
             Controls.Add(dataGridView1);
             Controls.Add(flowLayoutPanel1);
             Controls.Add(buttonAgregar);
@@ -419,7 +405,6 @@
         private ComboBox comboBoxFecha;
         private TextBox textBoxNumFactura;
         private Label labelNumFactura;
-        private CheckBox checkBoxAnulada;
         private DataGridView dataGridView1;
         private DataGridViewTextBoxColumn CantidadColumna;
         private DataGridViewTextBoxColumn CodigoColumna;
