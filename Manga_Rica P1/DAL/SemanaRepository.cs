@@ -25,7 +25,7 @@ namespace Manga_Rica_P1.DAL
             var items = new List<Semana>();
             int total = 0;
 
-            // ===== Parse inteligentes para mejorar la búsqueda =====
+            // Parse “inteligente” del filtro
             int? fInt = null;
             DateTime? fDate = null;
 
@@ -33,13 +33,10 @@ namespace Manga_Rica_P1.DAL
             {
                 var f = filtro.Trim();
 
-                // Si escriben un número, permitimos coincidencia exacta por Id o Semana
                 if (int.TryParse(f, out var n)) fInt = n;
 
-                // Si escriben una fecha, coincidencia exacta por fecha (solo fecha)
-                DateTime dt;
                 if (DateTime.TryParseExact(f, new[] { "yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy" },
-                                           CultureInfo.InvariantCulture, DateTimeStyles.None, out dt)
+                                           CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)
                     || DateTime.TryParse(f, out dt))
                 {
                     fDate = dt.Date;
@@ -54,12 +51,10 @@ SELECT s.Id, s.Semana, s.Fecha_Inicio, s.Fecha_Final
 FROM dbo.Semanas s
 WHERE (
     @f IS NULL
-    -- LIKE textual sobre TODOS los campos
-    OR CONVERT(nvarchar(20), s.Id)           LIKE '%' + @f + '%'
-    OR CONVERT(nvarchar(20), s.Semana)       LIKE '%' + @f + '%'
-    OR CONVERT(nvarchar(10), s.Fecha_Inicio, 23) LIKE '%' + @f + '%'
-    OR CONVERT(nvarchar(10), s.Fecha_Final, 23)  LIKE '%' + @f + '%'
-    -- Coincidencias exactas cuando el filtro es número o fecha
+    OR CONVERT(nvarchar(20), s.Id)                 LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(20), s.Semana)             LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(10), s.Fecha_Inicio, 23)   LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(10), s.Fecha_Final, 23)    LIKE '%' + @f + '%'
     OR (@fInt  IS NOT NULL AND (s.Id = @fInt OR s.Semana = @fInt))
     OR (@fDate IS NOT NULL AND (CAST(s.Fecha_Inicio AS date) = @fDate OR CAST(s.Fecha_Final AS date) = @fDate))
 )
@@ -70,10 +65,10 @@ SELECT COUNT(*)
 FROM dbo.Semanas s
 WHERE (
     @f IS NULL
-    OR CONVERT(nvarchar(20), s.Id)           LIKE '%' + @f + '%'
-    OR CONVERT(nvarchar(20), s.Semana)       LIKE '%' + @f + '%'
-    OR CONVERT(nvarchar(10), s.Fecha_Inicio, 23) LIKE '%' + @f + '%'
-    OR CONVERT(nvarchar(10), s.Fecha_Final, 23)  LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(20), s.Id)                 LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(20), s.Semana)             LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(10), s.Fecha_Inicio, 23)   LIKE '%' + @f + '%'
+    OR CONVERT(nvarchar(10), s.Fecha_Final, 23)    LIKE '%' + @f + '%'
     OR (@fInt  IS NOT NULL AND (s.Id = @fInt OR s.Semana = @fInt))
     OR (@fDate IS NOT NULL AND (CAST(s.Fecha_Inicio AS date) = @fDate OR CAST(s.Fecha_Final AS date) = @fDate))
 );";
@@ -105,11 +100,34 @@ WHERE (
             }
 
             if (rd.NextResult() && rd.Read())
-                total = rd.GetInt32(0);
+                total = Convert.ToInt32(rd.GetValue(0));
 
             return (items, total);
         }
 
+        // ============================
+        //  Nueva implementacion: GetAll (para combos o catálogos)
+        // ============================
+        public IEnumerable<Semana> GetAll()
+        {
+            var items = new List<Semana>();
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = "SELECT Id, Semana, Fecha_Inicio, Fecha_Final FROM dbo.Semanas ORDER BY Id DESC;";
+            cn.Open();
+            using var rd = cmd.ExecuteReader();
+            while (rd.Read())
+            {
+                items.Add(new Semana
+                {
+                    Id = rd.GetInt32(0),
+                    semana = rd.GetInt32(1),
+                    fecha_Inicio = rd.GetDateTime(2),
+                    fecha_Final = rd.GetDateTime(3)
+                });
+            }
+            return items;
+        }
 
         // ============================
         //  Get por Id
@@ -136,6 +154,51 @@ WHERE (
         }
 
         // ============================
+        //  Nueva implementacion: Unicidad por número de semana
+        // ============================
+        public bool ExistsByNumeroSemana(int numeroSemana, int? exceptId = null)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"
+SELECT TOP(1) 1
+FROM dbo.Semanas
+WHERE Semana = @sem
+  AND (@id IS NULL OR Id <> @id);";
+            cmd.Parameters.Add("@sem", SqlDbType.Int).Value = numeroSemana;
+            var pId = cmd.Parameters.Add("@id", SqlDbType.Int);
+            pId.Value = exceptId.HasValue ? exceptId.Value : DBNull.Value;
+
+            cn.Open();
+            var x = cmd.ExecuteScalar();
+            return x != null;
+        }
+
+        // ============================
+        //  Nueva implementacion: Validar traslapes de rango
+        // ============================
+        public bool ExistsOverlap(DateTime fechaInicio, DateTime fechaFinal, int? exceptId = null)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+            // Regla: hay traslape si [A1, A2] se cruza con [B1, B2] -> (A1 <= B2) AND (B1 <= A2)
+            cmd.CommandText = @"
+SELECT TOP(1) 1
+FROM dbo.Semanas
+WHERE (@id IS NULL OR Id <> @id)
+  AND (CAST(Fecha_Inicio AS date) <= @fin)
+  AND (CAST(@ini AS date) <= CAST(Fecha_Final AS date));";
+            cmd.Parameters.Add("@ini", SqlDbType.Date).Value = fechaInicio.Date;
+            cmd.Parameters.Add("@fin", SqlDbType.Date).Value = fechaFinal.Date;
+            var pId = cmd.Parameters.Add("@id", SqlDbType.Int);
+            pId.Value = exceptId.HasValue ? exceptId.Value : DBNull.Value;
+
+            cn.Open();
+            var x = cmd.ExecuteScalar();
+            return x != null;
+        }
+
+        // ============================
         //  Insert
         // ============================
         public int Insert(Semana s)
@@ -153,7 +216,7 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
             cmd.Parameters.Add("@Final", SqlDbType.DateTime).Value = s.fecha_Final;
 
             cn.Open();
-            return (int)cmd.ExecuteScalar();
+            return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
         // ============================

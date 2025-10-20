@@ -33,6 +33,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly SodaService _sodaService;
         private readonly DeduccionesService _deduccionesService;
         private readonly CierreDiarioService _cierreService;
+        private readonly ActivarPagosService _activarPagosService;
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
@@ -44,7 +45,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             HorasService horasService,
             SodaService sodaService,
             DeduccionesService deduccionesService,
-            CierreDiarioService cierreService)
+            CierreDiarioService cierreService,
+            ActivarPagosService activarPagosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -58,6 +60,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _sodaService = sodaService ?? throw new ArgumentNullException(nameof(sodaService));
             _deduccionesService = deduccionesService ?? throw new ArgumentNullException(nameof(deduccionesService));
             _cierreService = cierreService ?? throw new ArgumentNullException(nameof(cierreService));
+            _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
 
 
 
@@ -481,7 +484,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnActivarPagos_Click(object sender, EventArgs e)
         {
-            using (var dlg = new Manga_Rica_P1.UI.Pagos.ActivarPagos())
+            using (var dlg = new Manga_Rica_P1.UI.Pagos.ActivarPagos(_activarPagosService, _semanasService, _session))
             {
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);
