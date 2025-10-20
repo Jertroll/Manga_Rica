@@ -41,5 +41,8 @@ namespace Manga_Rica_P1.Entity
         [Column("Activo")][Required] public int Activo { get; set; }
 
         [Column("MC_Numero")] public long MC_Numero { get; set; }
+        
+        // Propiedad adicional para mostrar el nombre del departamento (no mapeada a BD)
+        [NotMapped] public string Departamento_Nombre { get; set; } = "";
     }
 }

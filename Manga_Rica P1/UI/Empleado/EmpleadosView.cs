@@ -38,9 +38,9 @@ namespace Manga_Rica_P1.UI.Empleados
 
         private static readonly string[] COLS_EMPLEADOS =
         {
-            "Id","Cedula","Apellido 1","Apellido 2","Nombre",
-            "Fecha Nacimiento","Estado Civil","Celular","Nacionalidad","Laboro","Direccion",
-            "Id_Departamento","Salario","Puesto","Fecha Ingreso","Fecha Salida","Activo"
+            "Cedula","Apellido 1","Nombre",
+            "Fecha Nacimiento","Telefono","Celular","Laboro",
+            "Departamento","Salario","Puesto","Fecha Ingreso","Activo"
         };
 
         public EmpleadosView(EmpleadosService empSvc, SolicitudesService solSvc, DepartamentosService depSvc)
@@ -305,7 +305,7 @@ namespace Manga_Rica_P1.UI.Empleados
             if (g.Columns.Contains("Fecha Salida")) g.Columns["Fecha Salida"].DefaultCellStyle.Format = "d";
             if (g.Columns.Contains("Salario")) g.Columns["Salario"].DefaultCellStyle.Format = "N0";
 
-            if (g.Columns.Contains("Id_Departamento")) g.Columns["Id_Departamento"].HeaderText = "Depto";
+            if (g.Columns.Contains("Departamento")) g.Columns["Departamento"].HeaderText = "Depto";
             if (g.Columns.Contains("Fecha Nacimiento")) g.Columns["Fecha Nacimiento"].HeaderText = "Nacimiento";
 
             void Peso(string col, float w)
@@ -316,28 +316,23 @@ namespace Manga_Rica_P1.UI.Empleados
             }
 
             // Comunes (Solicitudes y Empleados)
-            Peso("Id", 55);
             Peso("Cedula", 110);
             Peso("Apellido 1", 120);
-            Peso("Apellido 2", 120);
             Peso("Nombre", 150);
             Peso("Fecha Nacimiento", 110);
-            Peso("Telefono", 110);  // ⬅️ nuevo peso
+            Peso("Telefono", 110);
             Peso("Celular", 110);
-            Peso("Nacionalidad", 120);
             Peso("Direccion", 260);
 
             if (_mode == GridMode.Empleados)
             {
-                Peso("Id_Departamento", 80);
+                Peso("Departamento", 120);
                 Peso("Salario", 110);
                 Peso("Puesto", 150);
                 Peso("Fecha Ingreso", 110);
-                Peso("Fecha Salida", 110);
                 if (g.Columns.Contains("Activo")) g.Columns["Activo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             }
 
-            if (g.Columns.Contains("Id")) g.Columns["Id"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             if (g.Columns.Contains("Salario")) g.Columns["Salario"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
             foreach (var c in new[] { "Fecha Nacimiento", "Fecha Ingreso", "Fecha Salida" })
                 if (g.Columns.Contains(c))
