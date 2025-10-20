@@ -30,9 +30,10 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly SolicitudesService _solicitudesService;
         private readonly EmpleadosService _empleadoService;
         private readonly HorasService _horasService;
-
         private readonly SodaService _sodaService;
         private readonly DeduccionesService _deduccionesService;
+        private readonly CierreDiarioService _cierreService;
+        private readonly ActivarPagosService _activarPagosService;
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
@@ -43,7 +44,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             EmpleadosService empleadosService,
             HorasService horasService,
             SodaService sodaService,
-            DeduccionesService deduccionesService)
+            DeduccionesService deduccionesService,
+            CierreDiarioService cierreService,
+            ActivarPagosService activarPagosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -56,6 +59,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _horasService = horasService ?? throw new ArgumentNullException(nameof(horasService));
             _sodaService = sodaService ?? throw new ArgumentNullException(nameof(sodaService));
             _deduccionesService = deduccionesService ?? throw new ArgumentNullException(nameof(deduccionesService));
+            _cierreService = cierreService ?? throw new ArgumentNullException(nameof(cierreService));
+            _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
+
 
 
             // Evita recálculos de layout mientras reacomodamos todo
@@ -453,11 +459,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnCierreDiario_Click(object sender, EventArgs e)
         {
-            using (var dlg = new Manga_Rica_P1.UI.CierreDiario.CierreDiario())
-            {
-                dlg.StartPosition = FormStartPosition.CenterParent;
-                dlg.ShowDialog(this);
-            }
+            using var dlg = new Manga_Rica_P1.UI.CierreDiario.CierreDiario(_cierreService);
+            dlg.StartPosition = FormStartPosition.CenterParent;
+            dlg.ShowDialog(this);
         }
 
         private void btnSoda_Click(object sender, EventArgs e)
@@ -480,7 +484,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnActivarPagos_Click(object sender, EventArgs e)
         {
-            using (var dlg = new Manga_Rica_P1.UI.Pagos.ActivarPagos())
+            using (var dlg = new Manga_Rica_P1.UI.Pagos.ActivarPagos(_activarPagosService, _semanasService, _session))
             {
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);

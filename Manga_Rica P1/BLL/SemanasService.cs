@@ -1,33 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿// Nueva implementacion
 using Manga_Rica_P1.DAL;
 using Manga_Rica_P1.Entity;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Manga_Rica_P1.BLL
 {
     /// <summary>
-    /// Lógica de negocio para Semanas (sin interfaz).
-    /// Reglas portadas del módulo viejo:
-    ///  - Semana requerida
+    /// Lógica de negocio para Semanas.
+    /// Reglas:
+    ///  - Semana requerida (> 0)
     ///  - Fecha_Final >= Fecha_Inicio
     /// </summary>
     public sealed class SemanasService
     {
         private readonly SemanaRepository _repo;
-        public SemanasService(SemanaRepository repo) => _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+        public SemanasService(SemanaRepository repo) =>
+            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
 
-        // Listado paginado para PagedSearchGrid
+        // ===== Listado paginado para PagedSearchGrid =====
         public (DataTable page, int total) GetPageAsDataTable(int pageIndex, int pageSize, string? filtro)
         {
-            var res = _repo.GetPage(pageIndex, pageSize, filtro);
-            return (ToDataTable(res.items), res.total);
+            var (items, total) = _repo.GetPage(pageIndex, pageSize, filtro);
+            return (ToDataTable(items), total);
         }
 
-        // Consultas
+        // ===== Consultas =====
         public Semana? Get(int id) => _repo.GetById(id);
 
-        // Comandos
+        // DTO liviano para combos
+        public sealed class SemanaItem
+        {
+            public int Id { get; set; }
+            public string Semana { get; set; } = "";
+        }
+
+        /// <summary>
+        /// Devuelve todas las semanas para combos (Id + texto).
+        /// No hace SQL aquí: reutiliza el repositorio.
+        /// </summary>
+        public List<SemanaItem> GetAllForCombo()
+        {
+            // Si tu repo no tiene un "GetAll", usamos paginación con un pageSize grande.
+            var (items, _) = _repo.GetPage(pageIndex: 1, pageSize: int.MaxValue / 4, filtro: null);
+
+            var list = new List<SemanaItem>();
+            foreach (var s in items)
+            {
+                // s.semana parece ser int en tu ENTITY; lo convertimos a string para el combo
+                list.Add(new SemanaItem
+                {
+                    Id = s.Id,
+                    Semana = s.semana.ToString() // o formatea como necesites: $"Semana {s.semana}"
+                });
+            }
+            return list;
+        }
+
+        // ===== Comandos =====
         public int Create(Semana s)
         {
             if (s is null) throw new ArgumentNullException(nameof(s));
@@ -46,10 +77,10 @@ namespace Manga_Rica_P1.BLL
 
         public void Delete(int id) => _repo.Delete(id);
 
-        // Helpers
+        // ===== Helpers =====
         private static void Normalize(Semana s)
         {
-            // Redondear fecha a día (sin hora) por consistencia, opcional:
+            // Redondea la hora (opcional) para consistencia
             s.fecha_Inicio = s.fecha_Inicio.Date;
             s.fecha_Final = s.fecha_Final.Date;
         }

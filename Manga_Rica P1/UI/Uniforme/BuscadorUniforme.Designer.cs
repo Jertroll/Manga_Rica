@@ -48,7 +48,7 @@
             // 
             buttonCancelar.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             buttonCancelar.ForeColor = Color.Red;
-            buttonCancelar.Location = new Point(264, 361);
+            buttonCancelar.Location = new Point(420, 430);
             buttonCancelar.Name = "buttonCancelar";
             buttonCancelar.Size = new Size(124, 35);
             buttonCancelar.TabIndex = 14;
@@ -60,7 +60,7 @@
             // 
             buttonAceptar.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             buttonAceptar.ForeColor = Color.Green;
-            buttonAceptar.Location = new Point(110, 361);
+            buttonAceptar.Location = new Point(256, 430);
             buttonAceptar.Name = "buttonAceptar";
             buttonAceptar.Size = new Size(124, 35);
             buttonAceptar.TabIndex = 13;
@@ -70,19 +70,20 @@
             // buttonBuscar
             // 
             buttonBuscar.Font = new Font("Segoe UI", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            buttonBuscar.Location = new Point(150, 129);
+            buttonBuscar.Location = new Point(250, 115);
             buttonBuscar.Name = "buttonBuscar";
-            buttonBuscar.Size = new Size(63, 24);
+            buttonBuscar.Size = new Size(80, 28);
             buttonBuscar.TabIndex = 12;
             buttonBuscar.Text = "Buscar";
             buttonBuscar.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
-            textBox1.BackColor = SystemColors.ActiveBorder;
-            textBox1.Location = new Point(34, 129);
+            textBox1.BackColor = SystemColors.Window;
+            textBox1.Font = new Font("Segoe UI", 10F);
+            textBox1.Location = new Point(20, 115);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(110, 23);
+            textBox1.Size = new Size(220, 25);
             textBox1.TabIndex = 11;
             // 
             // dataGridView1
@@ -97,10 +98,14 @@
             dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ColumnaCarnet, ColumnaNombre, ColumnaIdUniforme, ColumnaFecha, ColumnaTotal, ColumnaAnulada });
-            dataGridView1.Location = new Point(34, 159);
+            dataGridView1.Location = new Point(20, 159);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(600, 150);
+            dataGridView1.Size = new Size(760, 250);
             dataGridView1.TabIndex = 10;
+            dataGridView1.ScrollBars = ScrollBars.Vertical;
+            dataGridView1.AllowUserToResizeRows = true;
+            dataGridView1.MultiSelect = false;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             // 
             // ColumnaCarnet
             // 
@@ -135,19 +140,19 @@
             // labelTitulo
             // 
             labelTitulo.AutoSize = true;
-            labelTitulo.Font = new Font("Segoe UI", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            labelTitulo.ForeColor = Color.Blue;
-            labelTitulo.Location = new Point(150, 55);
+            labelTitulo.Font = new Font("Segoe UI", 16F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            labelTitulo.ForeColor = Color.FromArgb(0, 102, 204);
+            labelTitulo.Location = new Point(240, 30);
             labelTitulo.Name = "labelTitulo";
-            labelTitulo.Size = new Size(232, 30);
+            labelTitulo.Size = new Size(320, 30);
             labelTitulo.TabIndex = 9;
-            labelTitulo.Text = "Buscador de Uniforme";
+            labelTitulo.Text = "Buscador de Deducciones - Uniformes";
             // 
             // BuscadorUniforme
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(506, 408);
+            ClientSize = new Size(800, 490);
             Controls.Add(buttonCancelar);
             Controls.Add(buttonAceptar);
             Controls.Add(buttonBuscar);

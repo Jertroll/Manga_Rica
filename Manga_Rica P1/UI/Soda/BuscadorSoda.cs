@@ -39,10 +39,21 @@ namespace Manga_Rica_P1.UI.Soda
             ColumnaTotal.DataPropertyName = "Total";
             ColumnaAnulada.DataPropertyName = "Anulada";
             
+            // Configurar ancho de columnas
+            ColumnaCarnet.Width = 100;
+            ColumnaNombre.Width = 250;
+            ColumnaIdSoda.Width = 100;
+            ColumnaFecha.Width = 110;
+            ColumnaTotal.Width = 100;
+            ColumnaAnulada.Width = 80;
+            
             // Configurar formato de fecha y total
             ColumnaFecha.DefaultCellStyle.Format = "dd/MM/yyyy";
             ColumnaTotal.DefaultCellStyle.Format = "N2";
             ColumnaTotal.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            ColumnaCarnet.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            ColumnaIdSoda.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            ColumnaAnulada.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
             // Cargar datos iniciales
             CargarDeducciones();

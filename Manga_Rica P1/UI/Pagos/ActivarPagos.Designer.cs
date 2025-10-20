@@ -30,7 +30,7 @@
         {
             labelSemana = new Label();
             buttonActivarPagos = new Button();
-            comboBox1 = new ComboBox();
+            comboSemana = new ComboBox();
             SuspendLayout();
             // 
             // labelSemana
@@ -57,20 +57,20 @@
             buttonActivarPagos.Text = "Activar Pagos";
             buttonActivarPagos.UseVisualStyleBackColor = false;
             // 
-            // comboBox1
+            // comboSemana
             // 
-            comboBox1.FormattingEnabled = true;
-            comboBox1.Location = new Point(93, 110);
-            comboBox1.Name = "comboBox1";
-            comboBox1.Size = new Size(121, 23);
-            comboBox1.TabIndex = 2;
+            comboSemana.FormattingEnabled = true;
+            comboSemana.Location = new Point(93, 110);
+            comboSemana.Name = "comboSemana";
+            comboSemana.Size = new Size(121, 23);
+            comboSemana.TabIndex = 2;
             // 
             // ActivarPagos
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(306, 260);
-            Controls.Add(comboBox1);
+            Controls.Add(comboSemana);
             Controls.Add(buttonActivarPagos);
             Controls.Add(labelSemana);
             Name = "ActivarPagos";
@@ -84,6 +84,6 @@
 
         private Label labelSemana;
         private Button buttonActivarPagos;
-        private ComboBox comboBox1;
+        private ComboBox comboSemana;
     }
 }
