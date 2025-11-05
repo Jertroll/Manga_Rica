@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="10/29/2025 15:10:15" ReportInfo.Modified="10/30/2025 00:52:56" ReportInfo.CreatorVersion="2026.1.0.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+    
+  }
+}
+</ScriptText>
+  <Dictionary>
+    <MsSqlDataConnection Name="MangaRica Conecction" ConnectionString="rijcmlqLkomXvCIuYrNSdqxGEhJF42C5OJ6IUzuiaNhzAGg7kmSCwqcvEJamocYrse53C58X/rDbrN+uND2kZahGGvo4c/azMCgGWg0dwuT+RhCvsjSCM5jFkGqQ7E2d5lN+5kTyE7U6dVP446gnZ8TNyEbgaFZHVlV6BHnUTUej6FMv8BQkN/KMQyOpkosL8Hygz4netElR7Ebdm1lAxn4gp+7fg==">
+      <TableDataSource Name="sysdiagrams" DataType="System.Int32" Enabled="true" TableName="sysdiagrams">
+        <Column Name="name" DataType="System.String"/>
+        <Column Name="principal_id" DataType="System.Int32"/>
+        <Column Name="diagram_id" DataType="System.Int32"/>
+        <Column Name="version" DataType="System.Int32"/>
+        <Column Name="definition" DataType="System.Byte[]" BindableControl="Picture"/>
+      </TableDataSource>
+      <TableDataSource Name="Acumulado_Diario" DataType="System.Int32" Enabled="true" TableName="Acumulado_Diario">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Empleado" DataType="System.Int64"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+        <Column Name="Normales" DataType="System.Double"/>
+        <Column Name="Extras" DataType="System.Double"/>
+        <Column Name="Dobles" DataType="System.Double"/>
+        <Column Name="Feriado" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Articulos" DataType="System.Int32" Enabled="true" TableName="Articulos">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Descripcion" DataType="System.String"/>
+        <Column Name="Precio" DataType="System.Double"/>
+        <Column Name="Existencia" DataType="System.Int32"/>
+        <Column Name="Categoria" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Configuraciones" DataType="System.Int32" Enabled="true" TableName="Configuraciones">
+        <Column Name="Cedula" DataType="System.String"/>
+        <Column Name="Nombre" DataType="System.String"/>
+        <Column Name="Tel1" DataType="System.String"/>
+        <Column Name="Tel2" DataType="System.String"/>
+        <Column Name="Fax" DataType="System.String"/>
+        <Column Name="Direccion" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Control_Acceso" DataType="System.Int32" Enabled="true" TableName="Control_Acceso">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Usuario" DataType="System.String"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+        <Column Name="Computadora" DataType="System.String"/>
+        <Column Name="Sistema" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Deducciones" DataType="System.Int32" Enabled="true" TableName="Deducciones">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Empleado" DataType="System.Int64"/>
+        <Column Name="Total" DataType="System.Double"/>
+        <Column Name="Saldo" DataType="System.Double"/>
+        <Column Name="Id_Usuario" DataType="System.Int32"/>
+        <Column Name="Anulada" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Deducciones_Detalles" DataType="System.Int32" Enabled="true" TableName="Deducciones_Detalles">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Deduccion" DataType="System.Int64"/>
+        <Column Name="Codigo_Articulo" DataType="System.Int32"/>
+        <Column Name="Cantidad" DataType="System.Int32"/>
+        <Column Name="Precio" DataType="System.Double"/>
+        <Column Name="Total" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Departamentos" DataType="System.Int32" Enabled="true" TableName="Departamentos">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Departamento" DataType="System.String"/>
+        <Column Name="Codigo" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Empleados" DataType="System.Int32" Enabled="true" TableName="Empleados">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Carne" DataType="System.Int64"/>
+        <Column Name="Cedula" DataType="System.String"/>
+        <Column Name="Primer_Apellido" DataType="System.String"/>
+        <Column Name="Segundo_Apellido" DataType="System.String"/>
+        <Column Name="Nombre" DataType="System.String"/>
+        <Column Name="Fecha_Nacimiento" DataType="System.DateTime"/>
+        <Column Name="Estado_Civil" DataType="System.String"/>
+        <Column Name="Telefono" DataType="System.String"/>
+        <Column Name="Celular" DataType="System.String"/>
+        <Column Name="Nacionalidad" DataType="System.String"/>
+        <Column Name="Laboro" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Direccion" DataType="System.String"/>
+        <Column Name="Id_Departamento" DataType="System.Int32"/>
+        <Column Name="Salario" DataType="System.Double"/>
+        <Column Name="Puesto" DataType="System.String"/>
+        <Column Name="Fecha_Ingreso" DataType="System.DateTime"/>
+        <Column Name="Fecha_Salida" DataType="System.DateTime"/>
+        <Column Name="Foto" DataType="System.String"/>
+        <Column Name="Activo" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="MC_Numero" DataType="System.Int64"/>
+      </TableDataSource>
+      <TableDataSource Name="Faltas" DataType="System.Int32" Enabled="true" TableName="Faltas">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Empleado" DataType="System.Int64"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Horas" DataType="System.Int32" Enabled="true" TableName="Horas">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Empleado" DataType="System.Int64"/>
+        <Column Name="Carne" DataType="System.Int64"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+        <Column Name="Hora_Entrada" DataType="System.DateTime"/>
+        <Column Name="Hora_Salida" DataType="System.DateTime"/>
+        <Column Name="Total_Horas" DataType="System.Decimal"/>
+        <Column Name="Id_Usuario" DataType="System.Int32"/>
+        <Column Name="Usuario_Salida_Id" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="Pagos" DataType="System.Int32" Enabled="true" TableName="Pagos">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Empleado" DataType="System.Int64"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+        <Column Name="Id_Semana" DataType="System.Int32"/>
+        <Column Name="Horas_Normales" DataType="System.Double"/>
+        <Column Name="Horas_Extras" DataType="System.Double"/>
+        <Column Name="Horas_Dobles" DataType="System.Double"/>
+        <Column Name="Feriadas" DataType="System.Double"/>
+        <Column Name="Deduccion_Soda" DataType="System.Double"/>
+        <Column Name="Deduccion_Uniforme" DataType="System.Double"/>
+        <Column Name="Deduccion_Otras" DataType="System.Double"/>
+        <Column Name="Salario_Bruto" DataType="System.Double"/>
+        <Column Name="Salario_Neto" DataType="System.Double"/>
+        <Column Name="Id_Usuario" DataType="System.Int32"/>
+        <Column Name="Registrado" DataType="System.Boolean" BindableControl="CheckBox"/>
+      </TableDataSource>
+      <TableDataSource Name="Semanas" DataType="System.Int32" Enabled="true" TableName="Semanas">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Semana" DataType="System.Int32"/>
+        <Column Name="Fecha_Inicio" DataType="System.DateTime"/>
+        <Column Name="Fecha_Final" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Soda" DataType="System.Int32" Enabled="true" TableName="Soda">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Empleado" DataType="System.Int64"/>
+        <Column Name="Total" DataType="System.Double"/>
+        <Column Name="Id_Usuario" DataType="System.Int32"/>
+        <Column Name="Anulada" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="Soda_Detalles" DataType="System.Int32" Enabled="true" TableName="Soda_Detalles">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Id_Soda" DataType="System.Int64"/>
+        <Column Name="Codigo_Articulo" DataType="System.Int32"/>
+        <Column Name="Cantidad" DataType="System.Int32"/>
+        <Column Name="Precio" DataType="System.Double"/>
+        <Column Name="Total" DataType="System.Double"/>
+      </TableDataSource>
+      <TableDataSource Name="Solicitudes" DataType="System.Int32" Enabled="true" TableName="Solicitudes">
+        <Column Name="Id" DataType="System.Int64"/>
+        <Column Name="Cedula" DataType="System.String"/>
+        <Column Name="Primer_Apellido" DataType="System.String"/>
+        <Column Name="Segundo_Apellido" DataType="System.String"/>
+        <Column Name="Nombre" DataType="System.String"/>
+        <Column Name="Fecha_Nacimiento" DataType="System.DateTime"/>
+        <Column Name="Estado_Civil" DataType="System.String"/>
+        <Column Name="Telefono" DataType="System.String"/>
+        <Column Name="Celular" DataType="System.String"/>
+        <Column Name="Nacionalidad" DataType="System.String"/>
+        <Column Name="Laboro" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="Direccion" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="Usuarios" DataType="System.Int32" Enabled="true" TableName="Usuarios">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Nombre" DataType="System.String"/>
+        <Column Name="Clave" DataType="System.String"/>
+        <Column Name="Perfil" DataType="System.String"/>
+        <Column Name="Fecha" DataType="System.DateTime"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="103.95">
+      <TextObject Name="TextTelefonoLabel" Left="245.7" Top="47.25" Width="302.4" Height="18.9" Text="Telefonos: (+506) 2666-4744 / (+506) 2666-4733" Font="Arial, 9.75pt"/>
+      <PictureObject Name="Picture1" Left="-18.9" Width="103.95" Height="75.6" ImageFormat="Jpeg" Image="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"/>
+      <TextObject Name="TextDireccionLabel" Left="217.35" Top="66.15" Width="359.1" Height="18.9" Text="Direccion: Barrio La Cruz, Liberia, Guanacaste, Costa Rica" Font="Arial, 9.75pt"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="107.95" Width="718.2" Height="85.05">
+      <TextObject Name="TextEstadoEmpleado" Left="406.35" Top="9.45" Width="94.5" Height="18.9" Text="Activos" Font="Arial, 14.25pt"/>
+      <TextObject Name="TextEmpleadoTitulo" Left="274.05" Top="9.45" Width="122.85" Height="18.9" Text="Empleados: " Font="Arial, 14.25pt, style=Bold" TextFill.Color="Green"/>
+      <TextObject Name="TextCedulaColumna" Left="37.8" Top="56.7" Width="94.5" Height="18.9" Text="Cedula" Font="Arial, 9.75pt, style=Bold"/>
+    </PageHeaderBand>
+    <GroupHeaderBand Name="GroupHeader1" Top="197" Width="718.2" Height="37.8" Condition="[Empleados.Id_Departamento]">
+      <TextObject Name="Text1" Left="56.7" Top="9.45" Width="141.75" Height="18.9" Text="Departamento:" Font="Arial, 14.25pt" TextFill.Color="Green"/>
+      <TextObject Name="Text2" Left="198.45" Top="9.45" Width="302.4" Height="18.9" Text="[Departamentos.Departamento]" Font="Arial, 14.25pt" TextFill.Color="Green"/>
+      <DataBand Name="Data1" Top="238.8" Width="718.2" Height="75.6" DataSource="Empleados">
+        <TextObject Name="TextCedulaDato" Left="37.8" Top="9.45" Width="132.3" Height="18.9" Text="[Empleados.Cedula]" Font="Arial, 10pt"/>
+      </DataBand>
+      <GroupFooterBand Name="GroupFooter1" Top="318.4" Width="718.2" Height="37.8"/>
+    </GroupHeaderBand>
+    <PageFooterBand Name="PageFooter1" Top="360.2" Width="718.2" Height="18.9"/>
+  </ReportPage>
+</Report>

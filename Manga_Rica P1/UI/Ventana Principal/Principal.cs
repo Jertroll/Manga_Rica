@@ -1,10 +1,10 @@
 ﻿using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.BLL.Session;
-// ▼ NUEVO
 using Manga_Rica_P1.DAL;
 using Manga_Rica_P1.UI.Articulos;
 using Manga_Rica_P1.UI.Departamentos;
 using Manga_Rica_P1.UI.Helpers;
+using Manga_Rica_P1.UI.Reportes;
 using Manga_Rica_P1.UI.Solicitudes;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -35,6 +35,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly CierreDiarioService _cierreService;
         private readonly ActivarPagosService _activarPagosService;
 
+        //Reporte
+        private readonly ReporteEmpleadosService _reporteEmpleadosService;
+
         public Principal(IAppSession session,
             UsuariosService usuariosService,
             DepartamentosService departamentosService,
@@ -46,7 +49,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             SodaService sodaService,
             DeduccionesService deduccionesService,
             CierreDiarioService cierreService,
-            ActivarPagosService activarPagosService)
+            ActivarPagosService activarPagosService,
+             ReporteEmpleadosService reporteEmpleadosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -61,6 +65,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _deduccionesService = deduccionesService ?? throw new ArgumentNullException(nameof(deduccionesService));
             _cierreService = cierreService ?? throw new ArgumentNullException(nameof(cierreService));
             _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
+
+            //Reportes
+            _reporteEmpleadosService = reporteEmpleadosService ?? throw new ArgumentNullException(nameof(reporteEmpleadosService));
 
 
 
@@ -303,14 +310,55 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             Close();
         }
 
-        private void btnEmpleadosReporte_Click(object sender, EventArgs e)
+        private void btnEmpleadosReporte_Click(object? sender, EventArgs e)
         {
             PopupMenus.ShowEmpleadosMenu(
-                btnEmpleado
-            // listado: () => ShowView<UI.Vistas.EmpleadosView>(),
-            // nuevo: () => ShowView<UI.Vistas.EmpleadoNuevoView>(),
-            // importar: () => ShowView<UI.Vistas.ImportarEmpleadosView>()
+                btnEmpleadosReporte,
+                activos: MostrarReporteEmpleadosActivos,
+                noActivos: MostrarReporteEmpleadosInactivos
             );
+        }
+
+        private void MostrarReporteEmpleadosActivos()
+        {
+            try
+            {
+                var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                            ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
+                var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+
+                using var dlg = new MangaRica.UI.Forms.FormReporteEmpleadosActivos(cs, vhost);
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
+                    "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void MostrarReporteEmpleadosInactivos()
+        {
+            try
+            {
+                MessageBox.Show("Reporte de Empleados Inactivos - Funcionalidad pendiente de implementar",
+                    "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                
+                // TODO: Implementar el reporte de empleados inactivos
+                // var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                //             ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
+                // var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+                //
+                // using var dlg = new MangaRica.UI.Forms.FormReporteEmpleadosInactivos(cs, vhost);
+                // dlg.StartPosition = FormStartPosition.CenterParent;
+                // dlg.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
+                    "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnPlanillaReportes_Click(object sender, EventArgs e)

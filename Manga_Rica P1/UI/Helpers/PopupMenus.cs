@@ -105,7 +105,7 @@ namespace Manga_Rica_P1.UI.Helpers
             var b5 = MakeItem("Ausencias", ausencias  /*, Properties.Resources.import_icon*/);
 
             var panel = BuildPanel(b1, b2, b3, b4, b5);
-            ShowPopup(anchor, panel, new Point(anchor.Width - 40, 158));
+            ShowPopup(anchor, panel, new Point(anchor.Width - 40, 20));
         }
 
         public static void ShowPlanillaMenu(
