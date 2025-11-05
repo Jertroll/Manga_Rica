@@ -54,8 +54,10 @@ namespace Manga_Rica_P1.DAL
 SELECT  e.Id, e.Carne, e.Cedula, e.Primer_Apellido, e.Segundo_Apellido, e.Nombre,
         e.Fecha_Nacimiento, e.Estado_Civil, e.Telefono, e.Celular, e.Nacionalidad,
         e.Laboro, e.Direccion, e.Id_Departamento, e.Salario, e.Puesto,
-        e.Fecha_Ingreso, e.Fecha_Salida, e.Foto, e.Activo, e.MC_Numero
+        e.Fecha_Ingreso, e.Fecha_Salida, e.Foto, e.Activo, e.MC_Numero,
+        d.Departamento
 FROM dbo.Empleados e
+LEFT JOIN dbo.Departamentos d ON e.Id_Departamento = d.Id
 WHERE (
     @f IS NULL
     OR CONVERT(nvarchar(20), e.Id) LIKE '%' + @f + '%'
@@ -332,6 +334,7 @@ WHERE Cedula=@ced AND (@id IS NULL OR Id<>@id);";
             //  0: Id (BIGINT)
             //  1: Carne (BIGINT)
             // 14: Salario (float en SQL -> double en .NET)
+            // 21: Departamento (nombre) - NUEVO
             var emp = new Empleado
             {
                 Id = Convert.ToInt32(rd.GetValue(0)),                     // BIGINT -> int (app)
@@ -356,6 +359,12 @@ WHERE Cedula=@ced AND (@id IS NULL OR Id<>@id);";
                 Activo = rd.GetBoolean(19) ? 1 : 0,
                 MC_Numero = Convert.ToInt64(rd.GetValue(20))
             };
+            
+            // Si viene del GetPage con JOIN, asignar el nombre del departamento
+            if (rd.FieldCount > 21)
+            {
+                emp.Departamento_Nombre = rd.IsDBNull(21) ? "" : rd.GetString(21);
+            }
 
             return emp;
         }

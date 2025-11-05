@@ -134,6 +134,7 @@ namespace Manga_Rica_P1.BLL
             dt.Columns.Add("Laboro", typeof(int));         // 0/1
             dt.Columns.Add("Direccion", typeof(string));
             dt.Columns.Add("Id_Departamento", typeof(int));
+            dt.Columns.Add("Departamento", typeof(string)); // NUEVO: nombre del departamento
             dt.Columns.Add("Salario", typeof(decimal));
             dt.Columns.Add("Puesto", typeof(string));
             dt.Columns.Add("Fecha Ingreso", typeof(DateTime));
@@ -157,6 +158,7 @@ namespace Manga_Rica_P1.BLL
                     e.Laboro,
                     e.Direccion,
                     e.Id_Departamento,
+                    e.Departamento_Nombre, // NUEVO
                     Convert.ToDecimal(e.Salario),
                     e.Puesto,
                     e.Fecha_Ingreso,
