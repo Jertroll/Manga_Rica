@@ -41,6 +41,10 @@ namespace Manga_Rica_P1
             var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
             var acumuladoRepo = new AcumuladoDiarioRepository(cs);
 
+            //Reporte
+            var reporteEmpleadosDal = new ReporteEmpleadosDAL(cs);
+         
+
             // Nueva implementacion: repo específico para activar pagos
             var pagosRepo = new ActivarPagosRepository(cs);
 
@@ -56,7 +60,10 @@ namespace Manga_Rica_P1
             var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
             var cierreService = new CierreDiarioService(acumuladoRepo);
 
-            
+            //Reporte
+            var reporteEmpleadosService = new ReporteEmpleadosService(reporteEmpleadosDal);
+
+
             var activarPagosService = new ActivarPagosService(pagosRepo, empleadoRepo, semanaRepo);
 
             // Autenticación + sesión
@@ -89,7 +96,10 @@ namespace Manga_Rica_P1
                 sodaService,
                 deduccionesService,
                 cierreService,
-                activarPagosService 
+                activarPagosService,
+
+                //Reportes
+                reporteEmpleadosService
             ));
         }
     }

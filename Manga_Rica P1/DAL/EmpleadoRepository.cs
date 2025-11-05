@@ -424,5 +424,6 @@ WHERE Activo = 1 AND Carne = @carne;";
 
             return MapEmpleado(rd);  // reutiliza tu mapeador existente
         }
+
     }
 }
