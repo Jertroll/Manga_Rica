@@ -60,8 +60,7 @@ namespace Manga_Rica_P1
             var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
             var cierreService = new CierreDiarioService(acumuladoRepo);
 
-            //Reporte
-            var reporteEmpleadosService = new ReporteEmpleadosService(reporteEmpleadosDal);
+      
 
 
             var activarPagosService = new ActivarPagosService(pagosRepo, empleadoRepo, semanaRepo);
@@ -96,10 +95,9 @@ namespace Manga_Rica_P1
                 sodaService,
                 deduccionesService,
                 cierreService,
-                activarPagosService,
+                activarPagosService
 
-                //Reportes
-                reporteEmpleadosService
+   
             ));
         }
     }
