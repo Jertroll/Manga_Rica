@@ -311,10 +311,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             PopupMenus.ShowEmpleadosMenu(
                 btnEmpleadosReporte,
                 activos: MostrarReporteEmpleadosActivos,
-                noActivos: MostrarReporteEmpleadosInactivos,
-                uniformeGeneral: MostrarReporteUniformeGeneral,
-                uniformePorArticulo: MostrarReporteUniformePorArticulo,
-                uniformePorEmpleado: MostrarReporteUniformePorEmpleado
+                noActivos: MostrarReporteEmpleadosInactivos
             );
         }
 
@@ -354,24 +351,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
                     "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void MostrarReporteUniformeGeneral()
-        {
-            MessageBox.Show("Reporte Uniforme - General\n(Pendiente de implementación)", 
-                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void MostrarReporteUniformePorArticulo()
-        {
-            MessageBox.Show("Reporte Uniforme - Por Artículo\n(Pendiente de implementación)", 
-                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-
-        private void MostrarReporteUniformePorEmpleado()
-        {
-            MessageBox.Show("Reporte Uniforme - Por Empleado\n(Pendiente de implementación)", 
-                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnPlanillaReportes_Click(object sender, EventArgs e)

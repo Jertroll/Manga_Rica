@@ -69,24 +69,33 @@ namespace Manga_Rica_P1.UI.Reportes
         {
             try
             {
-                await _web.EnsureCoreWebView2Async();
+                // 1) Crear el environment con flags que desactivan el modo oscuro forzado
+                var opts = new CoreWebView2EnvironmentOptions
+                {
+                    // ambas por compatibilidad entre versiones de Edge
+                    AdditionalBrowserArguments =
+                        "--disable-features=WebContentsForceDark --force-dark-mode=0"
+                };
+                var env = await CoreWebView2Environment.CreateAsync(null, null, opts);
 
+                // 2) Iniciar WebView2 con ese environment
+                await _web.EnsureCoreWebView2Async(env);
+
+                // 3) Fondo blanco explícito (por si el tema del SO es oscuro)
+                _web.DefaultBackgroundColor = System.Drawing.Color.White;
+
+                // 4) Mapear assets
                 _web.CoreWebView2.SetVirtualHostNameToFolderMapping(
-                    _virtualHost,
-                    _assetsFolder,
-                    CoreWebView2HostResourceAccessKind.DenyCors);
+                    _virtualHost, _assetsFolder, CoreWebView2HostResourceAccessKind.DenyCors);
 
-                // ViewModel
+                // 5) Render habitual del HTML…
                 var vm = await _service.GetEmpleadosInactivosVmAsync();
-
-                // Config appsettings
                 var cfg = Manga_Rica_P1.Program.Configuration;
                 var company = cfg?["Brand:Company"] ?? "Manga Rica S.A.";
                 var phones = cfg?["Brand:Phones"] ?? "";
                 var address = cfg?["Brand:Address"] ?? "";
                 var logoFile = cfg?["Brand:LogoFile"] ?? "logo.png";
 
-                // Render Razor
                 var html = await _renderer.RenderAsync(
                     templateName: "EmpleadosInactivos.cshtml",
                     model: vm,
@@ -107,6 +116,7 @@ namespace Manga_Rica_P1.UI.Reportes
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         // Nueva implementacion: exportación a PDF
         private async void BtnExportar_Click(object? sender, EventArgs e)

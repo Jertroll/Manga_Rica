@@ -2,73 +2,88 @@
 @using System
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8"/>
-<title>@ViewBag?.Title</title>
-<style>
-  /* ===== Scroll siempre visible en pantalla ===== */
-  html {
-    height: 100%;
-    overflow-y: scroll;              /* reserva el canal vertical siempre */
-    scrollbar-gutter: stable both-edges; /* evita “saltos” al aparecer/desaparecer */
-  }
-  body {
-    min-height: 100vh;               /* asegura altura mínima al alto del viewport */
-    margin: 0;
-    font-family: system-ui, Segoe UI, Arial;
-  }
-  .content {
-    /* como la cabecera no es fija en pantalla, basta asegurar altura */
-    min-height: 100vh;
-  }
+  <meta charset="utf-8" />
+  <title>@ViewBag?.Title</title>
 
-  /* ===== Estilos de impresión ===== */
-  @@page { size: Letter; margin: 12.7mm; }
-  @@media print {
-    html, body { -webkit-print-color-adjust: exact; }
-    .no-break { break-inside: avoid; }
-    .header { position: fixed; top: 0; left: 0; right: 0; }
-    .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 11px; color: #555; }
-    .content { margin-top: 100px; margin-bottom: 40px; } /* margen por cabecera fija al imprimir */
-  }
+  <!-- Fuerza esquema de color claro en navegadores con auto-dark -->
+  <meta name="color-scheme" content="light" />
+  <style>
+    :root { color-scheme: light; }
 
-  h1,h2,h3 { margin: 0; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; }
-  th { background: #f1f5f9; text-align: left; }
-  td.num { text-align: right; }
-  tr:nth-child(even) td { background: #fafafa; }
+    /* ===== Scroll siempre visible en pantalla ===== */
+    html {
+      height: 100%;
+      overflow-y: scroll;                 /* reserva el canal vertical siempre */
+      scrollbar-gutter: stable both-edges;/* evita saltos al aparecer el scroll */
+      background: #ffffff;                /* fuerza fondo claro */
+    }
+    body {
+      min-height: 100vh;                  /* asegura altura mÃ­nima al alto del viewport */
+      margin: 0;
+      font-family: system-ui, Segoe UI, Arial;
+      background: #ffffff;                /* fuerza fondo claro */
+      color: #111;                        /* texto oscuro estÃ¡ndar */
+    }
 
-  /* Cabecera con logo a la izquierda y bloque central centrado */
-  .hdr {
-    display: grid;
-    grid-template-columns: 180px 1fr 180px;  /* [logo] [texto] [espaciador] */
-    align-items: center;
-    gap: 12px;
-    padding: 10px 8px 6px 8px;
-    border-bottom: 3px solid #eab308;
-  }
-  .hdr .logo-wrap { grid-column: 1; display:flex; align-items:center; justify-content:flex-start; }
-  .hdr .logo-wrap img { height: 36px; object-fit: contain; }
-  .hdr .info { grid-column: 2; text-align: center; line-height: 1.3; }
-  .hdr .info .company { font-weight: 600; font-size: 14px; }
-  .hdr .info .phones, .hdr .info .address { font-size: 13px; }
-  .hdr .spacer { grid-column: 3; } /* equilibra el centrado */
+    .content { min-height: 100vh; }
 
-  .title { font-size: 18px; font-weight: 600; margin: 12px 8px; }
+    /* ===== Estilos de impresiÃ³n ===== */
+    @@page { size: Letter; margin: 12.7mm; }
+    @@media print {
+      html, body { -webkit-print-color-adjust: exact; }
+      .no-break { break-inside: avoid; }
+      .header { position: fixed; top: 0; left: 0; right: 0; }
+      .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 11px; color: #555; }
+      .content { margin-top: 100px; margin-bottom: 40px; } /* margen por cabecera fija al imprimir */
+    }
 
-  
-  /* ——— Colchón al final para que no se corte la última fila ——— */
-  .content {
-    margin-top: 100px;               /* ya lo tienes para impresión */
-    margin-bottom: 40px;
-    padding-bottom: 120px;           /* << añade espacio visible al final */
-  }
+    h1, h2, h3 { margin: 0; }
 
-  
-  }
-</style>
+    table { width: 100%; border-collapse: collapse; background: #ffffff; }
+    th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; background: #ffffff; color: #111; }
+    th { background: #f1f5f9; text-align: left; }
+    td.num { text-align: right; }
+    tr:nth-child(even) td { background: #fafafa; }
+
+    /* Cabecera con logo a la izquierda y bloque central centrado */
+    .hdr {
+      display: grid;
+      grid-template-columns: 180px 1fr 180px;  /* [logo] [texto] [espaciador] */
+      align-items: center;
+      gap: 12px;
+      padding: 10px 8px 6px 8px;
+      border-bottom: 3px solid #eab308;
+      background: #ffffff;
+    }
+    .hdr .logo-wrap { grid-column: 1; display:flex; align-items:center; justify-content:flex-start; }
+    .hdr .logo-wrap img { height: 36px; object-fit: contain; }
+    .hdr .info { grid-column: 2; text-align: center; line-height: 1.3; color: #111; }
+    .hdr .info .company { font-weight: 600; font-size: 14px; }
+    .hdr .info .phones, .hdr .info .address { font-size: 13px; }
+    .hdr .spacer { grid-column: 3; }
+
+    .title { font-size: 18px; font-weight: 600; margin: 12px 8px; color: #111; }
+
+    /* ColchÃ³n al final para que no se corte la Ãºltima fila */
+    .content {
+      margin-top: 100px;        /* coordina con cabecera fija al imprimir */
+      margin-bottom: 40px;
+      padding-bottom: 120px;    /* espacio visible al final en pantalla */
+      background: #ffffff;
+    }
+
+    /* Neutraliza dark-mode si el SO estÃ¡ en oscuro */
+    @@media (prefers-color-scheme: dark) {
+      html, body, .hdr, .content, table, th, td { 
+        background: #ffffff !important; 
+        color: #111 !important; 
+      }
+      th { background: #f1f5f9 !important; }
+      tr:nth-child(even) td { background: #fafafa !important; }
+    }
+  </style>
 </head>
 <body>
   <!-- Cabecera corporativa -->
@@ -85,7 +100,7 @@
       </div>
       <div class="spacer"></div>
     </div>
-    <!-- Título del reporte debajo de la cabecera -->
+    <!-- TÃ­tulo del reporte debajo de la cabecera -->
     <div class="title">@ViewBag.Title</div>
   </div>
 
