@@ -35,8 +35,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly CierreDiarioService _cierreService;
         private readonly ActivarPagosService _activarPagosService;
 
-        //Reporte
-        private readonly ReporteEmpleadosService _reporteEmpleadosService;
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
@@ -49,8 +47,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             SodaService sodaService,
             DeduccionesService deduccionesService,
             CierreDiarioService cierreService,
-            ActivarPagosService activarPagosService,
-             ReporteEmpleadosService reporteEmpleadosService)
+            ActivarPagosService activarPagosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -66,8 +63,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _cierreService = cierreService ?? throw new ArgumentNullException(nameof(cierreService));
             _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
 
-            //Reportes
-            _reporteEmpleadosService = reporteEmpleadosService ?? throw new ArgumentNullException(nameof(reporteEmpleadosService));
+            
 
 
 
@@ -342,17 +338,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         {
             try
             {
-                MessageBox.Show("Reporte de Empleados Inactivos - Funcionalidad pendiente de implementar",
-                    "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                
-                // TODO: Implementar el reporte de empleados inactivos
-                // var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
-                //             ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
-                // var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
-                //
-                // using var dlg = new MangaRica.UI.Forms.FormReporteEmpleadosInactivos(cs, vhost);
-                // dlg.StartPosition = FormStartPosition.CenterParent;
-                // dlg.ShowDialog(this);
+                var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                            ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
+                var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+
+                using var dlg = new Manga_Rica_P1.UI.Reportes.FormReporteEmpleadosInactivos(cs, vhost);
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
             }
             catch (Exception ex)
             {

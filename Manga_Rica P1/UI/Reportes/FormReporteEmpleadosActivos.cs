@@ -68,7 +68,7 @@ namespace MangaRica.UI.Forms
             _renderer = new HtmlReportRenderer(_templatesFolder);
 
             // Nueva implementacion: eventos de UI
-            _btnExportar.Click += BtnExportar_Click;
+            _btnExportarPdf.Click += BtnExportar_Click;
             Load += Form_Load;
         }
 
@@ -146,6 +146,56 @@ namespace MangaRica.UI.Forms
             }
             _web.CoreWebView2.NavigationCompleted += Handler;
             return tcs.Task;
+        }
+
+        private async Task ExportarPdfAsync()
+        {
+            await EnsureWebView2ReadyAsync();
+
+            using var fbd = new FolderBrowserDialog
+            {
+                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Description = "Selecciona la carpeta donde guardar el PDF"
+            };
+            if (fbd.ShowDialog(this) != DialogResult.OK) return;
+
+            var filePath = Path.Combine(
+                fbd.SelectedPath,
+                SanitizeFileName($"{Text.Replace("Reporte: ", "")}_{DateTime.Now:yyyy-MM-dd_HH-mm}.pdf"));
+
+            var settings = _web.CoreWebView2.Environment.CreatePrintSettings();
+            settings.ShouldPrintHeaderAndFooter = false;
+            settings.ShouldPrintBackgrounds = true;
+            settings.Orientation = CoreWebView2PrintOrientation.Portrait;
+            settings.MarginTop = settings.MarginBottom = settings.MarginLeft = settings.MarginRight = 0.5;
+
+            bool ok = await _web.CoreWebView2.PrintToPdfAsync(filePath, settings);
+            MessageBox.Show(ok ? $"PDF generado:\n{filePath}" : "No se pudo generar el PDF.",
+                "Exportar", MessageBoxButtons.OK, ok ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+        }
+
+        private async Task EnsureWebView2ReadyAsync()
+        {
+            await _web.EnsureCoreWebView2Async();
+        }
+
+        private static string SanitizeFileName(string name)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars()) name = name.Replace(c, '_');
+            return name;
+        }
+
+        // Cambia el tipo de valor devuelto de Task a void para el método de evento
+        private async void _btnExportarPdf_Click(object sender, EventArgs e)
+        {
+
+            await ExportarPdfAsync();
+
+        }
+
+        private void _btnExportarExcel_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
