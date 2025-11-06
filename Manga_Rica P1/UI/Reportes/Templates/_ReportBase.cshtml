@@ -7,17 +7,32 @@
 <meta charset="utf-8"/>
 <title>@ViewBag?.Title</title>
 <style>
-  /* Nueva implementacion: estilos comunes */
+  /* ===== Scroll siempre visible en pantalla ===== */
+  html {
+    height: 100%;
+    overflow-y: scroll;              /* reserva el canal vertical siempre */
+    scrollbar-gutter: stable both-edges; /* evita “saltos” al aparecer/desaparecer */
+  }
+  body {
+    min-height: 100vh;               /* asegura altura mínima al alto del viewport */
+    margin: 0;
+    font-family: system-ui, Segoe UI, Arial;
+  }
+  .content {
+    /* como la cabecera no es fija en pantalla, basta asegurar altura */
+    min-height: 100vh;
+  }
+
+  /* ===== Estilos de impresión ===== */
   @@page { size: Letter; margin: 12.7mm; }
   @@media print {
     html, body { -webkit-print-color-adjust: exact; }
     .no-break { break-inside: avoid; }
     .header { position: fixed; top: 0; left: 0; right: 0; }
     .footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 11px; color: #555; }
-    .content { margin-top: 100px; margin-bottom: 40px; } /* Nueva implementacion: margen mayor por cabecera fija */
+    .content { margin-top: 100px; margin-bottom: 40px; } /* margen por cabecera fija al imprimir */
   }
 
-  body { font-family: system-ui, Segoe UI, Arial; margin: 0; }
   h1,h2,h3 { margin: 0; }
   table { width: 100%; border-collapse: collapse; }
   th, td { border: 1px solid #ddd; padding: 6px; font-size: 13px; }
@@ -25,27 +40,38 @@
   td.num { text-align: right; }
   tr:nth-child(even) td { background: #fafafa; }
 
-  /* Nueva implementacion: cabecera con logo a la izquierda y bloque central perfectamente centrado */
+  /* Cabecera con logo a la izquierda y bloque central centrado */
   .hdr {
     display: grid;
-    grid-template-columns: 180px 1fr 180px;  /* [logo] [texto centrado] [espaciador simétrico] */
+    grid-template-columns: 180px 1fr 180px;  /* [logo] [texto] [espaciador] */
     align-items: center;
     gap: 12px;
     padding: 10px 8px 6px 8px;
-    border-bottom: 3px solid #eab308; /* amarillo tenue */
+    border-bottom: 3px solid #eab308;
   }
   .hdr .logo-wrap { grid-column: 1; display:flex; align-items:center; justify-content:flex-start; }
   .hdr .logo-wrap img { height: 36px; object-fit: contain; }
   .hdr .info { grid-column: 2; text-align: center; line-height: 1.3; }
   .hdr .info .company { font-weight: 600; font-size: 14px; }
   .hdr .info .phones, .hdr .info .address { font-size: 13px; }
-  .hdr .spacer { grid-column: 3; } /* Nueva implementacion: equilibra el centrado */
+  .hdr .spacer { grid-column: 3; } /* equilibra el centrado */
 
   .title { font-size: 18px; font-weight: 600; margin: 12px 8px; }
+
+  
+  /* ——— Colchón al final para que no se corte la última fila ——— */
+  .content {
+    margin-top: 100px;               /* ya lo tienes para impresión */
+    margin-bottom: 40px;
+    padding-bottom: 120px;           /* << añade espacio visible al final */
+  }
+
+  
+  }
 </style>
 </head>
 <body>
-  <!-- Nueva implementacion: Cabecera corporativa -->
+  <!-- Cabecera corporativa -->
   <div class="header">
     <div class="hdr">
       <div class="logo-wrap">
@@ -59,7 +85,7 @@
       </div>
       <div class="spacer"></div>
     </div>
-    <!-- Nueva implementacion: Título del reporte debajo de la cabecera -->
+    <!-- Título del reporte debajo de la cabecera -->
     <div class="title">@ViewBag.Title</div>
   </div>
 
