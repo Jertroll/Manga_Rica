@@ -311,9 +311,21 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             PopupMenus.ShowEmpleadosMenu(
                 btnEmpleadosReporte,
                 activos: MostrarReporteEmpleadosActivos,
-                noActivos: MostrarReporteEmpleadosInactivos
+                noActivos: MostrarReporteEmpleadosInactivos,
+                uniformeSubmenu: (btnUniforme, closeParent) =>
+                {
+                    // Abre el submenú de Uniforme; cierra el padre SOLO al elegir una opción
+                    PopupMenus.ShowUniformeMenu(
+                        btnUniforme,
+                        general: () => { closeParent(); MostrarReporteUniformeGeneral(); },
+                        porArticulo: () => { closeParent(); MostrarReporteUniformePorArticulo(); },
+                        porEmpleado: () => { closeParent(); MostrarReporteUniformePorEmpleado(); },
+                        onCloseParent: closeParent // opcional
+                    );
+                }
             );
         }
+
 
         private void MostrarReporteEmpleadosActivos()
         {
@@ -351,6 +363,24 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
                     "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void MostrarReporteUniformeGeneral()
+        {
+            MessageBox.Show("Reporte de Uniforme General - En desarrollo",
+                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarReporteUniformePorArticulo()
+        {
+            MessageBox.Show("Reporte de Uniforme por Artículo - En desarrollo",
+                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarReporteUniformePorEmpleado()
+        {
+            MessageBox.Show("Reporte de Uniforme por Empleado - En desarrollo",
+                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnPlanillaReportes_Click(object sender, EventArgs e)
