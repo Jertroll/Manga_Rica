@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Manga_Rica_P1.ENTITY
+namespace Manga_Rica_P1.Entity
 {
     [Table("Pagos", Schema = "dbo")]
     public class Pagos

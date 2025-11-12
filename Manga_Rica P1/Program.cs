@@ -27,7 +27,11 @@ namespace Manga_Rica_P1
             string cs = Configuration.GetConnectionString("MangaRicaDb")
                 ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no está configurada");
 
-            // Infra (Repos)
+            string csClock = Configuration.GetConnectionString("ClockDb")
+                ?? throw new InvalidOperationException("Falta 'ClockDb', no hay conexion");
+
+
+            // Infra (Repository)
             var usuarioRepo = new UsuarioRepository(cs);
             var departamentoRepo = new DepartamentoRepository(cs);
             var semanaRepo = new SemanaRepository(cs);
@@ -40,10 +44,16 @@ namespace Manga_Rica_P1
             var deduccionesRepo = new DeduccionesRepository(cs);
             var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
             var acumuladoRepo = new AcumuladoDiarioRepository(cs);
+            var pagosRowRepo = new PagosRepository(cs);
 
             //Reporte
             var reporteEmpleadosDal = new ReporteEmpleadosDAL(cs);
-         
+
+            //CLock
+            var clockEmployeesRepo = new Manga_Rica_P1.DAL.Clock.EmployeesClockRepository(csClock);
+            var clockGlogsRepo = new Manga_Rica_P1.DAL.Clock.GLogsRepository(csClock);
+            var clockCalcAttRepo = new Manga_Rica_P1.DAL.Clock.CalculatedAttendanceRepository(csClock);
+
 
             // Nueva implementacion: repo específico para activar pagos
             var pagosRepo = new ActivarPagosRepository(cs);
@@ -59,8 +69,10 @@ namespace Manga_Rica_P1
             var sodaService = new SodaService(sodaRepo, sodaDetallesRepo, articulosRepo, empleadoRepo);
             var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
             var cierreService = new CierreDiarioService(acumuladoRepo);
+            var pagosService = new Manga_Rica_P1.BLL.Pagos.PagosService(acumuladoRepo, pagosRowRepo, deduccionesRepo, empleadoRepo, sodaRepo, semanaRepo);
+           
 
-      
+
 
 
             var activarPagosService = new ActivarPagosService(pagosRepo, empleadoRepo, semanaRepo);
@@ -95,9 +107,8 @@ namespace Manga_Rica_P1
                 sodaService,
                 deduccionesService,
                 cierreService,
-                activarPagosService
-
-   
+                activarPagosService,
+                pagosService
             ));
         }
     }

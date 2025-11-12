@@ -24,17 +24,43 @@ namespace Manga_Rica_P1.BLL
             return (ToDataTable(result.items), result.total);
         }
 
-        // Auxiliares
+        // =========================================================
+        //  Getters (wrappers) — compatibles con UI/BLL
+        // =========================================================
+
+        // Mantengo el existente por compatibilidad
         public Empleado? GetById(int id) => _repo.GetById(id);
+
+        // Overload correcto cuando trabajamos con BIGINT en BD
+        public Empleado? GetById(long id) => _repo.GetById(id);
+
         public Empleado? GetByCedula(string cedula) => _repo.GetByCedula(cedula);
-        
+
+        // Nuevo: obtener por carné (BIGINT)
+        public Empleado? GetByCarne(long carne) => _repo.GetByCarne(carne);
+
+
+        public Empleado? GetByCarne(string? carneText)
+        {
+            if (string.IsNullOrWhiteSpace(carneText)) return null;
+            if (!long.TryParse(carneText.Trim(), out var carne)) return null;
+            return _repo.GetActivoByCarne(carne) ?? _repo.GetByCarne(carne);
+        }
+
+        // Solo empleados ACTIVO = 1
+        public Empleado? GetActivoByCarne(long carne) => _repo.GetActivoByCarne(carne);
+
+        public (long Id, string NombreCompleto)? GetIdentidadBasica(long carne)
+            => _repo.GetIdentidadBasica(carne);
+
+        public bool ExisteActivoPorCarne(long carne) => _repo.ExisteActivoPorCarne(carne);
+
         /// <summary>
         /// Verifica si existe un empleado activo (Activo = 1) con la cédula especificada.
         /// </summary>
         public bool ExistsActiveByCedula(string cedula)
         {
             if (string.IsNullOrWhiteSpace(cedula)) return false;
-            
             var empleado = _repo.GetByCedula(cedula.Trim());
             return empleado != null && empleado.Activo == 1;
         }
@@ -100,7 +126,7 @@ namespace Manga_Rica_P1.BLL
         {
             e.Cedula = (e.Cedula ?? "").Trim();
             e.Primer_Apellido = (e.Primer_Apellido ?? "").Trim();
-            e.Segundo_Apellido = (e.Segundo_Apellido ?? "").Trim(); // BD la tiene NOT NULL
+            e.Segundo_Apellido = (e.Segundo_Apellido ?? "").Trim();
             e.Nombre = (e.Nombre ?? "").Trim();
             e.Estado_Civil = (e.Estado_Civil ?? "").Trim();
             e.Telefono = (e.Telefono ?? "").Trim();
@@ -134,7 +160,7 @@ namespace Manga_Rica_P1.BLL
             dt.Columns.Add("Laboro", typeof(int));         // 0/1
             dt.Columns.Add("Direccion", typeof(string));
             dt.Columns.Add("Id_Departamento", typeof(int));
-            dt.Columns.Add("Departamento", typeof(string)); // NUEVO: nombre del departamento
+            dt.Columns.Add("Departamento", typeof(string));
             dt.Columns.Add("Salario", typeof(decimal));
             dt.Columns.Add("Puesto", typeof(string));
             dt.Columns.Add("Fecha Ingreso", typeof(DateTime));
@@ -158,7 +184,7 @@ namespace Manga_Rica_P1.BLL
                     e.Laboro,
                     e.Direccion,
                     e.Id_Departamento,
-                    e.Departamento_Nombre, // NUEVO
+                    e.Departamento_Nombre,
                     Convert.ToDecimal(e.Salario),
                     e.Puesto,
                     e.Fecha_Ingreso,
@@ -168,10 +194,5 @@ namespace Manga_Rica_P1.BLL
             }
             return dt;
         }
-
-        //---------------------------------Reportes------------------------------------
-
-
-
     }
 }

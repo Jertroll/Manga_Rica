@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Linq;
-using Manga_Rica_P1.ENTITY;
+using Manga_Rica_P1.Entity;
 
 namespace Manga_Rica_P1.DAL
 {
@@ -26,10 +26,10 @@ namespace Manga_Rica_P1.DAL
         public long GetNextId()
         {
             const string sql = "SELECT ISNULL(MAX(Id), 0) + 1 FROM Deducciones";
-            
+
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(sql, connection);
-            
+
             connection.Open();
             var result = command.ExecuteScalar();
             return Convert.ToInt64(result);
@@ -47,7 +47,7 @@ namespace Manga_Rica_P1.DAL
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(sql, connection);
-            
+
             command.Parameters.AddWithValue("@Id_Empleado", deduccion.Id_Empleado);
             command.Parameters.AddWithValue("@Total", deduccion.Total);
             command.Parameters.AddWithValue("@Saldo", deduccion.Saldo);
@@ -77,7 +77,7 @@ namespace Manga_Rica_P1.DAL
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(sql, connection);
-            
+
             command.Parameters.AddWithValue("@Id", deduccion.Id);
             command.Parameters.AddWithValue("@Id_Empleado", deduccion.Id_Empleado);
             command.Parameters.AddWithValue("@Total", deduccion.Total);
@@ -106,7 +106,7 @@ namespace Manga_Rica_P1.DAL
 
             connection.Open();
             using var reader = command.ExecuteReader();
-            
+
             if (reader.Read())
             {
                 return new Deducciones
@@ -120,7 +120,7 @@ namespace Manga_Rica_P1.DAL
                     Fecha = reader.GetDateTime("Fecha")
                 };
             }
-            
+
             return null;
         }
 
@@ -129,13 +129,11 @@ namespace Manga_Rica_P1.DAL
         /// </summary>
         public (List<Deducciones> items, int total) GetByEmpleado(long empleadoId, int pageIndex = 1, int pageSize = 50)
         {
-            // Consulta para obtener el total
             const string sqlCount = @"
                 SELECT COUNT(*) 
                 FROM Deducciones 
                 WHERE Id_Empleado = @EmpleadoId";
 
-            // Consulta paginada
             const string sqlData = @"
                 SELECT Id, Id_Empleado, Total, Saldo, Id_Usuario, Anulada, Fecha
                 FROM Deducciones 
@@ -147,12 +145,10 @@ namespace Manga_Rica_P1.DAL
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
 
-            // Obtener total
             using var countCommand = new SqlCommand(sqlCount, connection);
             countCommand.Parameters.AddWithValue("@EmpleadoId", empleadoId);
             var total = (int)countCommand.ExecuteScalar();
 
-            // Obtener datos paginados
             var items = new List<Deducciones>();
             using var dataCommand = new SqlCommand(sqlData, connection);
             dataCommand.Parameters.AddWithValue("@EmpleadoId", empleadoId);
@@ -193,14 +189,12 @@ namespace Manga_Rica_P1.DAL
                        OR e.Primer_Apellido LIKE @Filtro";
             }
 
-            // Consulta para obtener el total
             var sqlCount = $@"
                 SELECT COUNT(*) 
                 FROM Deducciones d
                 INNER JOIN Empleados e ON d.Id_Empleado = e.Id
                 {whereClause}";
 
-            // Consulta paginada con información del empleado
             var sqlData = $@"
                 SELECT d.Id, d.Id_Empleado, d.Total, d.Saldo, d.Id_Usuario, d.Anulada, d.Fecha,
                        e.Carne, e.Nombre, e.Primer_Apellido, e.Segundo_Apellido
@@ -214,7 +208,6 @@ namespace Manga_Rica_P1.DAL
             using var connection = new SqlConnection(_connectionString);
             connection.Open();
 
-            // Obtener total
             using var countCommand = new SqlCommand(sqlCount, connection);
             if (!string.IsNullOrWhiteSpace(filtro))
             {
@@ -222,7 +215,6 @@ namespace Manga_Rica_P1.DAL
             }
             var total = (int)countCommand.ExecuteScalar();
 
-            // Obtener datos paginados
             var items = new List<Deducciones>();
             using var dataCommand = new SqlCommand(sqlData, connection);
             if (!string.IsNullOrWhiteSpace(filtro))
@@ -262,7 +254,7 @@ namespace Manga_Rica_P1.DAL
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(sql, connection);
-            
+
             command.Parameters.AddWithValue("@Id", id);
             command.Parameters.AddWithValue("@Id_Usuario", usuarioId);
 
@@ -287,7 +279,7 @@ namespace Manga_Rica_P1.DAL
 
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand(sql, connection);
-            
+
             command.Parameters.AddWithValue("@Id", id);
             command.Parameters.AddWithValue("@Saldo", nuevoSaldo);
 
@@ -308,6 +300,75 @@ namespace Manga_Rica_P1.DAL
 
             connection.Open();
             command.ExecuteNonQuery();
+        }
+
+        // Suma el saldo pendiente de todas las deducciones de un empleado
+        public double SumSaldoPendiente(long idEmpleado)
+        {
+            using var cn = new SqlConnection(_connectionString);
+            using var cmd = cn.CreateCommand();
+            cmd.CommandText = @"
+                SELECT ISNULL(SUM(Saldo), 0)
+                FROM dbo.Deducciones
+                WHERE Id_Empleado = @emp AND Saldo <> 0;";
+            cmd.Parameters.Add("@emp", SqlDbType.BigInt).Value = idEmpleado;
+            cn.Open();
+            return Convert.ToDouble(cmd.ExecuteScalar());
+        }
+
+        // Aplica 'monto' contra las deducciones pendientes (FIFO por Id).
+        // Devuelve el remanente no aplicado (0 si alcanzó).
+        public double AplicarContraSaldo(long idEmpleado, double monto)
+        {
+            if (monto <= 0) return 0;
+
+            using var cn = new SqlConnection(_connectionString);
+            cn.Open();
+            using var tx = cn.BeginTransaction();
+
+            try
+            {
+                // Traer deducciones con saldo, bloqueando para actualización (consistencia)
+                using var cmdSel = cn.CreateCommand();
+                cmdSel.Transaction = tx;
+                cmdSel.CommandText = @"
+                    SELECT Id, Saldo
+                    FROM dbo.Deducciones WITH (UPDLOCK, ROWLOCK)
+                    WHERE Id_Empleado = @emp AND Saldo > 0
+                    ORDER BY Id;"; // FIFO
+                cmdSel.Parameters.Add("@emp", SqlDbType.BigInt).Value = idEmpleado;
+
+                var items = new List<(int Id, double Saldo)>();
+                using (var rd = cmdSel.ExecuteReader())
+                    while (rd.Read())
+                        items.Add((rd.GetInt32(0), rd.GetDouble(1)));
+
+                foreach (var it in items)
+                {
+                    if (monto <= 0) break;
+                    var aplica = Math.Min(monto, it.Saldo);
+
+                    using var cmdUpd = cn.CreateCommand();
+                    cmdUpd.Transaction = tx;
+                    cmdUpd.CommandText = @"
+                        UPDATE dbo.Deducciones
+                        SET Saldo = Saldo - @aplica
+                        WHERE Id = @id;";
+                    cmdUpd.Parameters.Add("@aplica", SqlDbType.Float).Value = aplica;
+                    cmdUpd.Parameters.Add("@id", SqlDbType.Int).Value = it.Id;
+                    cmdUpd.ExecuteNonQuery();
+
+                    monto -= aplica;
+                }
+
+                tx.Commit();
+                return monto; // si > 0, no alcanzó para cubrir todo
+            }
+            catch
+            {
+                tx.Rollback();
+                throw;
+            }
         }
     }
 }

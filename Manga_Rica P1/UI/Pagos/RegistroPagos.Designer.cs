@@ -99,6 +99,7 @@
             buttonGuardar.Size = new Size(30, 25);
             buttonGuardar.TabIndex = 16;
             buttonGuardar.UseVisualStyleBackColor = true;
+            buttonGuardar.Click += buttonGuardar_Click;
             // 
             // labelHorasNormales
             // 

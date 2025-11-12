@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Manga_Rica_P1.ENTITY
+namespace Manga_Rica_P1.Entity
 {
     [Table("Deducciones", Schema = "dbo")]
     public class Deducciones

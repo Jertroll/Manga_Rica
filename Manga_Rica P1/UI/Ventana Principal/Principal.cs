@@ -1,4 +1,5 @@
 ﻿using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.BLL.Pagos;
 using Manga_Rica_P1.BLL.Session;
 using Manga_Rica_P1.DAL;
 using Manga_Rica_P1.UI.Articulos;
@@ -34,20 +35,22 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly DeduccionesService _deduccionesService;
         private readonly CierreDiarioService _cierreService;
         private readonly ActivarPagosService _activarPagosService;
+        private readonly PagosService _PagosService;
 
 
         public Principal(IAppSession session,
             UsuariosService usuariosService,
             DepartamentosService departamentosService,
             SemanasService semanasService,
-            ArticulosService articulosService, 
+            ArticulosService articulosService,
             SolicitudesService solicitudesService,
             EmpleadosService empleadosService,
             HorasService horasService,
             SodaService sodaService,
             DeduccionesService deduccionesService,
             CierreDiarioService cierreService,
-            ActivarPagosService activarPagosService)
+            ActivarPagosService activarPagosService,
+            PagosService pagosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -62,8 +65,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _deduccionesService = deduccionesService ?? throw new ArgumentNullException(nameof(deduccionesService));
             _cierreService = cierreService ?? throw new ArgumentNullException(nameof(cierreService));
             _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
+            _PagosService = pagosService ?? throw new ArgumentNullException(nameof(pagosService));
 
-            
+
 
 
 
@@ -476,7 +480,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSolicitudesPlanilla_Click(object sender, EventArgs e)
         {
-          
+
             var existente = panelPrincipal.Controls.OfType<SolicitudView>().FirstOrDefault();
             if (existente is not null) { existente.BringToFront(); return; }
 
@@ -563,10 +567,15 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnPagosSubmenu_Click(object sender, EventArgs e)
         {
-            var vista = new Manga_Rica_P1.UI.Pagos.RegistroPagos
-            {
-                Dock = DockStyle.Fill
-            };
+            var existente = panelPrincipal.Controls
+       .OfType<Manga_Rica_P1.UI.Pagos.RegistroPagos>()
+       .FirstOrDefault();
+            if (existente is not null) { existente.BringToFront(); return; }
+
+            var vista = new Manga_Rica_P1.UI.Pagos.RegistroPagos(
+                _PagosService, _semanasService, _empleadoService)
+            { Dock = DockStyle.Fill };
+
             panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
         }

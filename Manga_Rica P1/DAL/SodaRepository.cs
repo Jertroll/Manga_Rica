@@ -221,5 +221,29 @@ namespace Manga_Rica_P1.DAL
             cn.Open();
             cmd.ExecuteNonQuery();
         }
+
+        // Suma el total de soda por empleado en un rango [desde..hasta] (inclusive por día)
+        public double SumTotalByEmpleadoYRango(long idEmpleado, DateTime desde, DateTime hasta)
+        {
+            using var cn = new SqlConnection(_cs);
+            using var cmd = cn.CreateCommand();
+
+            // Inclusivo por la izquierda y exclusivo por la derecha:
+            // Fecha >= desde  AND Fecha < (hasta + 1 día) evita el clásico 23:59:59
+            cmd.CommandText = @"
+        SELECT ISNULL(SUM(Total), 0)
+        FROM dbo.Soda
+        WHERE Id_Empleado = @emp
+          AND Fecha >= @fini
+          AND Fecha < DATEADD(DAY, 1, @ffin);";
+
+            cmd.Parameters.Add("@emp", SqlDbType.BigInt).Value = idEmpleado;
+            cmd.Parameters.Add("@fini", SqlDbType.DateTime).Value = desde.Date;
+            cmd.Parameters.Add("@ffin", SqlDbType.DateTime).Value = hasta.Date;
+
+            cn.Open();
+            return Convert.ToDouble(cmd.ExecuteScalar());
+        }
+
     }
 }

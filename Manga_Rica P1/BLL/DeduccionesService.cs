@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Manga_Rica_P1.DAL;
-using Manga_Rica_P1.ENTITY;
+using Manga_Rica_P1.Entity;
 
 namespace Manga_Rica_P1.BLL
 {

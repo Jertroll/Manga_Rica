@@ -107,5 +107,9 @@ namespace Manga_Rica_P1.BLL
 
             return dt;
         }
+
+        public IEnumerable<Semana> GetAll() => _repo.GetAll();
+
+        public Semana? GetById(int id) => _repo.GetById(id);
     }
 }
