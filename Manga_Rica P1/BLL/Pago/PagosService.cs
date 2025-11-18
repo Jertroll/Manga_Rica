@@ -22,7 +22,7 @@ namespace Manga_Rica_P1.BLL.Pagos
             PagosRepository pagosRepo,
             DeduccionesRepository dedRepo,
             EmpleadoRepository empRepo,
-            SodaRepository sodaRepo, // si no lo usas, quítalo también del ctor y de los campos
+            SodaRepository sodaRepo,
             SemanaRepository semanaRepo
         )
         {

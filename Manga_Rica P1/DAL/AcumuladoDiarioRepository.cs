@@ -29,8 +29,26 @@ namespace Manga_Rica_P1.DAL
     public sealed class AcumuladoDiarioRepository : IAcumuladoDiarioRepository
     {
         private readonly string _cs;
+
+        // ▼ Dependencias opcionales para integrar con el reloj marcador
+        private readonly EmpleadoRepository? _empRepo; // BD principal (para leer MC_Numero)
+        private readonly Clock.CalculatedAttendanceRepository? _clockRepo; // BD Clock
+
         public AcumuladoDiarioRepository(string connectionString)
             => _cs = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+
+        /// <summary>
+        /// Ctor extendido: inyecta repos de Empleado (main DB) y Clock (calculatedAttendance).
+        /// Permite que GetHorasTrabajadasEnteras use el reloj marcador con el mapeo MC_Numero → employees.code.
+        /// </summary>
+        public AcumuladoDiarioRepository(
+            string connectionString,
+            EmpleadoRepository empRepo,
+            Clock.CalculatedAttendanceRepository clockRepo) : this(connectionString)
+        {
+            _empRepo = empRepo ?? throw new ArgumentNullException(nameof(empRepo));
+            _clockRepo = clockRepo ?? throw new ArgumentNullException(nameof(clockRepo));
+        }
 
         private SqlConnection Open() => new SqlConnection(_cs);
 
@@ -60,21 +78,50 @@ namespace Manga_Rica_P1.DAL
             return list;
         }
 
+        /// <summary>
+        /// Devuelve horas TRUNCADAS del día. Preferencia:
+        ///  1) Si hay repos de Empleado + Clock inyectados: usa Clock (calculatedAttendance.total por employees.code).
+        ///  2) Si no, usa la tabla Horas del sistema nuevo (plan B).
+        /// </summary>
         public double GetHorasTrabajadasEnteras(long idEmpleado, DateTime fecha)
         {
-            using var cn = Open();
-            using var cmd = cn.CreateCommand();
-            cmd.CommandText = @"
+            // ========== Opción preferida: Reloj marcador ==========
+            if (_empRepo is not null && _clockRepo is not null)
+            {
+                // 1) Tomar MC_Numero del empleado en tu BD principal
+                var emp = _empRepo.GetById(idEmpleado);
+                if (emp is not null && emp.MC_Numero > 0)
+                {
+                    // En Clock, employees.code es VARCHAR. En tu mapeo actual, code == MC_Numero.ToString()
+                    var clockCode = emp.MC_Numero.ToString();
+
+                    // 2) Sumar minutos en calculatedAttendance para ese 'code' y fecha
+                    //    (Este método lo agregamos previamente en Clock.CalculatedAttendanceRepository)
+                    var totalMinutes = _clockRepo.GetTotalMinutesByClockCodeAndDate(clockCode, fecha);
+
+                    // 3) Convertir a horas y TRUNCAR (CInt del sistema viejo)
+                    var hours = (totalMinutes ?? 0) / 60.0;
+                    return Math.Truncate(hours);
+                }
+                // Si no hay MC_Numero o no se encontró, cae al plan B.
+            }
+
+            // ========== Plan B: tabla Horas (tu SQL original) ==========
+            using (var cn = Open())
+            using (var cmd = cn.CreateCommand())
+            {
+                cmd.CommandText = @"
                 SELECT ISNULL(SUM(CAST(Total_Horas AS float)), 0)
                 FROM dbo.Horas
                 WHERE Id_Empleado = @id 
                   AND CAST(Fecha AS date) = @f
                   AND Hora_Salida IS NOT NULL;";
-            cmd.Parameters.Add("@id", SqlDbType.BigInt).Value = idEmpleado;
-            cmd.Parameters.Add("@f", SqlDbType.Date).Value = fecha.Date;
-            cn.Open();
-            var total = Convert.ToDouble(cmd.ExecuteScalar());
-            return Math.Truncate(total); // igual que el sistema viejo (CInt)
+                cmd.Parameters.Add("@id", SqlDbType.BigInt).Value = idEmpleado;
+                cmd.Parameters.Add("@f", SqlDbType.Date).Value = fecha.Date;
+                cn.Open();
+                var total = Convert.ToDouble(cmd.ExecuteScalar());
+                return Math.Truncate(total); // igual que el sistema viejo (CInt)
+            }
         }
 
         public long Insert(Acumulado_Diario fila)
