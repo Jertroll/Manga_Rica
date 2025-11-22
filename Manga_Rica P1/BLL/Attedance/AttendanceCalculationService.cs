@@ -82,6 +82,8 @@ namespace Manga_Rica_P1.BLL.Attendance
         /// <summary>
         /// Nueva implementacion
         /// Minutos netos desde calculatedAttendance para un día.
+        /// Prioriza la columna TOTAL del reloj (ya viene en minutos) y solo si está
+        /// nula recurre al cálculo Start/End legacy como contingencia.
         /// </summary>
         private int? ComputeNetFromCA(long idEmployeeClock, DateTime dia, out CalculatedAttendance? caRow)
         {
@@ -89,18 +91,14 @@ namespace Manga_Rica_P1.BLL.Attendance
             caRow = list.FirstOrDefault(x => x.Date.Date == dia.Date);
             if (caRow == null) return null;
 
-            int? net = null;
+            int? net = caRow.Total;
 
-            if (caRow.StartEnroll.HasValue && caRow.EndEnroll.HasValue)
+            if (!net.HasValue && caRow.StartEnroll.HasValue && caRow.EndEnroll.HasValue)
             {
                 var start = caRow.StartEnroll.Value;
                 var end = caRow.EndEnroll.Value;
                 if (end < start) end = end.AddDays(1);
                 net = (int)(end - start).TotalMinutes;
-            }
-            else if (caRow.Total.HasValue)
-            {
-                net = caRow.Total.Value;
             }
 
             if (net.HasValue && caRow.DeductBreak && caRow.DurationBreak.HasValue)
