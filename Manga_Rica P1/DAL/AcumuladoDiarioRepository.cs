@@ -85,26 +85,18 @@ namespace Manga_Rica_P1.DAL
         /// </summary>
         public double GetHorasTrabajadasEnteras(long idEmpleado, DateTime fecha)
         {
-            // ========== Opción preferida: Reloj marcador ==========
+            
             if (_empRepo is not null && _clockRepo is not null)
             {
-                // 1) Tomar MC_Numero del empleado en tu BD principal
                 var emp = _empRepo.GetById(idEmpleado);
                 if (emp is not null && emp.MC_Numero > 0)
                 {
-                    // En Clock, employees.code es VARCHAR. En tu mapeo actual, code == MC_Numero.ToString()
-                    var clockCode = emp.MC_Numero.ToString();
-
-                    // 2) Sumar minutos en calculatedAttendance para ese 'code' y fecha
-                    //    (Este método lo agregamos previamente en Clock.CalculatedAttendanceRepository)
-                    var totalMinutes = _clockRepo.GetTotalMinutesByClockCodeAndDate(clockCode, fecha);
-
-                    // 3) Convertir a horas y TRUNCAR (CInt del sistema viejo)
-                    var hours = (totalMinutes ?? 0) / 60.0;
-                    return Math.Truncate(hours);
+                    var minutos = _clockRepo.GetHorasDiaByCode(emp.MC_Numero, fecha); // minutos del día
+                    var horas = minutos / 60.0;
+                    return Math.Truncate(horas); 
                 }
-                // Si no hay MC_Numero o no se encontró, cae al plan B.
             }
+
 
             // ========== Plan B: tabla Horas (tu SQL original) ==========
             using (var cn = Open())

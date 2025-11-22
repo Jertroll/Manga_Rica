@@ -142,7 +142,7 @@ namespace Manga_Rica_P1.UI.Pagos
             var boundObj = (dynamic?)dataGridViewEmpleados.CurrentRow.DataBoundItem;
             if (boundObj == null) return;
             _idEmpleadoSel = (long)boundObj.Id;
-            textBoxCarnet.Text = (string?)boundObj.Carne ?? "";
+            textBoxCarnet.Text = boundObj.Carne.ToString() ?? "";
             CargarPreview();
         }
 

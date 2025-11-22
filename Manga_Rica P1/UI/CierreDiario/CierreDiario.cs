@@ -34,7 +34,10 @@ namespace Manga_Rica_P1.UI.CierreDiario
                     "Cierre Diario",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
-                Close();
+
+                
+                checkBoxFeriado.Checked = false;
+                checkBoxDomingo.Checked = false;
             }
             catch (Exception ex)
             {

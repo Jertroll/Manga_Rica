@@ -43,8 +43,7 @@ namespace Manga_Rica_P1
             var sodaDetallesRepo = new SodaDetallesRepository(cs);
             var deduccionesRepo = new DeduccionesRepository(cs);
             var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
-            var acumuladoRepo = new AcumuladoDiarioRepository(cs);
-            var pagosRowRepo = new PagosRepository(cs);
+
 
             //Reporte
             var reporteEmpleadosDal = new ReporteEmpleadosDAL(cs);
@@ -54,7 +53,8 @@ namespace Manga_Rica_P1
             var clockGlogsRepo = new Manga_Rica_P1.DAL.Clock.GLogsRepository(csClock);
             var clockCalcAttRepo = new Manga_Rica_P1.DAL.Clock.CalculatedAttendanceRepository(csClock);
 
-
+            var acumuladoRepo = new AcumuladoDiarioRepository(cs, empleadoRepo, clockCalcAttRepo);
+            var pagosRowRepo = new PagosRepository(cs);
             // Nueva implementacion: repo específico para activar pagos
             var pagosRepo = new ActivarPagosRepository(cs);
 
