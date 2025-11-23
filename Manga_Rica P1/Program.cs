@@ -31,7 +31,6 @@ namespace Manga_Rica_P1
                 ?? throw new InvalidOperationException("Falta 'ClockDb', no hay conexion");
 
 
-            // Infra (Repository)
             var usuarioRepo = new UsuarioRepository(cs);
             var departamentoRepo = new DepartamentoRepository(cs);
             var semanaRepo = new SemanaRepository(cs);
@@ -72,12 +71,9 @@ namespace Manga_Rica_P1
             var pagosService = new Manga_Rica_P1.BLL.Pagos.PagosService(acumuladoRepo, pagosRowRepo, deduccionesRepo, empleadoRepo, sodaRepo, semanaRepo);
            
 
-
-
-
             var activarPagosService = new ActivarPagosService(pagosRepo, empleadoRepo, semanaRepo);
 
-            // Autenticación + sesión
+            
             var autentificacionService = new AutentificacionService(usuarioRepo);
             IAppSession session = new AppSession();
 

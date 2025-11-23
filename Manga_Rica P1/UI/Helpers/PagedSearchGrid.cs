@@ -13,10 +13,11 @@ namespace Manga_Rica_P1.UI.Helpers
         public Func<string, DataTable>? GetAllFilteredDataTable { get; set; }
         public Func<int /*pageIndex*/, int /*pageSize*/, string /*filtro*/, (DataTable page, int total)>? GetPage { get; set; }
 
-        // ==== Eventos CRUD ====
+        // ==== Eventos CRUD + extra ====
         public event EventHandler? NewRequested;
         public event EventHandler? EditRequested;
         public event EventHandler? DeleteRequested;
+        public event EventHandler? ViewNewRequested;   // usado p.ej. en Solicitudes / Empleados
 
         // ==== Campos UI ====
         private Panel panelHeader = new();
@@ -32,6 +33,7 @@ namespace Manga_Rica_P1.UI.Helpers
         private Button btnNuevo = new();
         private Button btnEditar = new();
         private Button btnEliminar = new();
+        private Button btnVerNuevas = new();   // botón extra lateral
 
         private DataGridView grid = new();
 
@@ -61,10 +63,24 @@ namespace Manga_Rica_P1.UI.Helpers
                 .Select(r => Convert.ToInt32(r.Cells["Id"]!.Value))
                 .ToList();
 
-        // ==== NUEVO: accesores públicos para los botones ====
+        // ==== Accesores públicos para los botones ====
         public Button BtnNuevo => btnNuevo;
         public Button BtnEditar => btnEditar;
         public Button BtnEliminar => btnEliminar;
+
+        // Cambiar texto del botón extra
+        public void SetViewNewButtonText(string text)
+        {
+            if (btnVerNuevas != null)
+                btnVerNuevas.Text = text;
+        }
+
+        // Controlar visibilidad del botón extra desde cada módulo
+        public bool ViewNewButtonVisible
+        {
+            get => btnVerNuevas.Visible;
+            set => btnVerNuevas.Visible = value;
+        }
 
         public PagedSearchGrid()
         {
@@ -76,7 +92,12 @@ namespace Manga_Rica_P1.UI.Helpers
         private void BuildUi()
         {
             // Header
-            panelHeader = new Panel { Dock = DockStyle.Top, Height = 40, BackColor = Color.FromArgb(230, 135, 45) };
+            panelHeader = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 40,
+                BackColor = Color.FromArgb(230, 135, 45)
+            };
             lblTitle = new Label
             {
                 Text = "Listado",
@@ -88,38 +109,107 @@ namespace Manga_Rica_P1.UI.Helpers
             panelHeader.Controls.Add(lblTitle);
 
             // Search
-            panelSearch = new Panel { Dock = DockStyle.Top, Height = 40, BackColor = Color.WhiteSmoke, Padding = new Padding(8, 5, 8, 5) };
+            panelSearch = new Panel
+            {
+                Dock = DockStyle.Top,
+                Height = 40,
+                BackColor = Color.WhiteSmoke,
+                Padding = new Padding(8, 5, 8, 5)
+            };
             lblBuscar = new Label { Text = "Buscar:", AutoSize = true, Location = new Point(10, 11) };
             txtBuscar = new TextBox { Location = new Point(65, 8), Width = 220 };
             btnBuscar = new Button { Text = "Buscar", Location = new Point(295, 7), Size = new Size(65, 25) };
             btnLimpiar = new Button { Text = "Limpiar", Location = new Point(365, 7), Size = new Size(65, 25) };
             panelSearch.Controls.AddRange(new Control[] { lblBuscar, txtBuscar, btnBuscar, btnLimpiar });
 
-            // Toolbar
-            panelToolbar = new Panel { Dock = DockStyle.Right, Width = 92, BackColor = Color.WhiteSmoke, BorderStyle = BorderStyle.FixedSingle };
-            btnNuevo = new Button { Text = "Nuevo", BackColor = Color.FromArgb(230, 135, 45), ForeColor = Color.White, Size = new Size(75, 30), Location = new Point(6, 22) };
-            btnEditar = new Button { Text = "Editar", BackColor = Color.FromArgb(124, 179, 66), ForeColor = Color.White, Size = new Size(75, 30), Location = new Point(6, 73) };
-            btnEliminar = new Button { Text = "Eliminar", BackColor = Color.FromArgb(211, 47, 47), ForeColor = Color.White, Size = new Size(75, 30), Location = new Point(6, 124) };
-            panelToolbar.Controls.AddRange(new Control[] { btnNuevo, btnEditar, btnEliminar });
+            // Toolbar (derecha)
+            panelToolbar = new Panel
+            {
+                Dock = DockStyle.Right,
+                Width = 92,
+                BackColor = Color.WhiteSmoke,
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
+            btnNuevo = new Button
+            {
+                Text = "Nuevo",
+                BackColor = Color.FromArgb(230, 135, 45),
+                ForeColor = Color.White,
+                Size = new Size(75, 30),
+                Location = new Point(6, 22)
+            };
+
+            btnEditar = new Button
+            {
+                Text = "Editar",
+                BackColor = Color.FromArgb(124, 179, 66),
+                ForeColor = Color.White,
+                Size = new Size(75, 30),
+                Location = new Point(6, 73)
+            };
+
+            btnEliminar = new Button
+            {
+                Text = "Eliminar",
+                BackColor = Color.FromArgb(211, 47, 47),
+                ForeColor = Color.White,
+                Size = new Size(75, 30),
+                Location = new Point(6, 124)
+            };
+
+            // Botón extra (Ver Nuevas / Ver empleados / Ver solicitudes)
+            btnVerNuevas = new Button
+            {
+                Text = "Ver Nuevas",
+                BackColor = Color.FromArgb(33, 150, 243),
+                ForeColor = Color.White,
+                // ⬇️ Ajuste de tamaño y fuente para que se vea texto largo ("Ver empleados")
+                Size = new Size(80, 30),
+                Location = new Point(6, 175),
+                Font = new Font("Segoe UI", 8.25f, FontStyle.Regular),
+                Visible = false // por defecto oculto; cada módulo lo activa si lo necesita
+            };
+
+            panelToolbar.Controls.AddRange(new Control[]
+            {
+                btnNuevo, btnEditar, btnEliminar, btnVerNuevas
+            });
 
             // Grid
             grid = new DataGridView { Dock = DockStyle.Fill };
             GridStyler.ApplyDefault(grid);
 
             // Pager
-            panelPager = new Panel { Dock = DockStyle.Bottom, Height = 40, BackColor = Color.WhiteSmoke, Padding = new Padding(8, 5, 8, 5), BorderStyle = BorderStyle.FixedSingle };
+            panelPager = new Panel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 40,
+                BackColor = Color.WhiteSmoke,
+                Padding = new Padding(8, 5, 8, 5),
+                BorderStyle = BorderStyle.FixedSingle
+            };
+
             btnFirst = new Button { Text = "⏮", Size = new Size(40, 28), Location = new Point(10, 6) };
             btnPrev = new Button { Text = "◀", Size = new Size(40, 28), Location = new Point(55, 6) };
             btnNext = new Button { Text = "▶", Size = new Size(40, 28), Location = new Point(100, 6) };
             btnLast = new Button { Text = "⏭", Size = new Size(40, 28), Location = new Point(145, 6) };
+
             lblPageInfo = new Label { AutoSize = true, Location = new Point(200, 11), Text = "1 de 1 (Total: 0)" };
             lblTam = new Label { AutoSize = true, Location = new Point(290, 11), Text = "Tamaño:" };
-            cboPageSize = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(350, 8), Size = new Size(60, 23) };
+
+            cboPageSize = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Location = new Point(350, 8),
+                Size = new Size(60, 23)
+            };
             cboPageSize.Items.AddRange(PageSizeOptions.Cast<object>().ToArray());
             cboPageSize.SelectedItem = PageSize;
             if (cboPageSize.SelectedIndex < 0) cboPageSize.SelectedIndex = 2; // 20 por defecto
 
-            panelPager.Controls.AddRange(new Control[] {
+            panelPager.Controls.AddRange(new Control[]
+            {
                 btnFirst, btnPrev, btnNext, btnLast, lblPageInfo, lblTam, cboPageSize
             });
 
@@ -133,14 +223,27 @@ namespace Manga_Rica_P1.UI.Helpers
 
         private void WireEvents()
         {
+            // Búsqueda
             btnBuscar.Click += (s, e) => { PageIndex = 0; RefreshData(); };
             btnLimpiar.Click += (s, e) => { txtBuscar.Text = ""; PageIndex = 0; RefreshData(); };
-            txtBuscar.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) { btnBuscar.PerformClick(); e.SuppressKeyPress = true; } };
+            txtBuscar.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    btnBuscar.PerformClick();
+                    e.SuppressKeyPress = true;
+                }
+            };
 
+            // CRUD
             btnNuevo.Click += (s, e) => NewRequested?.Invoke(this, EventArgs.Empty);
             btnEditar.Click += (s, e) => EditRequested?.Invoke(this, EventArgs.Empty);
             btnEliminar.Click += (s, e) => DeleteRequested?.Invoke(this, EventArgs.Empty);
 
+            // Botón extra (Ver Nuevas / Ver empleados …)
+            btnVerNuevas.Click += (s, e) => ViewNewRequested?.Invoke(this, EventArgs.Empty);
+
+            // Paginación
             btnFirst.Click += (s, e) => { PageIndex = 0; RefreshData(); };
             btnPrev.Click += (s, e) => { PageIndex--; RefreshData(); };
             btnNext.Click += (s, e) => { PageIndex++; RefreshData(); };

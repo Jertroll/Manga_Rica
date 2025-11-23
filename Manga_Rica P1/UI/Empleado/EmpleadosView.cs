@@ -9,7 +9,7 @@ using Manga_Rica_P1.BLL;                       // EmpleadosService + Solicitudes
 using Manga_Rica_P1.Entity;                    // Entities
 using Manga_Rica_P1.UI.Helpers;                // PagedSearchGrid
 using Manga_Rica_P1.UI.Solicitudes.Modales;    // AddSolicitud
-using Manga_Rica_P1.UI.Empleados.Modales;      
+using Manga_Rica_P1.UI.Empleados.Modales;
 
 using EntitySolicitud = Manga_Rica_P1.Entity.Solicitudes;
 using EntityEmpleado = Manga_Rica_P1.Entity.Empleado;
@@ -22,20 +22,19 @@ namespace Manga_Rica_P1.UI.Empleados
         private readonly SolicitudesService _solSvc;
         private readonly DepartamentosService _depSvc;
 
-
         private PagedSearchGrid pagedGrid;
-        private CheckBox chkVerEmpleados;
 
         private enum GridMode { Solicitudes, Empleados }
         private GridMode _mode = GridMode.Solicitudes;
 
-        // ⬇️ Modo Solicitudes: ahora incluye "Telefono"
+        // Modo Solicitudes (columnas visibles)
         private static readonly string[] COLS_SOLICITUDES =
         {
             "Id","Cedula","Apellido 1","Apellido 2","Nombre",
             "Fecha Nacimiento","Estado Civil","Telefono","Celular","Nacionalidad","Laboro","Direccion"
         };
 
+        // Modo Empleados (columnas visibles)
         private static readonly string[] COLS_EMPLEADOS =
         {
             "Cedula","Apellido 1","Nombre",
@@ -53,32 +52,30 @@ namespace Manga_Rica_P1.UI.Empleados
 
             Controls.Clear();
 
-            var topPanel = new Panel { Dock = DockStyle.Top, Height = 40 };
-            chkVerEmpleados = new CheckBox
-            {
-                Text = "Ver empleados (alternar solicitudes/empleados)",
-                AutoSize = true,
-                Left = 10,
-                Top = 10
-            };
-            chkVerEmpleados.CheckedChanged += (_, __) => ToggleMode();
-            topPanel.Controls.Add(chkVerEmpleados);
-            Controls.Add(topPanel);
-
+            // Sólo usamos el PagedSearchGrid (con su barra naranja interna)
             pagedGrid = new PagedSearchGrid
             {
-                Dock = DockStyle.Fill,
-                Title = "Listado de Solicitudes"
+                Dock = DockStyle.Fill
+                // El título lo ponemos en SetMode(...)
             };
+
+            // Este módulo SÍ usa el botón extra (igual que Solicitudes),
+            // pero con otro texto: "Ver empleados" / "Ver solicitudes".
+            pagedGrid.ViewNewButtonVisible = true;
+            pagedGrid.SetViewNewButtonText("Empleados");
+            pagedGrid.ViewNewRequested += (_, __) => ToggleModeFromButton();
+
             Controls.Add(pagedGrid);
 
-            pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
-                _solSvc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+            // Modo inicial: Solicitudes (sin refrescar aún)
+            SetMode(GridMode.Solicitudes, doRefresh: false);
 
+            // CRUD
             pagedGrid.NewRequested += (_, __) => Nuevo();
             pagedGrid.EditRequested += (_, __) => Editar();
             pagedGrid.DeleteRequested += (_, __) => Eliminar();
 
+            // Formateo de columnas Laboro/Activo como "Sí/No"
             pagedGrid.Grid.CellFormatting += (s, e) =>
             {
                 var name = pagedGrid.Grid.Columns[e.ColumnIndex].Name;
@@ -89,31 +86,61 @@ namespace Manga_Rica_P1.UI.Empleados
                 }
             };
 
+            // Ajuste de columnas después del binding
             pagedGrid.Grid.DataBindingComplete += (_, __) => AplicarTuningDeColumnas();
+
+            // Primer bind
             pagedGrid.RefreshData();
         }
 
-        private void ToggleMode()
+        /// <summary>
+        /// Cambia el modo (Solicitudes / Empleados) y actualiza título,
+        /// origen de datos y texto del botón lateral.
+        /// </summary>
+        private void SetMode(GridMode mode, bool doRefresh = true)
         {
-            _mode = chkVerEmpleados.Checked ? GridMode.Empleados : GridMode.Solicitudes;
+            _mode = mode;
 
             if (_mode == GridMode.Empleados)
             {
                 pagedGrid.Title = "Listado de Empleados";
                 pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
                     _empSvc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+
+                pagedGrid.SetViewNewButtonText("Solicitudes");
             }
             else
             {
                 pagedGrid.Title = "Listado de Solicitudes";
                 pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
                     _solSvc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+
+                pagedGrid.SetViewNewButtonText("Empleados");
             }
 
-            pagedGrid.RefreshData();
-            AplicarTuningDeColumnas();
+            if (doRefresh)
+            {
+                pagedGrid.RefreshData();
+                AplicarTuningDeColumnas();
+            }
         }
 
+        /// <summary>
+        /// Handler del botón lateral (tipo "Ver Nuevas", pero aquí alterna
+        /// entre Solicitudes y Empleados).
+        /// </summary>
+        private void ToggleModeFromButton()
+        {
+            var newMode = _mode == GridMode.Solicitudes
+                ? GridMode.Empleados
+                : GridMode.Solicitudes;
+
+            SetMode(newMode, doRefresh: true);
+        }
+
+        // =========================
+        // CRUD
+        // =========================
         private void Nuevo()
         {
             try
@@ -142,8 +169,11 @@ namespace Manga_Rica_P1.UI.Empleados
                                          $"Nombre: {empleadoExistente.Nombre} {empleadoExistente.Primer_Apellido}\n\n" +
                                          $"¿Desea abrirlo para edición?";
 
-                            var result = MessageBox.Show(message, "Empleado Existente", 
-                                MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                            var result = MessageBox.Show(
+                                message,
+                                "Empleado Existente",
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Information);
 
                             if (result == DialogResult.Yes)
                             {
@@ -154,16 +184,15 @@ namespace Manga_Rica_P1.UI.Empleados
                                 {
                                     _empSvc.Update(editDlg.Result);
                                     // Cambiar a vista de empleados y refrescar
-                                    chkVerEmpleados.Checked = true;
-                                    pagedGrid.RefreshData();
+                                    SetMode(GridMode.Empleados, doRefresh: true);
                                 }
                             }
-                            // Si elige No, simplemente retorna sin crear nada
+                            // Si elige No, salimos sin crear nada
                             return;
                         }
                     }
 
-                    // Si no existe empleado activo con esa cédula, continuar con el flujo normal
+                    // Si no existe empleado activo con esa cédula, flujo normal de alta
                     var seed = MapSolicitudToEmpleadoSeed(s);
 
                     using var dlg = new AddEmpleado(_depSvc);
@@ -171,16 +200,19 @@ namespace Manga_Rica_P1.UI.Empleados
                     if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
                     _empSvc.Create(dlg.Result);
-                    chkVerEmpleados.Checked = true; // opcional
+
+                    // Después de crear, tiene sentido quedar viendo la lista de empleados
+                    SetMode(GridMode.Empleados, doRefresh: true);
                 }
                 else
                 {
+                    // Modo Empleados: alta directa
                     using var dlg = new AddEmpleado(_depSvc);
                     if (dlg.ShowDialog(this) != DialogResult.OK) return;
                     _empSvc.Create(dlg.Result);
-                }
 
-                pagedGrid.RefreshData();
+                    pagedGrid.RefreshData();
+                }
             }
             catch (SqlException ex) { ShowSqlError(ex); }
             catch (ArgumentException valEx)
@@ -248,7 +280,9 @@ namespace Manga_Rica_P1.UI.Empleados
             var dr = MessageBox.Show(
                 ids.Count == 1 ? $"¿Eliminar Id {ids[0]}?" : $"¿Eliminar {ids.Count} registro(s)?",
                 "Confirmar eliminación",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning,
+                MessageBoxDefaultButton.Button2);
 
             if (dr != DialogResult.Yes) return;
 
@@ -274,13 +308,17 @@ namespace Manga_Rica_P1.UI.Empleados
             if (ok > 0) pagedGrid.RefreshData();
         }
 
+        // =========================
+        // Ajuste de columnas / formato
+        // =========================
         private void AplicarTuningDeColumnas()
         {
             var g = pagedGrid.Grid;
             if (g.Columns.Count == 0) return;
 
             var allow = _mode == GridMode.Solicitudes ? COLS_SOLICITUDES : COLS_EMPLEADOS;
-            foreach (DataGridViewColumn c in g.Columns) c.Visible = allow.Contains(c.Name);
+            foreach (DataGridViewColumn c in g.Columns)
+                c.Visible = allow.Contains(c.Name);
 
             var rowFont = new Font("Segoe UI", 8f);
             var headerFont = new Font("Segoe UI Semibold", 9f, FontStyle.Bold);
@@ -291,7 +329,8 @@ namespace Manga_Rica_P1.UI.Empleados
             g.AlternatingRowsDefaultCellStyle.Font = rowFont;
             g.ColumnHeadersDefaultCellStyle.Font = headerFont;
 
-            foreach (DataGridViewColumn col in g.Columns) col.DefaultCellStyle.Font = rowFont;
+            foreach (DataGridViewColumn col in g.Columns)
+                col.DefaultCellStyle.Font = rowFont;
 
             g.RowTemplate.Height = 22;
             g.DefaultCellStyle.Padding = new Padding(2);
@@ -300,13 +339,19 @@ namespace Manga_Rica_P1.UI.Empleados
             g.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             g.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
 
-            if (g.Columns.Contains("Fecha Nacimiento")) g.Columns["Fecha Nacimiento"].DefaultCellStyle.Format = "d";
-            if (g.Columns.Contains("Fecha Ingreso")) g.Columns["Fecha Ingreso"].DefaultCellStyle.Format = "d";
-            if (g.Columns.Contains("Fecha Salida")) g.Columns["Fecha Salida"].DefaultCellStyle.Format = "d";
-            if (g.Columns.Contains("Salario")) g.Columns["Salario"].DefaultCellStyle.Format = "N0";
+            if (g.Columns.Contains("Fecha Nacimiento"))
+                g.Columns["Fecha Nacimiento"].DefaultCellStyle.Format = "d";
+            if (g.Columns.Contains("Fecha Ingreso"))
+                g.Columns["Fecha Ingreso"].DefaultCellStyle.Format = "d";
+            if (g.Columns.Contains("Fecha Salida"))
+                g.Columns["Fecha Salida"].DefaultCellStyle.Format = "d";
+            if (g.Columns.Contains("Salario"))
+                g.Columns["Salario"].DefaultCellStyle.Format = "N0";
 
-            if (g.Columns.Contains("Departamento")) g.Columns["Departamento"].HeaderText = "Depto";
-            if (g.Columns.Contains("Fecha Nacimiento")) g.Columns["Fecha Nacimiento"].HeaderText = "Nacimiento";
+            if (g.Columns.Contains("Departamento"))
+                g.Columns["Departamento"].HeaderText = "Depto";
+            if (g.Columns.Contains("Fecha Nacimiento"))
+                g.Columns["Fecha Nacimiento"].HeaderText = "Nacimiento";
 
             void Peso(string col, float w)
             {
@@ -330,10 +375,13 @@ namespace Manga_Rica_P1.UI.Empleados
                 Peso("Salario", 110);
                 Peso("Puesto", 150);
                 Peso("Fecha Ingreso", 110);
-                if (g.Columns.Contains("Activo")) g.Columns["Activo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                if (g.Columns.Contains("Activo"))
+                    g.Columns["Activo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
             }
 
-            if (g.Columns.Contains("Salario")) g.Columns["Salario"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+            if (g.Columns.Contains("Salario"))
+                g.Columns["Salario"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+
             foreach (var c in new[] { "Fecha Nacimiento", "Fecha Ingreso", "Fecha Salida" })
                 if (g.Columns.Contains(c))
                     g.Columns[c].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -349,7 +397,7 @@ namespace Manga_Rica_P1.UI.Empleados
                 Nombre = s.Nombre ?? "",
                 Fecha_Nacimiento = s.Fecha_Nacimiento,
                 Estado_Civil = s.Estado_Civil ?? "",
-                Telefono = s.Telefono ?? "",   // ⬅️ ahora se pasa al empleado
+                Telefono = s.Telefono ?? "",
                 Celular = s.Celular ?? "",
                 Nacionalidad = s.Nacionalidad ?? "",
                 Laboro = s.Laboro,
@@ -359,11 +407,9 @@ namespace Manga_Rica_P1.UI.Empleados
                 Salario = 0f,
                 Puesto = "",
                 Fecha_Ingreso = DateTime.Today,
-                // si tu tabla Empleados exige NOT NULL en Fecha_Salida, el modal debe permitir ajustarla
                 Fecha_Salida = DateTime.Today,
                 Activo = 1,
 
-                // campos no visibles en la grilla pero presentes en la entidad/BD
                 Carne = 0,
                 MC_Numero = 0,
                 Foto = ""

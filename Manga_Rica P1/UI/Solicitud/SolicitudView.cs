@@ -20,6 +20,7 @@ namespace Manga_Rica_P1.UI.Solicitudes
         // ✅ Servicio BLL inyectado
         private readonly SolicitudesService _svc;
         private PagedSearchGrid pagedGrid;
+        private bool _soloNuevas = false;
 
         // ✅ Recibe el servicio por ctor (como SemanaView/DepartamentoView)
         public SolicitudView(SolicitudesService svc)
@@ -35,6 +36,8 @@ namespace Manga_Rica_P1.UI.Solicitudes
                 Title = "Listado de Solicitudes"
             };
 
+            pagedGrid.ViewNewButtonVisible = true;
+            pagedGrid.SetViewNewButtonText("Ver Nuevas");
             // ↓↓↓ AJUSTE DE FUENTES (poner ANTES de Add/Refresh) ↓↓↓
             var g = pagedGrid.Grid;
 
@@ -55,12 +58,16 @@ namespace Manga_Rica_P1.UI.Solicitudes
 
             // ✅ MODO SERVIDOR: página desde BLL (DataTable + total en el propio control)
             pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
-                _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+    _soloNuevas
+        ? _svc.GetNewPageAsDataTable(pageIndex, pageSize, filtro)
+        : _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+
 
             // ✅ Acciones CRUD
             pagedGrid.NewRequested += (_, __) => Nuevo();
             pagedGrid.EditRequested += (_, __) => Editar();
             pagedGrid.DeleteRequested += (_, __) => Eliminar();
+            pagedGrid.ViewNewRequested += (_, __) => ToggleVerNuevas();
 
             // Formateo de columna Laboro como “Sí/No”
             pagedGrid.Grid.CellFormatting += (s, e) =>
@@ -89,7 +96,7 @@ namespace Manga_Rica_P1.UI.Solicitudes
 
             try
             {
-                _svc.Create(dlg.Result); 
+                _svc.Create(dlg.Result);
                 pagedGrid.RefreshData();
             }
             catch (SqlException sqlEx) { ShowSqlError(sqlEx); }
@@ -103,6 +110,14 @@ namespace Manga_Rica_P1.UI.Solicitudes
                 MessageBox.Show(this, ex.Message, "Error inesperado",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ToggleVerNuevas()
+        {
+
+            _soloNuevas = !_soloNuevas;
+            pagedGrid.SetViewNewButtonText(_soloNuevas ? "Ver Todas" : "Ver Nuevas");
+            pagedGrid.RefreshData();
         }
 
         private void Editar()
@@ -196,7 +211,15 @@ namespace Manga_Rica_P1.UI.Solicitudes
         // Si este control no tiene .Designer.cs, deja este stub.
         private void InitializeComponent()
         {
+            SuspendLayout();
+            // 
+            // SolicitudView
+            // 
+            Name = "SolicitudView";
+            ResumeLayout(false);
             // vacío a propósito (evita CS0103 si no usas diseñador)
         }
+
+        
     }
 }

@@ -143,5 +143,12 @@ namespace Manga_Rica_P1.BLL
             }
             return dt;
         }
+
+        public (DataTable page, int total) GetNewPageAsDataTable(int pageIndex, int pageSize, string? filtro)
+        {
+            var result = _repo.GetNewPage(pageIndex, pageSize, filtro);
+            return (ToDataTable(result.items), result.total);
+        }
+
     }
 }
