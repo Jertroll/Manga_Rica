@@ -34,9 +34,9 @@ namespace Manga_Rica_P1.UI.User
             btnCancelar = new Button();
             textBoxNombre = new TextBox();
             textBoxClave = new TextBox();
-
             dateTimePicker1 = new DateTimePicker();
             panel1 = new Panel();
+            comboPerfil = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             SuspendLayout();
@@ -145,18 +145,6 @@ namespace Manga_Rica_P1.UI.User
             textBoxClave.Size = new Size(112, 23);
             textBoxClave.TabIndex = 10;
             // 
-            // comboPerfil
-            comboPerfil = new ComboBox();
-            comboPerfil.DropDownStyle = ComboBoxStyle.DropDownList;
-            comboPerfil.Location = new Point(420, 95);
-            comboPerfil.Name = "comboPerfil";
-            comboPerfil.Size = new Size(111, 23);
-            comboPerfil.TabIndex = 11;
-
-            // Cargar opciones fijas
-            comboPerfil.Items.AddRange(new object[] { "Admin", "Empleado", "Supervisor" });
-            comboPerfil.SelectedIndex = 0; 
-            // 
             // dateTimePicker1
             // 
             dateTimePicker1.Location = new Point(367, 186);
@@ -174,6 +162,15 @@ namespace Manga_Rica_P1.UI.User
             panel1.Name = "panel1";
             panel1.Size = new Size(729, 41);
             panel1.TabIndex = 13;
+            // 
+            // comboPerfil
+            // 
+            comboPerfil.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboPerfil.Items.AddRange(new object[] { "ADMIN", "EMPLEADO", "SODA" });
+            comboPerfil.Location = new Point(420, 95);
+            comboPerfil.Name = "comboPerfil";
+            comboPerfil.Size = new Size(111, 23);
+            comboPerfil.TabIndex = 11;
             // 
             // AddUser
             // 

@@ -1,4 +1,5 @@
 ﻿using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.BLL.AutentificacionService;
 using Manga_Rica_P1.BLL.Pagos;
 using Manga_Rica_P1.BLL.Session;
 using Manga_Rica_P1.DAL;
@@ -36,9 +37,12 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly CierreDiarioService _cierreService;
         private readonly ActivarPagosService _activarPagosService;
         private readonly PagosService _PagosService;
+        private readonly AutentificacionService _auth;
+
 
 
         public Principal(IAppSession session,
+            AutentificacionService auth,
             UsuariosService usuariosService,
             DepartamentosService departamentosService,
             SemanasService semanasService,
@@ -54,6 +58,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
+            _auth = auth ?? throw new ArgumentNullException(nameof(auth));
             _usuariosService = usuariosService ?? throw new ArgumentNullException(nameof(usuariosService));
             _departamentosService = departamentosService ?? throw new ArgumentNullException(nameof(departamentosService));
             _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
@@ -84,28 +89,52 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 Padding = Padding.Empty
             };
 
-            // ====== 2) Preparar los controles internos del sidebar ======
             flowLayoutPanelSideBar.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanelSideBar.WrapContents = false;
             flowLayoutPanelSideBar.AutoScroll = false;
             flowLayoutPanelSideBar.Dock = DockStyle.Fill;
             flowLayoutPanelSideBar.Margin = Padding.Empty;
 
-            botonSalirContenedor.Dock = DockStyle.Bottom;
             botonSalirContenedor.BackColor = flowLayoutPanelSideBar.BackColor;
             botonSalirContenedor.Padding = new Padding(6, 8, 6, 8);
             botonSalirContenedor.Margin = Padding.Empty;
 
-            // Estética del botón Salir (como ya tenías)
+            // Estética del botón Salir
             btnSalir.FlatStyle = FlatStyle.Flat;
             btnSalir.FlatAppearance.BorderSize = 0;
             btnSalir.Cursor = Cursors.Hand;
             btnSalir.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             btnSalir.Margin = new Padding(4);
 
+            // (Opcional) estética similar para Cerrar sesión
+            buttonCerrarSesion.FlatStyle = FlatStyle.Flat;
+            buttonCerrarSesion.FlatAppearance.BorderSize = 0;
+            buttonCerrarSesion.Cursor = Cursors.Hand;
+            buttonCerrarSesion.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            buttonCerrarSesion.Margin = new Padding(4);
+
             // ====== 3) Re-parenting: mover piezas del sidebar al host ======
+
+            // Sacamos el panel de "Cerrar sesión" del FlowLayout para que no
+            // quede flotando en el medio, sino pegado abajo con el botón Salir.
+            flowLayoutPanelSideBar.Controls.Remove(panel8);
+
             this.Controls.Remove(flowLayoutPanelSideBar);
             this.Controls.Remove(botonSalirContenedor);
+
+            // Orden IMPORTANTE para Dock = Bottom:
+            // 1) Flow (Fill)
+            // 2) Cerrar sesión (Bottom → queda encima de Salir)
+            // 3) Salir (Bottom → último, pegado al borde inferior)
+            sideBarHost.Controls.Add(flowLayoutPanelSideBar);  // Fill principal
+
+            panel8.Dock = DockStyle.Bottom;
+            panel8.Margin = Padding.Empty;
+            sideBarHost.Controls.Add(panel8);                  // Cerrar sesión
+
+            botonSalirContenedor.Dock = DockStyle.Bottom;
+            botonSalirContenedor.Margin = Padding.Empty;
+            sideBarHost.Controls.Add(botonSalirContenedor);
             sideBarHost.Controls.Add(flowLayoutPanelSideBar);  // Fill
             sideBarHost.Controls.Add(botonSalirContenedor);    // Bottom
 
@@ -152,6 +181,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             InicializarMenus();
             WireUpHeaderClicks();
             AplicarEstilosHover();
+            MostrarHome();
         }
 
         private void InicializarMenus()
@@ -229,8 +259,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             ConfigurarHoverBoton(btnSemanas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnArticulos, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnEmpleado, hoverGreen, downGreen);
-            ConfigurarHoverBoton(btnEntradaYSalida, hoverGreen, downGreen);
-            ConfigurarHoverBoton(btnSalidas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnCierreDiario, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSolicitudesPlanilla, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSoda, hoverGreen, downGreen);
@@ -349,6 +377,28 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void MostrarHome()
+        {
+            // Evitar flicker mientras cambiamos contenido
+            panelPrincipal.SuspendLayout();
+
+            // Limpiar cualquier control previo
+            foreach (Control c in panelPrincipal.Controls)
+                c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            // Crear e insertar el Home
+            var home = new HomeView
+            {
+                Dock = DockStyle.Fill
+            };
+
+            panelPrincipal.Controls.Add(home);
+
+            panelPrincipal.ResumeLayout();
+        }
+
 
         private void MostrarReporteEmpleadosInactivos()
         {
@@ -578,6 +628,43 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
             panelPrincipal.Controls.Clear();
             panelPrincipal.Controls.Add(vista);
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            MostrarHome();
+        }
+
+        private void buttonCerrarSesion_Click(object sender, EventArgs e)
+        {
+            // 1. Limpiar usuario actual de la sesión
+            _session.CurrentUser = null;
+
+            // 2. Ocultar ventana principal mientras se muestra el login
+            this.Hide();
+
+            using (var login = new Manga_Rica_P1.UI.Login.LoginForm(_auth, _session))
+            {
+                var result = login.ShowDialog(this);
+
+                // 3. Si el login fue correcto y hay nuevo usuario:
+                if (result == DialogResult.OK && _session.CurrentUser != null)
+                {
+                    // Actualizar label de usuario arriba a la derecha
+                    ActualizarUsuario();
+
+                    // Volver al "Home" por si había otro módulo abierto
+                    // (usa el método que ya tienes)
+                    MostrarHome();
+
+                    this.Show();
+                }
+                else
+                {
+                    // Si canceló o falló el login, cerramos todo
+                    this.Close();
+                }
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ namespace Manga_Rica_P1.UI.Login
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             cardPanel = new Panel();
             panel1 = new Panel();
             label3 = new Label();
@@ -169,11 +170,12 @@ namespace Manga_Rica_P1.UI.Login
             ClientSize = new Size(744, 380);
             Controls.Add(cardPanel);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Manga Rica - Login";
+            Text = "Manga Rica - Inicio de Sesion";
             Load += LoginForm_Load;
             cardPanel.ResumeLayout(false);
             panel1.ResumeLayout(false);

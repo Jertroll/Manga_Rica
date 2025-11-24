@@ -187,17 +187,22 @@ SELECT CAST(SCOPE_IDENTITY() AS int);";
             using var cmd = cn.CreateCommand();
             cmd.CommandText = @"
 UPDATE dbo.Usuarios
-SET Nombre=@Nombre, Clave=@Clave, Perfil=@Perfil
+SET Nombre=@Nombre,
+    Clave=@Clave,
+    Perfil=@Perfil,
+    Fecha=@Fecha
 WHERE Id=@Id;";
 
             cmd.Parameters.Add("@Id", SqlDbType.Int).Value = u.Id;
             cmd.Parameters.Add("@Nombre", SqlDbType.NVarChar, 100).Value = u.username;
             cmd.Parameters.Add("@Clave", SqlDbType.NVarChar, 50).Value = u.password;
             cmd.Parameters.Add("@Perfil", SqlDbType.NVarChar, 50).Value = (object?)u.perfil ?? DBNull.Value;
+            cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = u.fecha;
 
             cn.Open();
             cmd.ExecuteNonQuery();
         }
+
 
         /// <summary>
         /// Elimina un usuario por Id (considera FKs antes de usar en prod).

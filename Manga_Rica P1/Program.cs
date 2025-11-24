@@ -88,11 +88,22 @@ namespace Manga_Rica_P1
                     Application.Exit();
                     return;
                 }
+
+                // ✅ Revisar flag que nos dejó el login
+                bool esUsuarioSoda = login.EsUsuarioSoda;
+
+                if (esUsuarioSoda)
+                {
+                    // Ir directo al módulo Soda
+                    Application.Run(new Manga_Rica_P1.UI.Soda.Soda(sodaService, session));
+                    return;
+                }
             }
 
             // Inyecta todos los servicios al form principal
             Application.Run(new Principal(
                 session,
+                autentificacionService,
                 usuariosService,
                 departamentosService,
                 semanasService,

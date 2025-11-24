@@ -32,7 +32,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Principal));
             panel1 = new Panel();
             LabelTitulo = new Label();
-            pictureBox1 = new PictureBox();
+            bttnHome = new PictureBox();
             flowLayoutPanelSideBar = new FlowLayoutPanel();
             menuConfContenedor = new FlowLayoutPanel();
             panel2 = new Panel();
@@ -50,10 +50,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanilla = new Button();
             panel13 = new Panel();
             btnEmpleado = new Button();
-            panel14 = new Panel();
-            btnEntradaYSalida = new Button();
-            panel15 = new Panel();
-            btnSalidas = new Button();
             panel16 = new Panel();
             btnCierreDiario = new Button();
             panel6 = new Panel();
@@ -85,11 +81,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanillaReportes = new Button();
             panel27 = new Panel();
             btnSodaReportes = new Button();
+            panel8 = new Panel();
+            buttonCerrarSesion = new Button();
             botonSalirContenedor = new Panel();
             btnSalir = new Button();
             panelPrincipal = new Panel();
             panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)bttnHome).BeginInit();
             flowLayoutPanelSideBar.SuspendLayout();
             menuConfContenedor.SuspendLayout();
             panel2.SuspendLayout();
@@ -100,8 +98,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             menuPlanillaContenedor.SuspendLayout();
             panel12.SuspendLayout();
             panel13.SuspendLayout();
-            panel14.SuspendLayout();
-            panel15.SuspendLayout();
             panel16.SuspendLayout();
             panel6.SuspendLayout();
             menuDeduccionesContenedor.SuspendLayout();
@@ -119,6 +115,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel25.SuspendLayout();
             panel26.SuspendLayout();
             panel27.SuspendLayout();
+            panel8.SuspendLayout();
             botonSalirContenedor.SuspendLayout();
             SuspendLayout();
             // 
@@ -126,7 +123,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             panel1.BackColor = Color.White;
             panel1.Controls.Add(LabelTitulo);
-            panel1.Controls.Add(pictureBox1);
+            panel1.Controls.Add(bttnHome);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
@@ -144,15 +141,17 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             LabelTitulo.TabIndex = 1;
             LabelTitulo.Text = "Manga Rica S.A ";
             // 
-            // pictureBox1
+            // bttnHome
             // 
-            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 3);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(43, 32);
-            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
-            pictureBox1.TabIndex = 1;
-            pictureBox1.TabStop = false;
+            bttnHome.Cursor = Cursors.Hand;
+            bttnHome.Image = (Image)resources.GetObject("bttnHome.Image");
+            bttnHome.Location = new Point(12, 3);
+            bttnHome.Name = "bttnHome";
+            bttnHome.Size = new Size(43, 32);
+            bttnHome.SizeMode = PictureBoxSizeMode.CenterImage;
+            bttnHome.TabIndex = 1;
+            bttnHome.TabStop = false;
+            bttnHome.Click += pictureBox1_Click;
             // 
             // flowLayoutPanelSideBar
             // 
@@ -162,6 +161,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             flowLayoutPanelSideBar.Controls.Add(menuDeduccionesContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuPagosContenedor);
             flowLayoutPanelSideBar.Controls.Add(menuReportesContenedor);
+            flowLayoutPanelSideBar.Controls.Add(panel8);
             flowLayoutPanelSideBar.Controls.Add(botonSalirContenedor);
             flowLayoutPanelSideBar.Dock = DockStyle.Left;
             flowLayoutPanelSideBar.ForeColor = SystemColors.ControlText;
@@ -323,8 +323,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             menuPlanillaContenedor.BorderStyle = BorderStyle.FixedSingle;
             menuPlanillaContenedor.Controls.Add(panel12);
             menuPlanillaContenedor.Controls.Add(panel13);
-            menuPlanillaContenedor.Controls.Add(panel14);
-            menuPlanillaContenedor.Controls.Add(panel15);
             menuPlanillaContenedor.Controls.Add(panel16);
             menuPlanillaContenedor.Controls.Add(panel6);
             menuPlanillaContenedor.ForeColor = Color.White;
@@ -385,61 +383,10 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnEmpleado.UseVisualStyleBackColor = false;
             btnEmpleado.Click += btnEmpleado_Click;
             // 
-            // panel14
-            // 
-            panel14.Controls.Add(btnEntradaYSalida);
-            panel14.Location = new Point(0, 92);
-            panel14.Margin = new Padding(0);
-            panel14.Name = "panel14";
-            panel14.Size = new Size(202, 46);
-            panel14.TabIndex = 13;
-            // 
-            // btnEntradaYSalida
-            // 
-            btnEntradaYSalida.BackColor = Color.FromArgb(124, 179, 66);
-            btnEntradaYSalida.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnEntradaYSalida.ForeColor = Color.White;
-            btnEntradaYSalida.Image = (Image)resources.GetObject("btnEntradaYSalida.Image");
-            btnEntradaYSalida.ImageAlign = ContentAlignment.MiddleLeft;
-            btnEntradaYSalida.Location = new Point(-32, -20);
-            btnEntradaYSalida.Name = "btnEntradaYSalida";
-            btnEntradaYSalida.Padding = new Padding(40, 0, 0, 0);
-            btnEntradaYSalida.Size = new Size(273, 89);
-            btnEntradaYSalida.TabIndex = 2;
-            btnEntradaYSalida.Text = "       Entradas y Salidas";
-            btnEntradaYSalida.TextAlign = ContentAlignment.MiddleLeft;
-            btnEntradaYSalida.UseVisualStyleBackColor = false;
-            btnEntradaYSalida.Click += btnEntradaYSalida_Click;
-            // 
-            // panel15
-            // 
-            panel15.Controls.Add(btnSalidas);
-            panel15.Location = new Point(0, 138);
-            panel15.Margin = new Padding(0);
-            panel15.Name = "panel15";
-            panel15.Size = new Size(202, 46);
-            panel15.TabIndex = 12;
-            // 
-            // btnSalidas
-            // 
-            btnSalidas.BackColor = Color.FromArgb(124, 179, 66);
-            btnSalidas.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnSalidas.ForeColor = Color.White;
-            btnSalidas.Image = (Image)resources.GetObject("btnSalidas.Image");
-            btnSalidas.ImageAlign = ContentAlignment.MiddleLeft;
-            btnSalidas.Location = new Point(-32, -20);
-            btnSalidas.Name = "btnSalidas";
-            btnSalidas.Padding = new Padding(40, 0, 0, 0);
-            btnSalidas.Size = new Size(273, 89);
-            btnSalidas.TabIndex = 2;
-            btnSalidas.Text = "       Salidas";
-            btnSalidas.TextAlign = ContentAlignment.MiddleLeft;
-            btnSalidas.UseVisualStyleBackColor = false;
-            // 
             // panel16
             // 
             panel16.Controls.Add(btnCierreDiario);
-            panel16.Location = new Point(0, 184);
+            panel16.Location = new Point(0, 92);
             panel16.Margin = new Padding(0);
             panel16.Name = "panel16";
             panel16.Size = new Size(202, 46);
@@ -465,7 +412,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // panel6
             // 
             panel6.Controls.Add(btnSolicitudesPlanilla);
-            panel6.Location = new Point(0, 230);
+            panel6.Location = new Point(0, 138);
             panel6.Margin = new Padding(0);
             panel6.Name = "panel6";
             panel6.Size = new Size(202, 46);
@@ -839,11 +786,39 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSodaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnSodaReportes.UseVisualStyleBackColor = false;
             // 
+            // panel8
+            // 
+            panel8.BorderStyle = BorderStyle.FixedSingle;
+            panel8.Controls.Add(buttonCerrarSesion);
+            panel8.Location = new Point(0, 260);
+            panel8.Margin = new Padding(0);
+            panel8.Name = "panel8";
+            panel8.Size = new Size(202, 46);
+            panel8.TabIndex = 11;
+            // 
+            // buttonCerrarSesion
+            // 
+            buttonCerrarSesion.BackColor = Color.Olive;
+            buttonCerrarSesion.Cursor = Cursors.Hand;
+            buttonCerrarSesion.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            buttonCerrarSesion.ForeColor = Color.White;
+            buttonCerrarSesion.Image = (Image)resources.GetObject("buttonCerrarSesion.Image");
+            buttonCerrarSesion.ImageAlign = ContentAlignment.MiddleLeft;
+            buttonCerrarSesion.Location = new Point(-32, -20);
+            buttonCerrarSesion.Name = "buttonCerrarSesion";
+            buttonCerrarSesion.Padding = new Padding(40, 0, 0, 0);
+            buttonCerrarSesion.Size = new Size(234, 89);
+            buttonCerrarSesion.TabIndex = 2;
+            buttonCerrarSesion.Text = "       Cerrar Sesion";
+            buttonCerrarSesion.TextAlign = ContentAlignment.MiddleLeft;
+            buttonCerrarSesion.UseVisualStyleBackColor = false;
+            buttonCerrarSesion.Click += buttonCerrarSesion_Click;
+            // 
             // botonSalirContenedor
             // 
             botonSalirContenedor.BorderStyle = BorderStyle.FixedSingle;
             botonSalirContenedor.Controls.Add(btnSalir);
-            botonSalirContenedor.Location = new Point(0, 260);
+            botonSalirContenedor.Location = new Point(0, 306);
             botonSalirContenedor.Margin = new Padding(0);
             botonSalirContenedor.Name = "botonSalirContenedor";
             botonSalirContenedor.Size = new Size(202, 46);
@@ -876,20 +851,22 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // Principal
             // 
+            AccessibleName = "";
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(922, 510);
             Controls.Add(panelPrincipal);
             Controls.Add(flowLayoutPanelSideBar);
             Controls.Add(panel1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Principal";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = " ";
+            Text = "Sistema de Planilla";
             WindowState = FormWindowState.Maximized;
             Load += Principal_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)bttnHome).EndInit();
             flowLayoutPanelSideBar.ResumeLayout(false);
             menuConfContenedor.ResumeLayout(false);
             panel2.ResumeLayout(false);
@@ -900,8 +877,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             menuPlanillaContenedor.ResumeLayout(false);
             panel12.ResumeLayout(false);
             panel13.ResumeLayout(false);
-            panel14.ResumeLayout(false);
-            panel15.ResumeLayout(false);
             panel16.ResumeLayout(false);
             panel6.ResumeLayout(false);
             menuDeduccionesContenedor.ResumeLayout(false);
@@ -919,6 +894,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel25.ResumeLayout(false);
             panel26.ResumeLayout(false);
             panel27.ResumeLayout(false);
+            panel8.ResumeLayout(false);
             botonSalirContenedor.ResumeLayout(false);
             ResumeLayout(false);
         }
@@ -928,7 +904,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         #endregion
 
         private Panel panel1;
-        private PictureBox pictureBox1;
+        private PictureBox bttnHome;
         private Label LabelTitulo;
         private FlowLayoutPanel flowLayoutPanelSideBar;
         private Button btnConfiguraciones;
@@ -951,10 +927,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private Panel panel12;
         private Panel panel13;
         private Button btnEmpleado;
-        private Panel panel14;
-        private Button btnEntradaYSalida;
-        private Panel panel15;
-        private Button btnSalidas;
         private Panel panel16;
         private Button btnCierreDiario;
         private FlowLayoutPanel menuDeduccionesContenedor;
@@ -987,5 +959,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private Panel panel6;
         private Button btnSolicitudesPlanilla;
         private Panel panelPrincipal;
+        private Panel panel8;
+        private Button buttonCerrarSesion;
     }
 }

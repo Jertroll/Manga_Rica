@@ -380,7 +380,7 @@
             dataGridViewEmpleados.DefaultCellStyle = dataGridViewCellStyle2;
             dataGridViewEmpleados.Location = new Point(735, 134);
             dataGridViewEmpleados.Name = "dataGridViewEmpleados";
-            dataGridViewEmpleados.Size = new Size(345, 269);
+            dataGridViewEmpleados.Size = new Size(349, 269);
             dataGridViewEmpleados.TabIndex = 39;
             // 
             // CarneColumna

@@ -46,8 +46,8 @@
             buttonAgregar = new Button();
             flowLayoutPanel1 = new FlowLayoutPanel();
             btnBuscar = new Button();
-            buttonAnular = new Button();
             buttonGuardar = new Button();
+            buttonAnular = new Button();
             dataGridView1 = new DataGridView();
             CantidadColumna = new DataGridViewTextBoxColumn();
             CodigoColumna = new DataGridViewTextBoxColumn();
@@ -366,35 +366,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(802, 472);
-            Controls.Add(labelTotal);
-            Controls.Add(textBoxTotal);
-            Controls.Add(comboBoxFecha);
-            Controls.Add(textBoxNumFactura);
-            Controls.Add(labelNumFactura);
-            Controls.Add(checkBoxAnulada);
-            Controls.Add(dataGridView1);
-            Controls.Add(flowLayoutPanel1);
-            Controls.Add(buttonAgregar);
-            Controls.Add(labelSubTotal);
-            Controls.Add(textBoxSubTotal);
-            Controls.Add(labelCantidad);
-            Controls.Add(comboBoxArticulos);
-            Controls.Add(textBoxCantidad);
-            Controls.Add(labelConcepto);
-            Controls.Add(textBoxNombre);
-            Controls.Add(labelNombreCompleto);
             Controls.Add(buttonBuscarEmpleado);
-            Controls.Add(textBoxCarnet);
-            Controls.Add(labelTitulo);
-            Controls.Add(pictureBoxEmpleado);
-            // Reemplaza 'ClientSize' por 'this.ClientSize' y 'Controls.Add' por 'this.Controls.Add' en el método InitializeComponent
-
-            // ...dentro de InitializeComponent()...
-
-            // Cambia estas líneas:
-            AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(802, 472);
             Controls.Add(labelTotal);
             Controls.Add(textBoxTotal);
             Controls.Add(comboBoxFecha);
@@ -416,36 +388,9 @@
             Controls.Add(labelTitulo);
             Controls.Add(pictureBoxEmpleado);
             Controls.Add(labelCarnet);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Soda";
-
-            // Por estas:
-            this.AutoScaleDimensions = new SizeF(7F, 15F);
-            this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new Size(802, 472);
-            this.Controls.Add(labelTotal);
-            this.Controls.Add(textBoxTotal);
-            this.Controls.Add(comboBoxFecha);
-            this.Controls.Add(textBoxNumFactura);
-            this.Controls.Add(labelNumFactura);
-            this.Controls.Add(checkBoxAnulada);
-            this.Controls.Add(dataGridView1);
-            this.Controls.Add(flowLayoutPanel1);
-            this.Controls.Add(buttonAgregar);
-            this.Controls.Add(labelSubTotal);
-            this.Controls.Add(textBoxSubTotal);
-            this.Controls.Add(labelCantidad);
-            this.Controls.Add(comboBoxArticulos);
-            this.Controls.Add(textBoxCantidad);
-            this.Controls.Add(labelConcepto);
-            this.Controls.Add(textBoxNombre);
-            this.Controls.Add(labelNombreCompleto);
-            this.Controls.Add(textBoxCarnet);
-            this.Controls.Add(labelTitulo);
-            this.Controls.Add(pictureBoxEmpleado);
-            this.Controls.Add(labelCarnet);
-            this.Name = "Soda";
-            Controls.Add(labelCarnet);
-            Name = "Soda";
+            StartPosition = FormStartPosition.CenterScreen;
             ((System.ComponentModel.ISupportInitialize)pictureBoxEmpleado).EndInit();
             flowLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();

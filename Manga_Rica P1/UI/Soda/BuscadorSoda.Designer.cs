@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BuscadorSoda));
             labelTitulo = new Label();
             dataGridView1 = new DataGridView();
             ColumnaCarnet = new DataGridViewTextBoxColumn();
@@ -51,30 +52,29 @@
             labelTitulo.ForeColor = Color.FromArgb(34, 139, 34);
             labelTitulo.Location = new Point(260, 30);
             labelTitulo.Name = "labelTitulo";
-            labelTitulo.Size = new Size(280, 30);
+            labelTitulo.Size = new Size(350, 30);
             labelTitulo.TabIndex = 3;
             labelTitulo.Text = "Buscador de Deducciones - Soda";
             // 
             // dataGridView1
             // 
-            dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = SystemColors.Control;
-            dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            dataGridViewCellStyle3.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
-            dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { ColumnaCarnet, ColumnaNombre, ColumnaIdSoda, ColumnaFecha, ColumnaTotal, ColumnaAnulada });
             dataGridView1.Location = new Point(20, 159);
+            dataGridView1.MultiSelect = false;
             dataGridView1.Name = "dataGridView1";
+            dataGridView1.ScrollBars = ScrollBars.Vertical;
+            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.Size = new Size(760, 250);
             dataGridView1.TabIndex = 4;
-            dataGridView1.ScrollBars = ScrollBars.Vertical;
-            dataGridView1.AllowUserToResizeRows = true;
-            dataGridView1.MultiSelect = false;
-            dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             // 
             // ColumnaCarnet
             // 
@@ -159,6 +159,7 @@
             Controls.Add(textBox1);
             Controls.Add(dataGridView1);
             Controls.Add(labelTitulo);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "BuscadorSoda";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;

@@ -388,9 +388,10 @@
             Controls.Add(labelTitulo);
             Controls.Add(pictureBoxEmpleado);
             Controls.Add(labelCarnet);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Uniforme";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Uniforme";
+            Text = "Modulo de Uniforme";
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             flowLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBoxEmpleado).EndInit();

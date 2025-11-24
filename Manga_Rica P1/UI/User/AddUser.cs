@@ -51,7 +51,7 @@ namespace Manga_Rica_P1.UI.User
             if (comboPerfil.Items.Count == 0)
             {
                 comboPerfil.DropDownStyle = ComboBoxStyle.DropDownList;
-                comboPerfil.Items.AddRange(new object[] { "Admin", "Empleado", "Supervisor" });
+                comboPerfil.Items.AddRange(new object[] { "ADMIN", "RRHH", "SODA" });
             }
 
             // UI según modo
@@ -60,8 +60,8 @@ namespace Manga_Rica_P1.UI.User
                 labelTitulo.Text = "Registro de Usuario";
                 btnAgregar.Text = "Agregar";
 
-                // valores por defecto
-                dateTimePicker1.Value = DateTime.Today;
+                // ✅ Ya NO forzamos la fecha a hoy; el usuario puede escoger la que quiera.
+                // (El DateTimePicker usará la fecha que tenga configurada en el diseñador.)
                 if (comboPerfil.Items.Count > 0 && comboPerfil.SelectedIndex < 0)
                     comboPerfil.SelectedIndex = 0;
             }
@@ -78,6 +78,7 @@ namespace Manga_Rica_P1.UI.User
                     Nombre = src.Nombre,
                     Clave = "", // no mostrar clave actual
                     Perfil = src.Perfil,
+                    // Si no hay fecha guardada, usamos hoy; si la hay, se respeta
                     FechaExpiracion = src.FechaExpiracion == default ? DateTime.Today : src.FechaExpiracion
                 };
 
@@ -126,7 +127,7 @@ namespace Manga_Rica_P1.UI.User
             // Mapear al resultado
             Resultado.Nombre = textBoxNombre.Text.Trim();
             Resultado.Perfil = comboPerfil.SelectedItem?.ToString() ?? "";
-            Resultado.FechaExpiracion = dateTimePicker1.Value.Date;
+            Resultado.FechaExpiracion = dateTimePicker1.Value.Date; // ← usa la fecha escogida
 
             // En Editar: solo cambiar clave si el usuario digitó una nueva
             if (!string.IsNullOrWhiteSpace(textBoxClave.Text))

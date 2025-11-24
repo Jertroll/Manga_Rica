@@ -13,7 +13,7 @@ namespace Manga_Rica_P1.BLL
     public sealed class UsuariosService
     {
         private readonly UsuarioRepository _repo;
-        private static readonly string[] PerfilesPermitidos = { "Admin", "Empleado", "Supervisor" };
+        private static readonly string[] PerfilesPermitidos = { "ADMIN", "EMPLEADO", "SODA" };
 // ...
 
 

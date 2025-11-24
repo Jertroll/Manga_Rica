@@ -14,7 +14,7 @@ namespace Manga_Rica_P1.UI.User
         public UserView(UsuariosService svc)
         {
             InitializeComponent();
-            _svc = svc;
+            _svc = svc ?? throw new ArgumentNullException(nameof(svc));
 
             // Limpia y monta el control compuesto
             Controls.Clear();
@@ -30,31 +30,34 @@ namespace Manga_Rica_P1.UI.User
                 _svc.GetPageAsDataTable(pageIndex, pageSize, filtro);
 
             // CRUD → BLL
-            pagedGrid.NewRequested += (s, e) => Nuevo();
-            pagedGrid.EditRequested += (s, e) => Editar();
-            pagedGrid.DeleteRequested += (s, e) => Eliminar();
+            pagedGrid.NewRequested += (_, __) => Nuevo();
+            pagedGrid.EditRequested += (_, __) => Editar();
+            pagedGrid.DeleteRequested += (_, __) => Eliminar();
 
             Controls.Add(pagedGrid);
             pagedGrid.RefreshData();
         }
 
-        // ====== CRUD (ahora contra el servicio) ======
+        // ====== CRUD (contra el servicio) ======
         private void Nuevo()
         {
             using var dlg = new AddUser(); // tu modal
             if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
             var r = dlg.Resultado;
-            var nombre = (r?.Nombre ?? "").Trim();
-            var perfil = r?.Perfil?.Trim();
-            var passRaw = (r?.Clave ?? "temp123").Trim(); // Recuerda: Clave en BD es VARCHAR(15)
+            if (r == null) return;
+
+            var nombre = (r.Nombre ?? "").Trim();
+            var perfil = (r.Perfil ?? "").Trim();
+            var passRaw = (r.Clave ?? "temp123").Trim(); // Recuerda: Clave en BD es VARCHAR(15)
 
             var u = new Usuario
             {
                 username = nombre,
                 password = passRaw,
                 perfil = perfil,
-                fecha = DateTime.Now
+                // ✅ Usar la fecha que escogió el usuario en el formulario
+                fecha = r.FechaExpiracion.Date
             };
 
             try
@@ -83,24 +86,32 @@ namespace Manga_Rica_P1.UI.User
                 Id = id,
                 Nombre = u.username,
                 Perfil = u.perfil ?? "",
-                // Password opcional en edición
-                FechaExpiracion = DateTime.Today // si tu diálogo lo usa para algo visual
+                // ✅ Usar la fecha que ya tiene el usuario en la BD
+                FechaExpiracion = (u.fecha == default ? DateTime.Today : u.fecha)
             };
 
             using var dlg = new AddUser(inicial);
             if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
             var r = dlg.Resultado;
-            var nuevoNombre = (r?.Nombre ?? "").Trim();
-            var nuevoPerfil = r?.Perfil?.Trim();
-            var nuevaPass = r?.Clave?.Trim(); // si viene vacía, no cambia
+            if (r == null) return;
 
+            var nuevoNombre = (r.Nombre ?? "").Trim();
+            var nuevoPerfil = (r.Perfil ?? "").Trim();
+            var nuevaPass = (r.Clave ?? "").Trim(); // si viene vacía, no cambia
+
+            // Mapear cambios
             u.username = nuevoNombre;
             u.perfil = nuevoPerfil;
+            // ✅ Actualizar también la fecha de expiración
+            u.fecha = r.FechaExpiracion.Date;
 
             try
             {
-                _svc.Update(u, newRawPassword: string.IsNullOrWhiteSpace(nuevaPass) ? null : nuevaPass);
+                _svc.Update(
+                    u,
+                    newRawPassword: string.IsNullOrWhiteSpace(nuevaPass) ? null : nuevaPass
+                );
                 pagedGrid.RefreshData();
             }
             catch (Exception ex)
@@ -124,7 +135,9 @@ namespace Manga_Rica_P1.UI.User
 
             try
             {
-                foreach (var id in ids) _svc.Delete(id);
+                foreach (var id in ids)
+                    _svc.Delete(id);
+
                 pagedGrid.RefreshData();
             }
             catch (Exception ex)

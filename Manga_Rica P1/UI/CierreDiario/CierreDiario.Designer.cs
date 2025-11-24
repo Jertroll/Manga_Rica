@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CierreDiario));
             monthCalendarCierreDiario = new MonthCalendar();
             labelTitulo = new Label();
             checkBoxDomingo = new CheckBox();
@@ -98,8 +99,9 @@
             Controls.Add(checkBoxDomingo);
             Controls.Add(labelTitulo);
             Controls.Add(monthCalendarCierreDiario);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "CierreDiario";
-            Text = "CierreDiario";
+            Text = "Cierre Diario";
             ResumeLayout(false);
             PerformLayout();
         }

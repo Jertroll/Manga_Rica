@@ -13,6 +13,8 @@ namespace Manga_Rica_P1.UI.Login
     {
         private readonly AutentificacionService _auth;
         private readonly IAppSession _session; // ⬅️ sesión compartida
+        public bool EsUsuarioSoda { get; private set; }
+
 
         // ============ PALETA ============ 
         private readonly Color Verde1 = Color.FromArgb(79, 170, 38);   // verde brillante
@@ -119,7 +121,7 @@ namespace Manga_Rica_P1.UI.Login
                     return;
                 }
 
-                // ⬇️ Nuevo: Login devuelve AuthUser (DTO de sesión)
+                // ⬇️ Login devuelve AuthUser (DTO de sesión)
                 var (ok, msg, authUser) = _auth.Login(usuario, pass);
 
                 if (!ok || authUser is null)
@@ -132,6 +134,9 @@ namespace Manga_Rica_P1.UI.Login
 
                 // ⬇️ Guardar en la sesión compartida
                 _session.CurrentUser = authUser;
+
+                // ⬇️ AQUÍ validamos el tipo de usuario (lógica pedida)
+                EsUsuarioSoda = string.Equals(authUser.Rol, "SODA", StringComparison.OrdinalIgnoreCase);
 
                 // Éxito
                 DialogResult = DialogResult.OK;

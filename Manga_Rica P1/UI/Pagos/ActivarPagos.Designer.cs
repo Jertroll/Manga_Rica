@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ActivarPagos));
             labelSemana = new Label();
             buttonActivarPagos = new Button();
             comboSemana = new ComboBox();
@@ -73,6 +74,7 @@
             Controls.Add(comboSemana);
             Controls.Add(buttonActivarPagos);
             Controls.Add(labelSemana);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ActivarPagos";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Activar Pagos";

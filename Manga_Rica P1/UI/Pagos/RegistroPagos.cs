@@ -4,6 +4,7 @@ using Manga_Rica_P1.Entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using static Manga_Rica_P1.BLL.Pagos.PagosService;
@@ -138,7 +139,7 @@ namespace Manga_Rica_P1.UI.Pagos
         private void SeleccionarEmpleadoDeGrilla()
         {
             if (dataGridViewEmpleados.CurrentRow is null) return;
-            
+
             var boundObj = (dynamic?)dataGridViewEmpleados.CurrentRow.DataBoundItem;
             if (boundObj == null) return;
             _idEmpleadoSel = (long)boundObj.Id;
@@ -168,6 +169,17 @@ namespace Manga_Rica_P1.UI.Pagos
 
             textBoxPagoBruto.Text = _previewActual.Bruto.ToString("0.00");
             textBoxPagoNeto.Text = _previewActual.Neto.ToString("0.00");
+
+            // Cargar foto del empleado (mismo enfoque que en Soda)
+            var emp = _empleadosService.GetById(_idEmpleadoSel.Value);
+            if (emp != null)
+            {
+                CargarFotoEmpleado(emp.Foto);
+            }
+            else
+            {
+                CargarFotoEmpleado(null);
+            }
 
             // (Opcional) mostrar aviso si ya estaba registrado
             if (_previewActual.YaRegistrado)
@@ -205,9 +217,77 @@ namespace Manga_Rica_P1.UI.Pagos
             textBoxOtras.Clear();
             textBoxPagoBruto.Clear();
             textBoxPagoNeto.Clear();
-            pictureBoxEmpleado.Image = null;
-            
+
+            // Limpiar imagen del empleado liberando recursos
+            if (pictureBoxEmpleado.Image != null)
+            {
+                pictureBoxEmpleado.Image.Dispose();
+                pictureBoxEmpleado.Image = null;
+            }
+
             toolTip1.RemoveAll();
+        }
+
+        // ----------- Carga de foto de empleado (copiada del módulo de Soda) -----------
+
+        /// <summary>
+        /// Carga la foto del empleado en el PictureBox, probando varias rutas posibles.
+        /// </summary>
+        private void CargarFotoEmpleado(string? rutaFoto)
+        {
+            try
+            {
+                // Limpiar imagen anterior
+                if (pictureBoxEmpleado.Image != null)
+                {
+                    pictureBoxEmpleado.Image.Dispose();
+                    pictureBoxEmpleado.Image = null;
+                }
+
+                // Si no hay ruta, no mostramos nada
+                if (string.IsNullOrEmpty(rutaFoto))
+                {
+                    return;
+                }
+
+                string? rutaEncontrada = null;
+
+                // Rutas que se van a probar (igual que en Soda)
+                string[] rutasAProbar = {
+                    rutaFoto,  // Ruta directa
+                    Path.Combine(Application.StartupPath, rutaFoto),
+                    Path.Combine(Application.StartupPath, "Imagenes", rutaFoto),
+                    Path.Combine(Application.StartupPath, "Imagenes", "Empleados", rutaFoto)
+                };
+
+                foreach (string ruta in rutasAProbar)
+                {
+                    if (File.Exists(ruta))
+                    {
+                        rutaEncontrada = ruta;
+                        break;
+                    }
+                }
+
+                if (rutaEncontrada == null)
+                {
+                    // No se encontró la imagen
+                    return;
+                }
+
+                // Cargar la imagen sin bloquear el archivo
+                using (var fileStream = new FileStream(rutaEncontrada, FileMode.Open, FileAccess.Read))
+                {
+                    pictureBoxEmpleado.Image = new System.Drawing.Bitmap(fileStream);
+                }
+
+                pictureBoxEmpleado.SizeMode = PictureBoxSizeMode.StretchImage;
+            }
+            catch (Exception ex)
+            {
+                pictureBoxEmpleado.Image = null;
+                System.Diagnostics.Debug.WriteLine($"Error cargando foto empleado (Pagos): {ex.Message}");
+            }
         }
 
         // ----------------- Guardar -----------------
