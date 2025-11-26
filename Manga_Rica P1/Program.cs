@@ -42,6 +42,7 @@ namespace Manga_Rica_P1
             var sodaDetallesRepo = new SodaDetallesRepository(cs);
             var deduccionesRepo = new DeduccionesRepository(cs);
             var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
+            var puestoRepo = new PuestoRepository(cs);
 
 
             //Reporte
@@ -69,7 +70,8 @@ namespace Manga_Rica_P1
             var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
             var cierreService = new CierreDiarioService(acumuladoRepo);
             var pagosService = new Manga_Rica_P1.BLL.Pagos.PagosService(acumuladoRepo, pagosRowRepo, deduccionesRepo, empleadoRepo, sodaRepo, semanaRepo);
-           
+            var puestosService = new PuestosService(puestoRepo);
+
 
             var activarPagosService = new ActivarPagosService(pagosRepo, empleadoRepo, semanaRepo);
 
@@ -115,7 +117,8 @@ namespace Manga_Rica_P1
                 deduccionesService,
                 cierreService,
                 activarPagosService,
-                pagosService
+                pagosService,
+                puestosService
             ));
         }
     }

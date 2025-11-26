@@ -26,8 +26,7 @@ namespace Manga_Rica_P1.DAL.Clock
 
         /// <summary>
         /// CA por idEmployee (clock) en rango de fechas.
-        /// Nota: usamos subset de columnas clave; si tu tabla tiene más columnas relevantes,
-        /// puedes ampliar el SELECT y el mapeo.
+        /// Solo incluye filas con startEnroll y endEnroll NO nulos.
         /// </summary>
         public List<CalculatedAttendance> GetByEmployeeId(long idEmployee, DateTime fromDate, DateTime toDate)
         {
@@ -56,6 +55,8 @@ SELECT
 FROM dbo.calculatedAttendance
 WHERE idEmployee = @emp
   AND _date >= @d1 AND _date <= @d2
+  AND startEnroll IS NOT NULL
+  AND endEnroll   IS NOT NULL
 ORDER BY _date, id;";
             cmd.Parameters.Add(new SqlParameter("@emp", SqlDbType.BigInt) { Value = idEmployee });
             cmd.Parameters.Add(new SqlParameter("@d1", SqlDbType.Date) { Value = fromDate.Date });
@@ -94,6 +95,7 @@ ORDER BY _date, id;";
         /// <summary>
         /// CA por code (empleado visible del reloj). Resuelve idEmployee vía dbo.employees.
         /// Versión para code VARCHAR exacto (compatibilidad).
+        /// Solo incluye filas con startEnroll y endEnroll NO nulos.
         /// </summary>
         public List<CalculatedAttendance> GetByEmployeeCode(string code, DateTime fromDate, DateTime toDate)
         {
@@ -124,6 +126,8 @@ JOIN dbo.employees e
   ON e.id = ca.idEmployee
 WHERE ca._date >= @d1 AND ca._date <= @d2
   AND e.code = @code
+  AND ca.startEnroll IS NOT NULL
+  AND ca.endEnroll   IS NOT NULL
 ORDER BY ca._date, ca.id;";
             cmd.Parameters.Add(new SqlParameter("@d1", SqlDbType.Date) { Value = fromDate.Date });
             cmd.Parameters.Add(new SqlParameter("@d2", SqlDbType.Date) { Value = toDate.Date });
@@ -162,6 +166,7 @@ ORDER BY ca._date, ca.id;";
         /// <summary>
         /// CA por code numérico (MC_Numero en tu app) → compara con employees.code (VARCHAR) usando TRY_CONVERT.
         /// Úsalo cuando recibes MC_Numero (BIGINT) desde tu BD principal.
+        /// Solo incluye filas con startEnroll y endEnroll NO nulos.
         /// </summary>
         public List<CalculatedAttendance> GetByEmployeeCode(long code, DateTime fromDate, DateTime toDate)
         {
@@ -192,6 +197,8 @@ JOIN dbo.employees e
   ON e.id = ca.idEmployee
 WHERE ca._date >= @d1 AND ca._date <= @d2
   AND TRY_CONVERT(bigint, e.code) = @code
+  AND ca.startEnroll IS NOT NULL
+  AND ca.endEnroll   IS NOT NULL
 ORDER BY ca._date, ca.id;";
             cmd.Parameters.Add(new SqlParameter("@d1", SqlDbType.Date) { Value = fromDate.Date });
             cmd.Parameters.Add(new SqlParameter("@d2", SqlDbType.Date) { Value = toDate.Date });
@@ -230,6 +237,7 @@ ORDER BY ca._date, ca.id;";
         /// <summary>
         /// Suma de total (minutos/unidad de 'total') para un día concreto por MC_Numero (BIGINT)
         /// mapeado contra employees.code (VARCHAR) mediante TRY_CONVERT.
+        /// Solo considera filas con startEnroll y endEnroll NO nulos.
         /// </summary>
         public double GetHorasDiaByCode(long code, DateTime fecha)
         {
@@ -241,7 +249,9 @@ FROM dbo.calculatedAttendance ca
 JOIN dbo.employees e
   ON e.id = ca.idEmployee
 WHERE TRY_CONVERT(bigint, e.code) = @code
-  AND CAST(ca._date AS date) = @fecha;";
+  AND CAST(ca._date AS date) = @fecha
+  AND ca.startEnroll IS NOT NULL
+  AND ca.endEnroll   IS NOT NULL;";
             cmd.Parameters.Add(new SqlParameter("@code", SqlDbType.BigInt) { Value = code });
             cmd.Parameters.Add(new SqlParameter("@fecha", SqlDbType.Date) { Value = fecha.Date });
             cmd.CommandTimeout = _timeout;
@@ -252,6 +262,7 @@ WHERE TRY_CONVERT(bigint, e.code) = @code
 
         /// <summary>
         /// Totales por día en un rango para un MC_Numero (BIGINT) → útil para cierres o verificación.
+        /// Solo considera filas con startEnroll y endEnroll NO nulos.
         /// </summary>
         public IEnumerable<(DateTime Fecha, double Total)> GetHorasPorRangoByCode(long code, DateTime desde, DateTime hasta)
         {
@@ -265,6 +276,8 @@ JOIN dbo.employees e
   ON e.id = ca.idEmployee
 WHERE TRY_CONVERT(bigint, e.code) = @code
   AND CAST(ca._date AS date) BETWEEN @d1 AND @d2
+  AND ca.startEnroll IS NOT NULL
+  AND ca.endEnroll   IS NOT NULL
 GROUP BY CAST(ca._date AS date)
 ORDER BY Fecha;";
             cmd.Parameters.Add(new SqlParameter("@code", SqlDbType.BigInt) { Value = code });

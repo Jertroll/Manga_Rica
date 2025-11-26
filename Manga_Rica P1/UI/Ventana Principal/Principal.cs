@@ -38,6 +38,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly ActivarPagosService _activarPagosService;
         private readonly PagosService _PagosService;
         private readonly AutentificacionService _auth;
+        private readonly PuestosService _puestosService;
 
 
 
@@ -54,7 +55,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             DeduccionesService deduccionesService,
             CierreDiarioService cierreService,
             ActivarPagosService activarPagosService,
-            PagosService pagosService)
+            PagosService pagosService,
+            PuestosService puestosService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -71,6 +73,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _cierreService = cierreService ?? throw new ArgumentNullException(nameof(cierreService));
             _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
             _PagosService = pagosService ?? throw new ArgumentNullException(nameof(pagosService));
+            _puestosService = puestosService ?? throw new ArgumentNullException(nameof(puestosService));
 
 
 
@@ -256,6 +259,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
             ConfigurarHoverBoton(btnUsuarios, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnDepartamentos, hoverGreen, downGreen);
+            ConfigurarHoverBoton(btnPuestos, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnSemanas, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnArticulos, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnEmpleado, hoverGreen, downGreen);
@@ -499,6 +503,33 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panelPrincipal.ResumeLayout();
         }
 
+
+        private void btnPuestos_Click(object sender, EventArgs e)
+        {
+            var existente = panelPrincipal.Controls
+                .OfType<Manga_Rica_P1.UI.Puesto.PuestoView>()
+                .FirstOrDefault();
+
+            if (existente is not null)
+            {
+                existente.BringToFront();
+                return;
+            }
+
+            panelPrincipal.SuspendLayout();
+
+            foreach (Control c in panelPrincipal.Controls) c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            var vista = new Manga_Rica_P1.UI.Puesto.PuestoView(_puestosService)
+            {
+                Dock = DockStyle.Fill
+            };
+
+            panelPrincipal.Controls.Add(vista);
+            panelPrincipal.ResumeLayout();
+        }
+
         private void btnSemanas_Click(object sender, EventArgs e)
         {
             var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.Semanas.SemanaView>().FirstOrDefault();
@@ -554,7 +585,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView(_empleadoService, _solicitudesService, _departamentosService)
+            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView(_empleadoService, _solicitudesService, _departamentosService, _puestosService)
             {
                 Dock = DockStyle.Fill
             };

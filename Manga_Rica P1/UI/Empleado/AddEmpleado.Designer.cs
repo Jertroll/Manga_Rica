@@ -52,7 +52,6 @@
             labelDepartamento = new Label();
             textBoxSalario = new TextBox();
             labelSalario = new Label();
-            textBoxPuestoLaboro = new TextBox();
             labelPuesto = new Label();
             dateTimePicker1 = new DateTimePicker();
             labelFechaIngreso = new Label();
@@ -75,6 +74,7 @@
             buttonBuscarFoto = new Button();
             fotoEmpleado = new PictureBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
+            comboBoxPuestoLaborar = new ComboBox();
             tabControlEmpleado.SuspendLayout();
             TabSolicitud.SuspendLayout();
             TabEmpleado.SuspendLayout();
@@ -292,13 +292,6 @@
             labelSalario.TabIndex = 25;
             labelSalario.Text = "Monto de Salario";
             // 
-            // textBoxPuestoLaboro
-            // 
-            textBoxPuestoLaboro.Location = new Point(448, 71);
-            textBoxPuestoLaboro.Name = "textBoxPuestoLaboro";
-            textBoxPuestoLaboro.Size = new Size(177, 29);
-            textBoxPuestoLaboro.TabIndex = 28;
-            // 
             // labelPuesto
             // 
             labelPuesto.AutoSize = true;
@@ -483,6 +476,7 @@
             // TabEmpleado
             // 
             TabEmpleado.BackColor = Color.WhiteSmoke;
+            TabEmpleado.Controls.Add(comboBoxPuestoLaborar);
             TabEmpleado.Controls.Add(textBoxCarnet);
             TabEmpleado.Controls.Add(labelCarne);
             TabEmpleado.Controls.Add(buttonBuscarFoto);
@@ -495,7 +489,6 @@
             TabEmpleado.Controls.Add(labelMcNumero);
             TabEmpleado.Controls.Add(labelPuesto);
             TabEmpleado.Controls.Add(comboBoxActivo);
-            TabEmpleado.Controls.Add(textBoxPuestoLaboro);
             TabEmpleado.Controls.Add(labelActivo);
             TabEmpleado.Controls.Add(labelFechaIngreso);
             TabEmpleado.Controls.Add(dateTimePicker1);
@@ -557,6 +550,14 @@
             flowLayoutPanel1.Size = new Size(885, 59);
             flowLayoutPanel1.TabIndex = 42;
             // 
+            // comboBoxPuestoLaborar
+            // 
+            comboBoxPuestoLaborar.FormattingEnabled = true;
+            comboBoxPuestoLaborar.Location = new Point(447, 65);
+            comboBoxPuestoLaborar.Name = "comboBoxPuestoLaborar";
+            comboBoxPuestoLaborar.Size = new Size(177, 29);
+            comboBoxPuestoLaborar.TabIndex = 43;
+            // 
             // AddEmpleado
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -603,7 +604,6 @@
         private Label labelDepartamento;
         private TextBox textBoxSalario;
         private Label labelSalario;
-        private TextBox textBoxPuestoLaboro;
         private Label labelPuesto;
         private DateTimePicker dateTimePicker1;
         private Label labelFechaIngreso;
@@ -626,5 +626,6 @@
         private TextBox textBoxTelefono;
         private TextBox textBoxCarnet;
         private Label labelCarne;
+        private ComboBox comboBoxPuestoLaborar;
     }
 }

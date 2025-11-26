@@ -5,11 +5,11 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
 
-using Manga_Rica_P1.BLL;                       // EmpleadosService + SolicitudesService
+using Manga_Rica_P1.BLL;                       // EmpleadosService + SolicitudesService + PuestosService + DepartamentosService
 using Manga_Rica_P1.Entity;                    // Entities
 using Manga_Rica_P1.UI.Helpers;                // PagedSearchGrid
 using Manga_Rica_P1.UI.Solicitudes.Modales;    // AddSolicitud
-using Manga_Rica_P1.UI.Empleados.Modales;
+using Manga_Rica_P1.UI.Empleados.Modales;      // AddEmpleado
 
 using EntitySolicitud = Manga_Rica_P1.Entity.Solicitudes;
 using EntityEmpleado = Manga_Rica_P1.Entity.Empleado;
@@ -21,6 +21,7 @@ namespace Manga_Rica_P1.UI.Empleados
         private readonly EmpleadosService _empSvc;
         private readonly SolicitudesService _solSvc;
         private readonly DepartamentosService _depSvc;
+        private readonly PuestosService _puestosService;
 
         private PagedSearchGrid pagedGrid;
 
@@ -42,13 +43,18 @@ namespace Manga_Rica_P1.UI.Empleados
             "Departamento","Salario","Puesto","Fecha Ingreso","Activo"
         };
 
-        public EmpleadosView(EmpleadosService empSvc, SolicitudesService solSvc, DepartamentosService depSvc)
+        public EmpleadosView(
+            EmpleadosService empSvc,
+            SolicitudesService solSvc,
+            DepartamentosService depSvc,
+            PuestosService puestosService)
         {
             InitializeComponent();
 
             _empSvc = empSvc ?? throw new ArgumentNullException(nameof(empSvc));
             _solSvc = solSvc ?? throw new ArgumentNullException(nameof(solSvc));
             _depSvc = depSvc ?? throw new ArgumentNullException(nameof(depSvc));
+            _puestosService = puestosService ?? throw new ArgumentNullException(nameof(puestosService));
 
             Controls.Clear();
 
@@ -178,7 +184,7 @@ namespace Manga_Rica_P1.UI.Empleados
                             if (result == DialogResult.Yes)
                             {
                                 // Abrir para edición
-                                using var editDlg = new AddEmpleado(_depSvc);
+                                using var editDlg = new AddEmpleado(_depSvc, _puestosService);
                                 editDlg.PrefillFromEmpleado(empleadoExistente);
                                 if (editDlg.ShowDialog(this) == DialogResult.OK)
                                 {
@@ -195,7 +201,7 @@ namespace Manga_Rica_P1.UI.Empleados
                     // Si no existe empleado activo con esa cédula, flujo normal de alta
                     var seed = MapSolicitudToEmpleadoSeed(s);
 
-                    using var dlg = new AddEmpleado(_depSvc);
+                    using var dlg = new AddEmpleado(_depSvc, _puestosService);
                     dlg.PrefillFromEmpleado(seed);
                     if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
@@ -207,8 +213,9 @@ namespace Manga_Rica_P1.UI.Empleados
                 else
                 {
                     // Modo Empleados: alta directa
-                    using var dlg = new AddEmpleado(_depSvc);
+                    using var dlg = new AddEmpleado(_depSvc, _puestosService);
                     if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
                     _empSvc.Create(dlg.Result);
 
                     pagedGrid.RefreshData();
@@ -249,7 +256,7 @@ namespace Manga_Rica_P1.UI.Empleados
                     var e = _empSvc.GetById(id.Value);
                     if (e is null) return;
 
-                    using var dlg = new AddEmpleado(_depSvc);
+                    using var dlg = new AddEmpleado(_depSvc, _puestosService);
                     dlg.PrefillFromEmpleado(e);
                     if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
@@ -430,6 +437,8 @@ namespace Manga_Rica_P1.UI.Empleados
                             MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        // Aquí normalmente no iría este InitializeComponent vacío,
+        // pero lo dejo como en tu ejemplo.
         private void InitializeComponent() { }
     }
 }

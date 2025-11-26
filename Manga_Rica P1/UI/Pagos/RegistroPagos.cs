@@ -22,6 +22,13 @@ namespace Manga_Rica_P1.UI.Pagos
         private long? _idEmpleadoSel;
         private PagoPreview? _previewActual;
 
+        // >>> Factores usados para el cálculo del bruto desde horas
+        //     AJUSTA ESTOS VALORES SI TU LÓGICA DE NEGOCIO ES DIFERENTE
+        private const float FACTOR_NORMAL = 1.0f;
+        private const float FACTOR_EXTRA = 1.5f;
+        private const float FACTOR_DOBLE = 2.0f;
+        private const float FACTOR_FERIADO = 2.0f;
+
         public RegistroPagos(
             PagosService pagosService,
             SemanasService semanasService,
@@ -38,19 +45,25 @@ namespace Manga_Rica_P1.UI.Pagos
             _empleadosService = empleadosService;
             toolTip1 = new ToolTip();
 
-            // UX: campos calculados no editables
-            textBoxHorasNormales.ReadOnly = true;
-            textBoxHorasExtras.ReadOnly = true;
-            textBoxHorasDobles.ReadOnly = true;
-            textBoxFeriados.ReadOnly = true;
-            textBoxSalario.ReadOnly = true;
-            textBoxPagoBruto.ReadOnly = true;
-            textBoxPagoNeto.ReadOnly = true;
+            // >>> Todos los campos de texto quedan editables
 
-            // Editables como en el sistema viejo
-            textBoxSoda.TextChanged += (_, __) => RecalcularNetoDesdeUI();
-            textBoxUniforme.TextChanged += (_, __) => RecalcularNetoDesdeUI();
-            textBoxOtras.TextChanged += (_, __) => RecalcularNetoDesdeUI();
+            // ---------------- Eventos de recálculo ----------------
+
+            // Cambios que afectan directamente el cálculo de BRUTO (salario + horas)
+            textBoxSalario.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+            textBoxHorasNormales.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+            textBoxHorasExtras.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+            textBoxHorasDobles.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+            textBoxFeriados.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+
+            // Cambios de deducciones también disparan recálculo COMPLETO
+            // (Bruto se recalcula desde salario+horas; Neto = Bruto - deducciones)
+            textBoxSoda.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+            textBoxUniforme.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+            textBoxOtras.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
+
+            // Si se edita manualmente el BRUTO, sólo recalculamos el NETO
+            textBoxPagoBruto.TextChanged += (_, __) => RecalcularSoloNetoDesdeUI();
 
             comboBoxSemana.SelectedIndexChanged += (_, __) => CargarPendientesDeSemana();
             dataGridViewEmpleados.CellDoubleClick += (_, __) => SeleccionarEmpleadoDeGrilla();
@@ -189,10 +202,35 @@ namespace Manga_Rica_P1.UI.Pagos
         private float ParseFloat(string? s)
             => float.TryParse(s, out var v) ? v : 0f;
 
-        private void RecalcularNetoDesdeUI()
+        // >>> Recalcula BRUTO y luego NETO en función de salario + horas + deducciones
+        private void RecalcularBrutoYNetoDesdeUI()
         {
-            if (_previewActual == null) return;
+            // Salario por hora
+            float salario = ParseFloat(textBoxSalario.Text);
 
+            // Horas
+            float hN = ParseFloat(textBoxHorasNormales.Text);
+            float hE = ParseFloat(textBoxHorasExtras.Text);
+            float hD = ParseFloat(textBoxHorasDobles.Text);
+            float hF = ParseFloat(textBoxFeriados.Text);
+
+            // Bruto según reglas (ajusta los factores arriba si lo necesitas)
+            float bruto = salario * (
+                  FACTOR_NORMAL * hN
+                + FACTOR_EXTRA * hE
+                + FACTOR_DOBLE * hD
+                + FACTOR_FERIADO * hF
+            );
+
+            textBoxPagoBruto.Text = bruto.ToString("0.00");
+
+            // Y con ese bruto recalculamos el neto
+            RecalcularSoloNetoDesdeUI();
+        }
+
+        // Recalcula sólo el NETO (asumiendo que PagoBruto ya es correcto)
+        private void RecalcularSoloNetoDesdeUI()
+        {
             float bruto = ParseFloat(textBoxPagoBruto.Text);
             float u = ParseFloat(textBoxUniforme.Text);
             float s = ParseFloat(textBoxSoda.Text);

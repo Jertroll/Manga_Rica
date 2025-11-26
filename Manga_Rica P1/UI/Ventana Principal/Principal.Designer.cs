@@ -41,6 +41,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnUsuarios = new Button();
             panel11 = new Panel();
             btnDepartamentos = new Button();
+            panelPuesto = new Panel();
+            btnPuestos = new Button();
             panel10 = new Panel();
             btnSemanas = new Button();
             panel9 = new Panel();
@@ -93,6 +95,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel2.SuspendLayout();
             panel7.SuspendLayout();
             panel11.SuspendLayout();
+            panelPuesto.SuspendLayout();
             panel10.SuspendLayout();
             panel9.SuspendLayout();
             menuPlanillaContenedor.SuspendLayout();
@@ -178,6 +181,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             menuConfContenedor.Controls.Add(panel2);
             menuConfContenedor.Controls.Add(panel7);
             menuConfContenedor.Controls.Add(panel11);
+            menuConfContenedor.Controls.Add(panelPuesto);
             menuConfContenedor.Controls.Add(panel10);
             menuConfContenedor.Controls.Add(panel9);
             menuConfContenedor.ForeColor = Color.White;
@@ -265,10 +269,36 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnDepartamentos.UseVisualStyleBackColor = false;
             btnDepartamentos.Click += btnDepartamentos_Click;
             // 
+            // panelPuesto
+            // 
+            panelPuesto.Controls.Add(btnPuestos);
+            panelPuesto.Location = new Point(0, 138);
+            panelPuesto.Margin = new Padding(0);
+            panelPuesto.Name = "panelPuesto";
+            panelPuesto.Size = new Size(202, 46);
+            panelPuesto.TabIndex = 14;
+            // 
+            // btnPuestos
+            // 
+            btnPuestos.BackColor = Color.FromArgb(124, 179, 66);
+            btnPuestos.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            btnPuestos.ForeColor = Color.White;
+            btnPuestos.Image = (Image)resources.GetObject("btnPuestos.Image");
+            btnPuestos.ImageAlign = ContentAlignment.MiddleLeft;
+            btnPuestos.Location = new Point(-32, -20);
+            btnPuestos.Name = "btnPuestos";
+            btnPuestos.Padding = new Padding(40, 0, 0, 0);
+            btnPuestos.Size = new Size(273, 89);
+            btnPuestos.TabIndex = 2;
+            btnPuestos.Text = "       Puestos";
+            btnPuestos.TextAlign = ContentAlignment.MiddleLeft;
+            btnPuestos.UseVisualStyleBackColor = false;
+            btnPuestos.Click += btnPuestos_Click;
+            // 
             // panel10
             // 
             panel10.Controls.Add(btnSemanas);
-            panel10.Location = new Point(0, 138);
+            panel10.Location = new Point(0, 184);
             panel10.Margin = new Padding(0);
             panel10.Name = "panel10";
             panel10.Size = new Size(202, 46);
@@ -294,7 +324,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // panel9
             // 
             panel9.Controls.Add(btnArticulos);
-            panel9.Location = new Point(0, 184);
+            panel9.Location = new Point(0, 230);
             panel9.Margin = new Padding(0);
             panel9.Name = "panel9";
             panel9.Size = new Size(202, 46);
@@ -872,6 +902,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panel2.ResumeLayout(false);
             panel7.ResumeLayout(false);
             panel11.ResumeLayout(false);
+            panelPuesto.ResumeLayout(false);
             panel10.ResumeLayout(false);
             panel9.ResumeLayout(false);
             menuPlanillaContenedor.ResumeLayout(false);
@@ -909,7 +940,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private FlowLayoutPanel flowLayoutPanelSideBar;
         private Button btnConfiguraciones;
         private Panel panel2;
-        private Button btnPlanilla; // <-- Deja solo UNA declaración de btnPlanilla aquí
+        private Button btnPlanilla; 
         private Button btnReportes;
         private FlowLayoutPanel menuConfContenedor;
         private Panel panel7;
@@ -961,5 +992,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private Panel panelPrincipal;
         private Panel panel8;
         private Button buttonCerrarSesion;
+        private Panel panelPuesto;
+        private Button btnPuestos;
     }
 }
