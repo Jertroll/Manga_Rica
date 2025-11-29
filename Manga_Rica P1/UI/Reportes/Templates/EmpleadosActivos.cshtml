@@ -1,5 +1,5 @@
 <!-- Nueva implementacion -->
-@model MangaRica.ENTITY.ViewModels.Reports.ReporteEmpleadosActivosVm
+@model MangaRica.ENTITY.ViewModels.Reports.ReporteEmpleadosListaVm
 @using System.Globalization
 @{ 
     Layout = "_ReportBase.cshtml";                
@@ -25,20 +25,20 @@
           <th>Fecha ingreso</th>
         </tr>
       </thead>
-      <tbody>
-        @foreach (var e in dep.Empleados)
-        {
-          <tr>
-            <td>@e.Carne</td>
-            <td>@e.Apellido1</td>
-            <td>@e.Apellido2</td>
-            <td>@e.Nombre</td>
-            <td class="num">@e.Salario.ToString("C", cr)</td>
-            <td>@e.Puesto</td>
-            <td>@e.FechaIngreso.ToString("dd/MM/yyyy")</td>
-          </tr>
-        }
-      </tbody>
+<tbody>
+@foreach (var e in dep.Empleados)
+{
+  <tr>
+    <td>@e.Carne</td>
+    <td>@e.Apellido1</td>
+    <td>@e.Apellido2</td>
+    <td>@e.Nombre</td>
+    <td class="num">@e.Salario.ToString("C", cr)</td>
+    <td>@e.Puesto</td>
+    <td>@(e.FechaIngreso is DateTime fi ? fi.ToString("dd/MM/yyyy") : "")</td>
+  </tr>
+}
+</tbody>
     </table>
   </section>
 }

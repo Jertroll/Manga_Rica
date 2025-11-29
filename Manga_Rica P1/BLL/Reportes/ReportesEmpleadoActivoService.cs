@@ -22,11 +22,11 @@ namespace MangaRica.BLL
         }
 
         // Nueva implementacion: consulta DAL y proyecta a ViewModel de Reporte
-        public async Task<ReporteEmpleadosActivosVm> GetEmpleadosActivosVmAsync(CancellationToken ct = default)
+        public async Task<ReporteEmpleadosListaVm> GetEmpleadosActivosVmAsync(CancellationToken ct = default)
         {
             var rows = await _repo.GetEmpleadosActivosAsync(ct);
 
-            var vm = new ReporteEmpleadosActivosVm
+            var vm = new ReporteEmpleadosListaVm
             {
                 Titulo = "Empleados Activos por Departamento",
                 PieDePagina = " "

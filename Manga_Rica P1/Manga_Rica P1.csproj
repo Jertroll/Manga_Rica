@@ -15,10 +15,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="ClosedXML" Version="0.105.0" />
 		<PackageReference Include="DinkToPdf" Version="1.0.8" />
-		<PackageReference Include="FastReport.Compat" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource" Version="2026.1.2" />
-		<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2026.1.2" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />

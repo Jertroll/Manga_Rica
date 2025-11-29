@@ -1,6 +1,8 @@
-﻿// Nueva implementacion
+﻿// FormReporteEmpleadosActivos.cs
 using System;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
@@ -9,11 +11,13 @@ using Microsoft.Web.WebView2.WinForms;
 using MangaRica.BLL;
 using MangaRica.UI.Reports;
 using Manga_Rica_P1.DAL.Reports;
+using Manga_Rica_P1.UI.Reportes.Export;      // ReportExportHelper, ReportTableBuilder
+using MangaRica.ENTITY.ViewModels.Reports;   // ReporteEmpleadosListaVm, DepartamentoGrupoVm, EmpleadoItemVm
 
 namespace MangaRica.UI.Forms
 {
     /// <summary>
-    /// Nueva implementacion: Form para visualizar el reporte de Empleados Activos y exportar a PDF.
+    /// Form para visualizar el reporte de Empleados Activos y exportar a PDF/Excel.
     /// </summary>
     public partial class FormReporteEmpleadosActivos : Form
     {
@@ -23,79 +27,78 @@ namespace MangaRica.UI.Forms
         private readonly string _templatesFolder;
         private readonly string _virtualHost;
 
-        // Nueva implementacion: recibe connectionString y opcionales (virtual host)
+        // Cache para exportaciones
+        private ReporteEmpleadosListaVm? _vm;
+        private string _titulo = "Empleados_Activos";
+
+        // Recibe connectionString y (opcional) virtual host
         public FormReporteEmpleadosActivos(string connectionString, string virtualHost = "appassets")
         {
             InitializeComponent();
 
-            // Nueva implementacion: dimensiones y título por defecto
             Text = "Reporte: Empleados Activos";
-            Width = 1100; Height = 700;
+            Width = 1100;
+            Height = 700;
 
-            // Nueva implementacion: BLL a partir del DAL de reportes
             var repo = new EmpleadosReportRepository(connectionString);
             _service = new ReportesEmpleadoActivoService(repo);
 
-            // Nueva implementacion: rutas de plantillas y assets (en bin\...\UI\Reportes\...)
             _templatesFolder = Path.Combine(AppContext.BaseDirectory, "UI", "Reportes", "Templates");
             _assetsFolder = Path.Combine(AppContext.BaseDirectory, "UI", "Reportes", "Assets");
 
-            // Nueva implementacion: fallback dev por si no se copiaron al bin (útil en debug)
+            // Fallback dev por si no se copiaron al bin
             if (!Directory.Exists(_templatesFolder))
             {
                 var devRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
                 var devTemplates = Path.Combine(devRoot, "UI", "Reportes", "Templates");
-                if (Directory.Exists(devTemplates))
-                    _templatesFolder = devTemplates;
+                if (Directory.Exists(devTemplates)) _templatesFolder = devTemplates;
             }
 
-            // Nueva implementacion: validación clara de templates
             if (!Directory.Exists(_templatesFolder))
             {
                 throw new DirectoryNotFoundException(
                     $"No se encontraron las plantillas Razor en:\n{_templatesFolder}\n\n" +
                     "Asegúrate de copiarlas al output en el .csproj:\n" +
-                    "<Content Include=\"UI\\Reportes\\Templates\\**\\*.cshtml\">\n  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>\n</Content>");
+                    "<Content Include=\"UI\\Reportes\\Templates\\**\\*.cshtml\">\n" +
+                    "  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>\n</Content>");
             }
 
-            // Nueva implementacion: garantizar carpeta de assets
             Directory.CreateDirectory(_assetsFolder);
-
-            // Nueva implementacion: host virtual (de appsettings o parámetro)
             _virtualHost = virtualHost;
 
-            // Nueva implementacion: renderer con soporte de ViewBag y caché
             _renderer = new HtmlReportRenderer(_templatesFolder);
-
-            // Nueva implementacion: eventos de UI
-            _btnExportarPdf.Click += BtnExportar_Click;
             Load += Form_Load;
         }
 
-        // Nueva implementacion: carga HTML en WebView2 y mapea assets locales
+        // Carga HTML en WebView2 y mapea assets locales
         private async void Form_Load(object? sender, EventArgs e)
         {
             try
             {
-                await _web.EnsureCoreWebView2Async();
+                // Mitigar forced dark mode y forzar fondo blanco
+                var opts = new CoreWebView2EnvironmentOptions
+                {
+                    AdditionalBrowserArguments = "--disable-features=WebContentsForceDark --force-dark-mode=0"
+                };
+                var env = await CoreWebView2Environment.CreateAsync(null, null, opts);
+                await _web.EnsureCoreWebView2Async(env);
+                _web.DefaultBackgroundColor = System.Drawing.Color.White;
 
-                // Nueva implementacion: Mapear carpeta de assets a un host virtual: https://{_virtualHost}/...
+                // Mapear carpeta de assets a un host virtual: https://{_virtualHost}/...
                 _web.CoreWebView2.SetVirtualHostNameToFolderMapping(
-                    _virtualHost,
-                    _assetsFolder,
-                    CoreWebView2HostResourceAccessKind.DenyCors);
+                    _virtualHost, _assetsFolder, CoreWebView2HostResourceAccessKind.DenyCors);
 
-                // Nueva implementacion: ViewModel del reporte
-                var vm = await _service.GetEmpleadosActivosVmAsync();
+                // ViewModel del reporte (LISTA)
+                ReporteEmpleadosListaVm vm = await _service.GetEmpleadosActivosVmAsync();
 
-                // Nueva implementacion: leer Brand de appsettings.json (Program.Configuration)
-                var cfg = Manga_Rica_P1.Program.Configuration; // Ajusta si tu Program está en otro namespace
+                // Brand desde appsettings
+                var cfg = Manga_Rica_P1.Program.Configuration;
                 var company = cfg?["Brand:Company"] ?? "Manga Rica S.A.";
                 var phones = cfg?["Brand:Phones"] ?? "";
                 var address = cfg?["Brand:Address"] ?? "";
                 var logoFile = cfg?["Brand:LogoFile"] ?? "logo.png";
 
-                // Nueva implementacion: Render con ViewBag para el layout (_ReportBase.cshtml)
+                // Render Razor con ViewBag para el layout base
                 var html = await _renderer.RenderAsync(
                     templateName: "EmpleadosActivos.cshtml",
                     model: vm,
@@ -109,6 +112,10 @@ namespace MangaRica.UI.Forms
                 );
 
                 _web.CoreWebView2.NavigateToString(html);
+
+                // Cachear para exportaciones
+                _vm = vm;
+                _titulo = vm?.Titulo ?? _titulo;
             }
             catch (Exception ex)
             {
@@ -117,85 +124,92 @@ namespace MangaRica.UI.Forms
             }
         }
 
-        // Nueva implementacion: exportación a PDF con márgenes en pulgadas
-        private async void BtnExportar_Click(object? sender, EventArgs e)
+        // ===== Exportar PDF (helper reutilizable) =====
+        private async void _btnExportarPdf_Click(object? sender, EventArgs e)
         {
-            await EsperarCargaAsync();
-
-            using var sfd = new SaveFileDialog { Filter = "PDF|*.pdf", FileName = "EmpleadosActivos.pdf" };
-            if (sfd.ShowDialog(this) != DialogResult.OK) return;
-
-            var settings = _web.CoreWebView2.Environment.CreatePrintSettings();
-            settings.ShouldPrintHeaderAndFooter = false;
-            settings.ShouldPrintBackgrounds = true;
-            settings.Orientation = CoreWebView2PrintOrientation.Portrait;
-            settings.MarginTop = settings.MarginBottom = settings.MarginLeft = settings.MarginRight = 0.5;
-
-            bool ok = await _web.CoreWebView2.PrintToPdfAsync(sfd.FileName, settings);
-            MessageBox.Show(ok ? "PDF generado." : "No se pudo generar el PDF.");
+            await ReportExportHelper.ExportWebView2ToPdfAsync(
+                this, _web, ReportExportHelper.SanitizeFileName(_titulo));
         }
 
-        // Nueva implementacion: helper para esperar navegación terminada
-        private Task EsperarCargaAsync()
+        // ===== Exportar Excel (VM -> DataTable -> XLSX/CSV) =====
+        private async void _btnExportarExcel_Click(object? sender, EventArgs e)
         {
-            var tcs = new TaskCompletionSource();
-            void Handler(object? s, CoreWebView2NavigationCompletedEventArgs e)
-            {
-                _web.CoreWebView2.NavigationCompleted -= Handler;
-                tcs.SetResult();
-            }
-            _web.CoreWebView2.NavigationCompleted += Handler;
-            return tcs.Task;
+            // Unificar tipos: ambos caminos devuelven ReporteEmpleadosListaVm
+            var vm = _vm ?? await _service.GetEmpleadosActivosVmAsync();
+
+            // 1) Filas tipadas a partir del VM (null-safe)
+            var departamentos = vm.Departamentos ?? Enumerable.Empty<DepartamentoGrupoVm>();
+            var rows = departamentos
+                .SelectMany(d => (d.Empleados ?? Enumerable.Empty<EmpleadoItemVm>())
+                    .Select(e => new Row
+                    {
+                        Departamento = d.Nombre ?? string.Empty,
+                        Carne = e.Carne,
+                        Apellido1 = e.Apellido1,
+                        Apellido2 = e.Apellido2,
+                        Nombre = e.Nombre,
+                        Salario = e.Salario,
+                        Puesto = e.Puesto,
+                        FechaIngreso = e.FechaIngreso   // si es nullable en tu VM, esta propiedad también es nullable
+                    }));
+
+            // 2) Declarar columnas explícitas (nombres y tipos EXACTOS)
+            var table = ReportTableBuilder.From(
+                rows,
+                new ReportTableBuilder.Column<Row>("Departamento", r => r.Departamento, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Carne", r => r.Carne, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Apellido 1", r => r.Apellido1, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Apellido 2", r => r.Apellido2, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Nombre", r => r.Nombre, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Salario", r => r.Salario, typeof(decimal)),
+                new ReportTableBuilder.Column<Row>("Puesto", r => r.Puesto, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Fecha ingreso", r => r.FechaIngreso, typeof(DateTime))
+            );
+
+            // 3) Branding + logo desde appsettings
+            var cfg = Manga_Rica_P1.Program.Configuration;
+            var company = cfg["Brand:Company"] ?? string.Empty;
+            var phones = cfg["Brand:Phones"] ?? string.Empty;
+            var address = cfg["Brand:Address"] ?? string.Empty;
+            var title = _titulo ?? "Reporte";
+            var logoFile = cfg["Brand:LogoFile"];
+            var logoPath = !string.IsNullOrWhiteSpace(logoFile) && Path.IsPathRooted(logoFile)
+                            ? logoFile
+                            : Path.Combine(_assetsFolder, logoFile ?? string.Empty);
+            var logo = File.Exists(logoPath) ? logoPath : null;
+
+            // 4) Exportar con plantilla genérica
+            await ReportExportHelper.ExportStyledXlsxOrCsvAsync(
+                owner: this,
+                table: table,
+                suggestedFileName: ReportExportHelper.SanitizeFileName(title),
+                company: company,
+                phones: phones,
+                address: address,
+                title: title,
+                logoPath: logo,
+                prependPhonesLabel: true,
+                groupByColumn: "Departamento",          // agrupa por Departamento
+                subtotalColumns: new[] { "Salario" },   // suma Salario por grupo y total
+                moneyColumns: new[] { "Salario" },      // formato ₡ para Salario
+                decimalColumns: Array.Empty<string>(),  // sin columnas decimales adicionales
+                logoHeightPx: 42                        // alto del logo en px
+            );
         }
 
-        private async Task ExportarPdfAsync()
+        // POCO para tipar las filas de Excel
+        private sealed class Row
         {
-            await EnsureWebView2ReadyAsync();
-
-            using var fbd = new FolderBrowserDialog
-            {
-                SelectedPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Description = "Selecciona la carpeta donde guardar el PDF"
-            };
-            if (fbd.ShowDialog(this) != DialogResult.OK) return;
-
-            var filePath = Path.Combine(
-                fbd.SelectedPath,
-                SanitizeFileName($"{Text.Replace("Reporte: ", "")}_{DateTime.Now:yyyy-MM-dd_HH-mm}.pdf"));
-
-            var settings = _web.CoreWebView2.Environment.CreatePrintSettings();
-            settings.ShouldPrintHeaderAndFooter = false;
-            settings.ShouldPrintBackgrounds = true;
-            settings.Orientation = CoreWebView2PrintOrientation.Portrait;
-            settings.MarginTop = settings.MarginBottom = settings.MarginLeft = settings.MarginRight = 0.5;
-
-            bool ok = await _web.CoreWebView2.PrintToPdfAsync(filePath, settings);
-            MessageBox.Show(ok ? $"PDF generado:\n{filePath}" : "No se pudo generar el PDF.",
-                "Exportar", MessageBoxButtons.OK, ok ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+            public string Departamento { get; set; } = "";
+            public string Carne { get; set; } = "";
+            public string Apellido1 { get; set; } = "";
+            public string Apellido2 { get; set; } = "";
+            public string Nombre { get; set; } = "";
+            public decimal Salario { get; set; }
+            public string Puesto { get; set; } = "";
+            public DateTime? FechaIngreso { get; set; }
         }
 
-        private async Task EnsureWebView2ReadyAsync()
-        {
-            await _web.EnsureCoreWebView2Async();
-        }
-
-        private static string SanitizeFileName(string name)
-        {
-            foreach (var c in Path.GetInvalidFileNameChars()) name = name.Replace(c, '_');
-            return name;
-        }
-
-        // Cambia el tipo de valor devuelto de Task a void para el método de evento
-        private async void _btnExportarPdf_Click(object sender, EventArgs e)
-        {
-
-            await ExportarPdfAsync();
-
-        }
-
-        private void _btnExportarExcel_Click(object sender, EventArgs e)
-        {
-
-        }
+        private void _web_Click(object sender, EventArgs e) { }
     }
 }
