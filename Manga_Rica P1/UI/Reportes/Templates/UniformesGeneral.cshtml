@@ -1,0 +1,105 @@
+@model Manga_Rica_P1.Entity.Reports.ReporteUniformesVm
+@using System.Linq
+
+@{
+    Layout = "_ReportBase.cshtml";  
+    // Si el layout usa ViewBag.Title, ya se lo pasamos desde el Form via HtmlReportRenderer
+}
+
+<h1 style="text-align:center; margin-bottom:10px;">
+    @Model.Titulo
+</h1>
+
+@* Recorremos empleados y mostramos sus artículos *@
+@foreach (var emp in Model.Empleados.OrderBy(e => e.Apellidos).ThenBy(e => e.Nombre))
+{
+    <div style="margin-top:15px;">
+
+        <div style="font-weight:bold; margin-bottom:4px;">
+            @* Datos encabezado empleado *@
+            Carne: @emp.Carne -
+            @emp.Apellidos @emp.Nombre
+            @if (!string.IsNullOrWhiteSpace(emp.Departamento))
+            {
+                @: (Departamento: @emp.Departamento)
+            }
+        </div>
+
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            <thead>
+                <tr>
+                    <th style="border-bottom:1px solid #000; text-align:left;">Carne</th>
+                    <th style="border-bottom:1px solid #000; text-align:left;">Apellidos</th>
+                    <th style="border-bottom:1px solid #000; text-align:left;">Nombre</th>
+                    <th style="border-bottom:1px solid #000; text-align:left;">Codigo</th>
+                    <th style="border-bottom:1px solid #000; text-align:left;">Descripcion</th>
+                    <th style="border-bottom:1px solid #000; text-align:right;">Cantidad</th>
+                    <th style="border-bottom:1px solid #000; text-align:right;">Precio</th>
+                    <th style="border-bottom:1px solid #000; text-align:right;">Total</th>
+                    <th style="border-bottom:1px solid #000; text-align:right;">Saldo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var det in emp.Detalles)
+                {
+                    <tr>
+                        <td>@emp.Carne</td>
+                        <td>@emp.Apellidos</td>
+                        <td>@emp.Nombre</td>
+                        <td>@det.Codigo</td>
+                        <td>@det.Descripcion</td>
+                        <td style="text-align:right;">@det.Cantidad</td>
+                        <td style="text-align:right;">
+                            @det.Precio.ToString("N2")
+                        </td>
+                        <td style="text-align:right;">
+                            @det.Total.ToString("N2")
+                        </td>
+                        <td style="text-align:right;">
+                            @det.SaldoDeduccion.ToString("N2")
+                        </td>
+                    </tr>
+                }
+
+                @* Fila de totales por empleado *@
+                <tr>
+                    <td colspan="7" style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                        Total articulos:
+                    </td>
+                    <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                        @emp.TotalDeducciones.ToString("N2")
+                    </td>
+                    <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                        @emp.SaldoPendiente.ToString("N2")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+
+
+@if (Model.Empleados != null && Model.Empleados.Any())
+{
+    var totalGeneralDeducciones = Model.Empleados.Sum(e => e.TotalDeducciones);
+    var totalGeneralSaldo = Model.Empleados.Sum(e => e.SaldoPendiente);
+
+    <div style="margin-top:25px;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+            <tbody>
+                <tr>
+                    <td colspan="7" style="text-align:right; font-weight:bold; border-top:2px solid #000; padding-top:5px;">
+                        TOTAL GENERAL:
+                    </td>
+                    <td style="text-align:right; font-weight:bold; border-top:2px solid #000; padding-top:5px;">
+                        @totalGeneralDeducciones.ToString("N2")
+                    </td>
+                    <td style="text-align:right; font-weight:bold; border-top:2px solid #000; padding-top:5px;">
+                        @totalGeneralSaldo.ToString("N2")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    }

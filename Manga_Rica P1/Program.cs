@@ -45,9 +45,6 @@ namespace Manga_Rica_P1
             var puestoRepo = new PuestoRepository(cs);
 
 
-            //Reporte
-            var reporteEmpleadosDal = new ReporteEmpleadosDAL(cs);
-
             //CLock
             var clockEmployeesRepo = new Manga_Rica_P1.DAL.Clock.EmployeesClockRepository(csClock);
             var clockGlogsRepo = new Manga_Rica_P1.DAL.Clock.GLogsRepository(csClock);

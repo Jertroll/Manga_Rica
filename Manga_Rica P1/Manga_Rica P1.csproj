@@ -51,12 +51,6 @@
 		</None>
 
 		<!-- (si aún usas estos .frx) -->
-		<None Update="UI\Reportes\Empleado\EmpleadoReporte.frx">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="UI\Reportes\Empleado\EmpleadosV2.frx">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 
 		<!-- Nueva implementacion: copia TODAS las plantillas Razor -->
 		<Content Include="UI\Reportes\Templates\**\*.cshtml">

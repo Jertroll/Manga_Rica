@@ -425,8 +425,29 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void MostrarReporteUniformeGeneral()
         {
-            MessageBox.Show("Reporte de Uniforme General - En desarrollo",
-                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                // 1) Cadena de conexión principal (igual que en otros reportes)
+                var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada");
+
+                // 2) Host virtual para WebView2 (la misma clave que usas en otros forms)
+                var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+
+                // 3) Crear y mostrar el nuevo Form de reporte de uniformes
+                using var dlg = new FormReporteUniformesGeneral(cs, vhost);
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de uniformes generales:\n{ex.Message}",
+                    "Reporte de Uniformes",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void MostrarReporteUniformePorArticulo()
@@ -654,7 +675,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             if (existente is not null) { existente.BringToFront(); return; }
 
             var vista = new Manga_Rica_P1.UI.Pagos.RegistroPagos(
-                _PagosService, _semanasService, _empleadoService)
+                _PagosService, _semanasService, _empleadoService, _session)
             { Dock = DockStyle.Fill };
 
             panelPrincipal.Controls.Clear();

@@ -1,5 +1,6 @@
 ﻿using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.BLL.Pagos;
+using Manga_Rica_P1.BLL.Session;
 using Manga_Rica_P1.Entity;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace Manga_Rica_P1.UI.Pagos
         private int? _idSemanaSel;
         private long? _idEmpleadoSel;
         private PagoPreview? _previewActual;
+        private readonly IAppSession _session;
 
         // >>> Factores usados para el cálculo del bruto desde horas
         //     AJUSTA ESTOS VALORES SI TU LÓGICA DE NEGOCIO ES DIFERENTE
@@ -32,7 +34,8 @@ namespace Manga_Rica_P1.UI.Pagos
         public RegistroPagos(
             PagosService pagosService,
             SemanasService semanasService,
-            EmpleadosService empleadosService)
+            EmpleadosService empleadosService,
+             IAppSession session)
         {
             InitializeComponent();
 
@@ -339,7 +342,15 @@ namespace Manga_Rica_P1.UI.Pagos
                 return;
             }
 
-            _pagosService.RegistrarPagoSemana(_idEmpleadoSel.Value, _idSemanaSel.Value, DateTime.Today);
+            var usuario = _session.CurrentUser
+                ?? throw new InvalidOperationException("No hay usuario autenticado.");
+
+            _pagosService.RegistrarPagoSemana(
+                _idEmpleadoSel.Value,
+                _idSemanaSel.Value,
+                DateTime.Today,
+                usuario.Id    
+            );
 
             MessageBox.Show("Pago registrado.", "Pagos",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);

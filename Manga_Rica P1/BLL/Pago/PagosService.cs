@@ -126,7 +126,7 @@ namespace Manga_Rica_P1.BLL.Pagos
         /// <summary>
         /// Calcula totales + dinero y registra el pago (equivalente al Registrar_Click del módulo viejo).
         /// </summary>
-        public void RegistrarPagoSemana(long idEmpleado, int idSemana, DateTime fechaCorte)
+        public void RegistrarPagoSemana(long idEmpleado, int idSemana, DateTime fechaCorte, int idUsuario)
         {
             var semana = _semanaRepo.GetById(idSemana)
         ?? throw new InvalidOperationException($"Semana {idSemana} no existe.");
@@ -174,7 +174,7 @@ namespace Manga_Rica_P1.BLL.Pagos
                 Salario_Bruto = bruto,
                 Salario_Neto = neto,
                 Registrado = true,
-                Id_Usuario = 0 
+                Id_Usuario = idUsuario
             };
 
 
