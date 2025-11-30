@@ -354,7 +354,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     PopupMenus.ShowUniformeMenu(
                         btnUniforme,
                         general: () => { closeParent(); MostrarReporteUniformeGeneral(); },
-                        porArticulo: () => { closeParent(); MostrarReporteUniformePorArticulo(); },
                         porEmpleado: () => { closeParent(); MostrarReporteUniformePorEmpleado(); },
                         onCloseParent: closeParent // opcional
                     );
@@ -450,16 +449,27 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
-        private void MostrarReporteUniformePorArticulo()
-        {
-            MessageBox.Show("Reporte de Uniforme por Artículo - En desarrollo",
-                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
         private void MostrarReporteUniformePorEmpleado()
         {
-            MessageBox.Show("Reporte de Uniforme por Empleado - En desarrollo",
-                "Uniforme", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
+                var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+
+                using var dlg = new FormReporteUniformesPorEmpleado(cs, vhost);
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de uniformes por empleado:\n{ex.Message}",
+                    "Reporte de Uniformes",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void btnPlanillaReportes_Click(object sender, EventArgs e)

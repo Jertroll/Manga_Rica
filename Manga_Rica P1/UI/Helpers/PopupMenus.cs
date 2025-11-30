@@ -196,10 +196,9 @@ namespace Manga_Rica_P1.UI.Helpers
             CloseIfOpen(ref _openSubmenu);
 
             var b1 = MakeItem("General", general);
-            var b2 = MakeItem("Por Artículo", porArticulo);
             var b3 = MakeItem("Por Empleado", porEmpleado);
 
-            var panel = BuildPanel(b1, b2, b3);
+            var panel = BuildPanel(b1, b3);
 
             // Abrimos el submenú anclado a la derecha del botón Uniforme
             _openSubmenu = ShowPopup(anchor, panel, new Point(anchor.Width + 5, 0), onCloseParent);

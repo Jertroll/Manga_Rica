@@ -1,0 +1,87 @@
+@model Manga_Rica_P1.Entity.Reports.ReporteUniformesEmpleadoVm
+@using System.Globalization
+
+@{
+    Layout = "_ReportBase.cshtml";  // Reutilizamos el layout corporativo
+    var culture = CultureInfo.GetCultureInfo("es-CR");
+}
+
+<h1 style="text-align:center; margin-bottom:10px;">
+    @Model.Titulo
+</h1>
+
+<table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:10px;">
+    <tr>
+        <td style="width:60px; font-weight:bold;">Carne :</td>
+        <td style="width:200px;">@Model.Carne</td>
+        <td style="width:80px; font-weight:bold;">Nombre :</td>
+        <td>@Model.NombreCompleto</td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">Depto. :</td>
+        <td colspan="3">@Model.Departamento</td>
+    </tr>
+</table>
+
+<table style="width:100%; border-collapse:collapse; font-size:11px;">
+    <thead>
+        <tr>
+            <th style="border-bottom:1px solid #000; text-align:left;">Fecha</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Deduccion</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Codigo</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Descripcion</th>
+            <th style="border-bottom:1px solid #000; text-align:right;">Cantidad</th>
+            <th style="border-bottom:1px solid #000; text-align:right;">Precio</th>
+            <th style="border-bottom:1px solid #000; text-align:right;">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Lineas != null && Model.Lineas.Any())
+        {
+            foreach (var linea in Model.Lineas)
+            {
+                <tr>
+                    <td>
+                        @linea.Fecha.ToString("dd/MM/yyyy", culture)
+                    </td>
+                    <td>
+                        @linea.IdDeduccion
+                    </td>
+                    <td>
+                        @linea.CodigoArticulo
+                    </td>
+                    <td>
+                        @linea.DescripcionArticulo
+                    </td>
+                    <td style="text-align:right;">
+                        @linea.Cantidad
+                    </td>
+                    <td style="text-align:right;">
+                        @linea.PrecioUnitario.ToString("N2", culture)
+                    </td>
+                    <td style="text-align:right;">
+                        @linea.TotalLinea.ToString("N2", culture)
+                    </td>
+                </tr>
+            }
+
+            <tr>
+                <td colspan="5"></td>
+                <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                    Total
+                </td>
+                <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                    @Model.TotalGeneral.ToString("N2", culture)
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" style="padding-top:10px; text-align:center;">
+                    No hay registros de uniformes para este carnet.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
