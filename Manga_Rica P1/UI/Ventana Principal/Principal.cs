@@ -355,13 +355,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                         btnUniforme,
                         general: () => { closeParent(); MostrarReporteUniformeGeneral(); },
                         porEmpleado: () => { closeParent(); MostrarReporteUniformePorEmpleado(); },
-                        onCloseParent: closeParent // opcional
+                        onCloseParent: closeParent 
                     );
-                }
+                },
+                sodaGeneral: MostrarReporteSodaGeneral
             );
         }
 
-
+        //Funciones para abrir los reportes
         private void MostrarReporteEmpleadosActivos()
         {
             try
@@ -381,28 +382,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
-        private void MostrarHome()
-        {
-            // Evitar flicker mientras cambiamos contenido
-            panelPrincipal.SuspendLayout();
-
-            // Limpiar cualquier control previo
-            foreach (Control c in panelPrincipal.Controls)
-                c.Dispose();
-            panelPrincipal.Controls.Clear();
-
-            // Crear e insertar el Home
-            var home = new HomeView
-            {
-                Dock = DockStyle.Fill
-            };
-
-            panelPrincipal.Controls.Add(home);
-
-            panelPrincipal.ResumeLayout();
-        }
-
-
         private void MostrarReporteEmpleadosInactivos()
         {
             try
@@ -419,6 +398,29 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             {
                 MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
                     "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void MostrarReporteSodaGeneral()
+        {
+            try
+            {
+                var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada");
+
+                var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+
+                using var dlg = new FormReporteSodaGeneral(cs, vhost);
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de soda general:\n{ex.Message}",
+                    "Reporte de Soda",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
@@ -449,7 +451,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
-
         private void MostrarReporteUniformePorEmpleado()
         {
             try
@@ -470,6 +471,27 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void MostrarHome()
+        {
+            // Evitar flicker mientras cambiamos contenido
+            panelPrincipal.SuspendLayout();
+
+            // Limpiar cualquier control previo
+            foreach (Control c in panelPrincipal.Controls)
+                c.Dispose();
+            panelPrincipal.Controls.Clear();
+
+            // Crear e insertar el Home
+            var home = new HomeView
+            {
+                Dock = DockStyle.Fill
+            };
+
+            panelPrincipal.Controls.Add(home);
+
+            panelPrincipal.ResumeLayout();
         }
 
         private void btnPlanillaReportes_Click(object sender, EventArgs e)

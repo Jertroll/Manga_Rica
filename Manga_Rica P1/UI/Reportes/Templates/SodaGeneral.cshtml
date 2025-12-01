@@ -1,0 +1,85 @@
+@model Manga_Rica_P1.Entity.Reports.ReporteSodaGeneralVm
+@using System.Globalization
+
+@{
+    Layout = "_ReportBase.cshtml";
+    var culture = CultureInfo.GetCultureInfo("es-CR");
+}
+
+<br></br>
+
+<h1 style="text-align:center; margin-bottom:10px;">
+    @Model.Titulo
+</h1>
+
+<table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:10px;">
+    <tr>
+        <td style="width:80%;"></td>
+        <td style="font-weight:bold; width:80px; text-align:right;">Fecha Inicio:</td>
+        <td style="width:80px; text-align:rightDetalle de Soda General
+            @Model.FechaInicio.ToString("dd/MM/yyyy", culture)
+        </td>
+    </tr>
+    <tr>
+        <td></td>
+        <td style="font-weight:bold; text-align:right;">Fecha Final:</td>
+        <td style="text-align:right;">
+            @Model.FechaFin.ToString("dd/MM/yyyy", culture)
+        </td>
+    </tr>
+</table>
+
+<table style="width:100%; border-collapse:collapse; font-size:11px;">
+    <thead>
+        <tr>
+            <th style="border-bottom:1px solid #000; text-align:left;">Factura</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Fecha</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Carne</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Nombre</th>
+            <th style="border-bottom:1px solid #000; text-align:left;">Descripcion</th>
+            <th style="border-bottom:1px solid #000; text-align:right;">Cantidad</th>
+            <th style="border-bottom:1px solid #000; text-align:right;">Precio</th>
+            <th style="border-bottom:1px solid #000; text-align:right;">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Lineas != null && Model.Lineas.Any())
+        {
+            foreach (var l in Model.Lineas)
+            {
+                <tr>
+                    <td>@l.Factura</td>
+                    <td>@l.Fecha.ToString("dd/MM/yyyy", culture)</td>
+                    <td>@l.Carne</td>
+                    <td>@l.Nombre</td>
+                    <td>@l.Descripcion</td>
+                    <td style="text-align:right;">@l.Cantidad</td>
+                    <td style="text-align:right;">
+                        @l.Precio.ToString("N2", culture)
+                    </td>
+                    <td style="text-align:right;">
+                        @l.Total.ToString("N2", culture)
+                    </td>
+                </tr>
+            }
+
+            <tr>
+                <td colspan="6"></td>
+                <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                    Total
+                </td>
+                <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
+                    @Model.TotalGeneral.ToString("N2", culture)
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" style="padding-top:10px; text-align:center;">
+                    No hay registros de soda para el rango de fechas seleccionado.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
