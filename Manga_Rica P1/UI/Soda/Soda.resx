@@ -132,12 +132,23 @@
   <data name="buttonGuardar.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAJ
-        0gAACdIBnNRyQQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAD7SURBVDhPndM7
+        0QAACdEBMW1TLAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAD7SURBVDhPndM7
         SgYxGIXhxwtuQATBwkp7S28IlvbuwQ24DC+bENFGcQdWtrZWirYKIlp64UAiYRznFw8cyHzJefNlMgNb
         eMDnCL9gRY8SPsM2roozbp3a+2+Q0LMoOi3uKrXzstErNtrJvwLiKVyUTr7VBXTPXl3BWZvnb7WA5Z7z
         V2cuGgRUjWG1OONWM5hrC13AeDlnbT0vr4XM4gD7ZfwDkF1Ty3WtNeNoHre4wz0uhwAJr+MJC034GtPY
         xXMfIO2m7dQfsdQT3sQbDvsAFZK2FwfCR5iogL2ea4tGhiug649yG8e4GQqPUr6+/Eg7/wlH7ad9gsnu
         gi/BNGfWZ/eJNwAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="buttonVerReporte.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAJcEhZcwAAAHUAAAB1AePCB2UAAAAZdEVYdFNvZnR3YXJlAHd3dy5pbmtzY2FwZS5vcmeb7jwa
+        AAABCElEQVQ4T53TSytGURTG8R/lkhgR5TJRipABU0YGBghFBiiX5JaUXDNV5kY+hvIBtWq/Oe337DPw
+        1Oq0917r37PW3oc/PeMVTzXxjaNKbq0CMIuXGsAPtnGYF1UVgBv05we4RxfWcJIfthSAhRoH59jDJiZx
+        W4IEYACrWEEnltI64h1fOE7fNgXgEsu4wwyu8JHFaMptU2xeYw5naaCRHLar0d0EGMEudtLQSioCwn68
+        heh3CAc1VzqMh7w4VL3G9dRKCTCYF4cCsIU3fGIsT6io2EIvFjGPDkyldTV6mgAX2Egupv9zjTGDceyn
+        GQQkd9DXBJhIT/c0WS2pFhATLv3O1Yicx1bRL4nrOM8CX+/4AAAAAElFTkSuQmCC
 </value>
   </data>
   <metadata name="CantidadColumna.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">

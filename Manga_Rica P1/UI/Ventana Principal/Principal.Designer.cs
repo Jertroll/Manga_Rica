@@ -815,6 +815,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSodaReportes.Text = "       Soda";
             btnSodaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnSodaReportes.UseVisualStyleBackColor = false;
+            btnSodaReportes.Click += btnSodaReportes_Click;
             // 
             // panel8
             // 

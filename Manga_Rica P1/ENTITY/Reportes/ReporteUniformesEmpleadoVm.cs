@@ -1,5 +1,9 @@
 ﻿namespace Manga_Rica_P1.Entity.Reports
 {
+    /// <summary>
+    /// VM raíz para el reporte "Detalle de Uniformes por Empleado".
+    /// Es lo que consumirá la vista Razor.
+    /// </summary>
     public sealed class ReporteUniformesEmpleadoVm
     {
         public string Titulo { get; set; } = "";

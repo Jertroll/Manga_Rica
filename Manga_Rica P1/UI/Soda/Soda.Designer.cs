@@ -60,6 +60,7 @@
             comboBoxFecha = new ComboBox();
             labelTotal = new Label();
             textBoxTotal = new TextBox();
+            buttonVerReporte = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBoxEmpleado).BeginInit();
             flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
@@ -220,6 +221,7 @@
             flowLayoutPanel1.Controls.Add(btnBuscar);
             flowLayoutPanel1.Controls.Add(buttonGuardar);
             flowLayoutPanel1.Controls.Add(buttonAnular);
+            flowLayoutPanel1.Controls.Add(buttonVerReporte);
             flowLayoutPanel1.Dock = DockStyle.Top;
             flowLayoutPanel1.ForeColor = Color.Lime;
             flowLayoutPanel1.Location = new Point(0, 0);
@@ -361,6 +363,16 @@
             textBoxTotal.Size = new Size(123, 23);
             textBoxTotal.TabIndex = 19;
             // 
+            // buttonVerReporte
+            // 
+            buttonVerReporte.Image = (Image)resources.GetObject("buttonVerReporte.Image");
+            buttonVerReporte.Location = new Point(151, 3);
+            buttonVerReporte.Name = "buttonVerReporte";
+            buttonVerReporte.Size = new Size(30, 25);
+            buttonVerReporte.TabIndex = 21;
+            buttonVerReporte.UseVisualStyleBackColor = true;
+            buttonVerReporte.Click += buttonVerReporte_Click;
+            // 
             // Soda
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -430,5 +442,6 @@
         private ComboBox comboBoxFecha;
         private Label labelTotal;
         private TextBox textBoxTotal;
+        private Button buttonVerReporte;
     }
 }

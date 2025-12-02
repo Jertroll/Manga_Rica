@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Manga_Rica_P1.DAL.Reports;
@@ -17,7 +18,7 @@ namespace Manga_Rica_P1.BLL
 
         public ReportesUniformesEmpleadoService(IUniformesEmpleadoReportRepository repo)
         {
-            _repo = repo;
+            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
         }
 
         /// <summary>
@@ -29,22 +30,26 @@ namespace Manga_Rica_P1.BLL
         {
             const string categoriaUniformes = "UNIFORMES"; // valor real en la BD
 
-            var rows = await _repo.GetUniformesPorEmpleadoAsync(carne, categoriaUniformes, ct);
+            var rows = await _repo
+                .GetUniformesPorEmpleadoAsync(carne, categoriaUniformes, ct)
+                .ConfigureAwait(false);
 
             var vm = new ReporteUniformesEmpleadoVm
             {
-                Titulo = "Detalle de Uniformes",
-                PieDePagina = " "
+                Titulo = "Detalle de Uniformes por Empleado",
+                PieDePagina = $"Generado el {DateTime.Now:dd/MM/yyyy HH:mm}"
             };
 
             if (rows.Any())
             {
                 var first = rows.First();
 
-                vm.Carne = first.Carne; // ya viene en string por el CAST
+                // Encabezado
+                vm.Carne = first.Carne; // ya viene en string por el CAST en el repo
                 vm.NombreCompleto = $"{first.Apellidos} {first.Nombre}";
-                vm.Departamento = first.Departamento;
+                vm.Departamento = first.Departamento ?? string.Empty;
 
+                // Detalle
                 vm.Lineas = rows.Select(r => new UniformeEmpleadoLineaVm
                 {
                     Fecha = r.Fecha,
@@ -60,10 +65,10 @@ namespace Manga_Rica_P1.BLL
             }
             else
             {
-               
+                // Caso sin datos: devolvemos un VM "vacío" pero consistente
                 vm.Carne = carne.ToString();
-                vm.NombreCompleto = "";
-                vm.Departamento = "";
+                vm.NombreCompleto = string.Empty;
+                vm.Departamento = string.Empty;
                 vm.Lineas = new();
                 vm.TotalGeneral = 0m;
             }

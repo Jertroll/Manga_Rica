@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Manga_Rica_P1.BLL;
+using Manga_Rica_P1.BLL.Session;
+using Manga_Rica_P1.UI.Reportes;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Manga_Rica_P1.BLL;
-using Manga_Rica_P1.BLL.Session;
 
 namespace Manga_Rica_P1.UI.Soda
 {
@@ -13,7 +15,7 @@ namespace Manga_Rica_P1.UI.Soda
     {
         private readonly SodaService _sodaService;
         private readonly IAppSession _session;
-        
+
         // Variables de estado (equivalentes al código legacy)
         private bool _modoEdicion = false;
         private long? _deduccionActualId = null;
@@ -25,7 +27,7 @@ namespace Manga_Rica_P1.UI.Soda
             InitializeComponent();
             _sodaService = sodaService ?? throw new ArgumentNullException(nameof(sodaService));
             _session = session ?? throw new ArgumentNullException(nameof(session));
-            
+
             InicializarFormulario();
         }
 
@@ -34,22 +36,22 @@ namespace Manga_Rica_P1.UI.Soda
             // Equivalente a FrmDeduccionesSoda_Load del código legacy
             CambiarEstado(true); // Habilitar desde el inicio
             buttonGuardar.Enabled = true;
-            
+
             // Configurar DataGridView para detalles
             ConfigurarDataGridView();
-            
+
             // Cargar próximo consecutivo
             VerificarConsecutivo();
-            
+
             // Llenar combo de artículos SODA
             LlenarArticulos();
-            
+
             // Configurar fecha actual
             comboBoxFecha.Text = DateTime.Now.ToString("dd/MM/yyyy");
-            
+
             // Configurar cantidad por defecto
             textBoxCantidad.Text = "1";
-            
+
             // Focus inicial en carné para empezar el flujo
             textBoxCarnet.Focus();
         }
@@ -58,7 +60,7 @@ namespace Manga_Rica_P1.UI.Soda
         {
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.Columns.Clear();
-            
+
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Cantidad",
@@ -66,7 +68,7 @@ namespace Manga_Rica_P1.UI.Soda
                 DataPropertyName = "Cantidad",
                 Width = 80
             });
-            
+
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Codigo",
@@ -74,7 +76,7 @@ namespace Manga_Rica_P1.UI.Soda
                 DataPropertyName = "Codigo",
                 Width = 80
             });
-            
+
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Descripcion",
@@ -82,7 +84,7 @@ namespace Manga_Rica_P1.UI.Soda
                 DataPropertyName = "Descripcion",
                 Width = 200
             });
-            
+
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Precio",
@@ -91,7 +93,7 @@ namespace Manga_Rica_P1.UI.Soda
                 Width = 100,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "N2" }
             });
-            
+
             dataGridView1.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Total",
@@ -117,7 +119,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar artículos: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al cargar artículos: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -131,7 +133,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al obtener consecutivo: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al obtener consecutivo: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -148,7 +150,7 @@ namespace Manga_Rica_P1.UI.Soda
             textBoxCantidad.Enabled = estado && _empleadoActual != null;
             textBoxSubTotal.Enabled = false;  // Siempre deshabilitado, se calcula automáticamente
             buttonAgregar.Enabled = estado && _empleadoActual != null;
-            
+
             // En modo normal, ocultar botón anular y restaurar colores
             if (estado)
             {
@@ -171,15 +173,15 @@ namespace Manga_Rica_P1.UI.Soda
             pictureBoxEmpleado.Image = null;
             checkBoxAnulada.Checked = false;
             comboBoxFecha.Text = DateTime.Now.ToString("dd/MM/yyyy");
-            
+
             _detallesTemporales.Clear();
             ActualizarDataGridView();
-            
+
             _empleadoActual = null;
             _deduccionActualId = null;
-            
+
             comboBoxArticulos.SelectedIndex = -1;
-            
+
             // Actualizar estado de controles
             CambiarEstado(true);
         }
@@ -238,13 +240,13 @@ namespace Manga_Rica_P1.UI.Soda
         {
             // Calcular automáticamente cuando se selecciona un artículo
             CalcularSubTotal();
-            
+
             // Si no hay cantidad, poner 1 por defecto
             if (string.IsNullOrEmpty(textBoxCantidad.Text) && comboBoxArticulos.SelectedItem != null)
             {
                 textBoxCantidad.Text = "1";
             }
-            
+
             // Si ya hay cantidad y artículo, enfocar en botón agregar
             if (comboBoxArticulos.SelectedItem != null && !string.IsNullOrEmpty(textBoxCantidad.Text))
             {
@@ -290,9 +292,9 @@ namespace Manga_Rica_P1.UI.Soda
                     // Obtener el artículo seleccionado directamente
                     var articuloSeleccionado = comboBoxArticulos.SelectedItem as BLL.ArticuloSoda;
                     if (articuloSeleccionado == null) return;
-                    
+
                     var articuloId = articuloSeleccionado.Id;
-                    
+
                     // Si no hay cantidad o es inválida, usar 1 por defecto para mostrar el precio
                     int cantidad = 1;
                     if (!string.IsNullOrEmpty(textBoxCantidad.Text))
@@ -302,7 +304,7 @@ namespace Manga_Rica_P1.UI.Soda
                             cantidad = 1;
                         }
                     }
-                    
+
                     var subtotal = _sodaService.CalcularSubtotal(articuloId, cantidad);
                     textBoxSubTotal.Text = subtotal.ToString("N2");
                 }
@@ -313,7 +315,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al calcular subtotal: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al calcular subtotal: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 textBoxSubTotal.Text = "";
             }
@@ -331,21 +333,21 @@ namespace Manga_Rica_P1.UI.Soda
                 // Validar campos
                 if (comboBoxArticulos.SelectedItem == null)
                 {
-                    MessageBox.Show("Debe Escoger algún Artículo válido para esta Deducción !!!!", 
+                    MessageBox.Show("Debe Escoger algún Artículo válido para esta Deducción !!!!",
                         "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (!int.TryParse(textBoxCantidad.Text, out int cantidad) || cantidad <= 0)
                 {
-                    MessageBox.Show("Debe Ingresar una Cantidad para esta Deducción !!!!", 
+                    MessageBox.Show("Debe Ingresar una Cantidad para esta Deducción !!!!",
                         "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (_empleadoActual == null)
                 {
-                    MessageBox.Show("Debe Ingresar un Empleado Válido !!!!", 
+                    MessageBox.Show("Debe Ingresar un Empleado Válido !!!!",
                         "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -353,7 +355,7 @@ namespace Manga_Rica_P1.UI.Soda
                 // Obtener el artículo seleccionado directamente
                 var articuloSeleccionado = comboBoxArticulos.SelectedItem as BLL.ArticuloSoda;
                 if (articuloSeleccionado == null) return;
-                
+
                 var articuloId = articuloSeleccionado.Id;
 
                 // Validar con el servicio
@@ -367,7 +369,7 @@ namespace Manga_Rica_P1.UI.Soda
                 // Verificar que no esté duplicado
                 if (_detallesTemporales.Any(d => d.Codigo == articuloId))
                 {
-                    MessageBox.Show("Este artículo ya fue agregado", "Validación", 
+                    MessageBox.Show("Este artículo ya fue agregado", "Validación",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
@@ -384,7 +386,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al agregar artículo: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al agregar artículo: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -393,7 +395,7 @@ namespace Manga_Rica_P1.UI.Soda
         {
             dataGridView1.DataSource = null;
             dataGridView1.DataSource = _detallesTemporales;
-            
+
             // Asegurar que las columnas estén correctamente configuradas
             if (dataGridView1.Columns.Count > 0)
             {
@@ -442,7 +444,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al calcular total: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al calcular total: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -455,14 +457,14 @@ namespace Manga_Rica_P1.UI.Soda
                 {
                     if (_modoEdicion)
                     {
-                        MessageBox.Show("No es posible editar una deducción !!!", "Información", 
+                        MessageBox.Show("No es posible editar una deducción !!!", "Información",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
 
-                    var result = MessageBox.Show("¿Desea quitar este artículo?", "Confirmar", 
+                    var result = MessageBox.Show("¿Desea quitar este artículo?", "Confirmar",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    
+
                     if (result == DialogResult.Yes)
                     {
                         var index = dataGridView1.CurrentRow.Index;
@@ -477,7 +479,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al eliminar artículo: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al eliminar artículo: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -488,7 +490,7 @@ namespace Manga_Rica_P1.UI.Soda
             {
                 if (string.IsNullOrEmpty(carnet) || !long.TryParse(carnet, out long carnetLong))
                 {
-                    MessageBox.Show("Empleado NO Registrado !!!!!", "Error", 
+                    MessageBox.Show("Empleado NO Registrado !!!!!", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     LimpiarDatosEmpleado();
                     return;
@@ -497,7 +499,7 @@ namespace Manga_Rica_P1.UI.Soda
                 var empleado = _sodaService.BuscarEmpleadoPorCarne(carnetLong);
                 if (empleado == null)
                 {
-                    MessageBox.Show("Empleado NO Registrado !!!!!", "Error", 
+                    MessageBox.Show("Empleado NO Registrado !!!!!", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     LimpiarDatosEmpleado();
                     return;
@@ -513,13 +515,13 @@ namespace Manga_Rica_P1.UI.Soda
 
                 // Habilitar controles para continuar el flujo
                 CambiarEstado(true);
-                
+
                 // Enfocar en ComboBox de artículos para continuar flujo
                 comboBoxArticulos.Focus();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al buscar empleado: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al buscar empleado: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -548,7 +550,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al buscar deducción: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al buscar deducción: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -560,7 +562,7 @@ namespace Manga_Rica_P1.UI.Soda
                 var deduccion = _sodaService.CargarDeduccion(id);
                 if (deduccion == null)
                 {
-                    MessageBox.Show("No se pudo cargar la deducción seleccionada", "Error", 
+                    MessageBox.Show("No se pudo cargar la deducción seleccionada", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -590,22 +592,22 @@ namespace Manga_Rica_P1.UI.Soda
 
                 // Cambiar a modo consulta/anulación
                 CambiarAModoConsultaAnulacion(deduccion.Anulada);
-                
+
                 // Mostrar información al usuario
                 if (deduccion.Anulada)
                 {
-                    MessageBox.Show("Deducción cargada. Esta deducción ya está ANULADA.", "Información", 
+                    MessageBox.Show("Deducción cargada. Esta deducción ya está ANULADA.", "Información",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Deducción cargada. Solo puede ANULAR esta deducción.", "Información", 
+                    MessageBox.Show("Deducción cargada. Solo puede ANULAR esta deducción.", "Información",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar deducción: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al cargar deducción: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -628,18 +630,18 @@ namespace Manga_Rica_P1.UI.Soda
             buttonAgregar.Enabled = false;
             buttonGuardar.Enabled = false;
             btnBuscar.Enabled = true;  // Permitir buscar otras deducciones
-            
+
             // Configurar botón anular según estado
             buttonAnular.Enabled = !yaAnulada;  // Solo permitir anular si no está anulada
             buttonAnular.Visible = true;        // Mostrar el botón anular
-            
+
             // Deshabilitar edición del DataGridView
             dataGridView1.ReadOnly = true;
             dataGridView1.AllowUserToDeleteRows = false;
-            
+
             // Cambiar color de fondo para indicar modo consulta
             this.BackColor = yaAnulada ? Color.LightCoral : Color.LightYellow;
-            
+
             // Mostrar en el título que está en modo consulta
             if (yaAnulada)
             {
@@ -702,7 +704,7 @@ namespace Manga_Rica_P1.UI.Soda
                 {
                     pictureBoxEmpleado.Image = new Bitmap(fileStream);
                 }
-                
+
                 // Configurar el modo de visualización
                 pictureBoxEmpleado.SizeMode = PictureBoxSizeMode.StretchImage;
             }
@@ -721,32 +723,32 @@ namespace Manga_Rica_P1.UI.Soda
             {
                 if (_empleadoActual == null)
                 {
-                    MessageBox.Show("Debe seleccionar un empleado", "Validación", 
+                    MessageBox.Show("Debe seleccionar un empleado", "Validación",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (_detallesTemporales.Count == 0)
                 {
-                    MessageBox.Show("Debe Tener Al Menos un Artículo !!!!", "Validación", 
+                    MessageBox.Show("Debe Tener Al Menos un Artículo !!!!", "Validación",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (_session.CurrentUser == null)
                 {
-                    MessageBox.Show("No hay usuario autenticado", "Error", 
+                    MessageBox.Show("No hay usuario autenticado", "Error",
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
                 // Registrar la deducción
                 var deduccionId = _sodaService.RegistrarDeduccion(
-                    _empleadoActual.Id, 
-                    _detallesTemporales, 
+                    _empleadoActual.Id,
+                    _detallesTemporales,
                     _session.CurrentUser.Id);
 
-                MessageBox.Show("Deducción Actualizada Satisfactoriamente....", "Éxito", 
+                MessageBox.Show("Deducción Actualizada Satisfactoriamente....", "Éxito",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Preparar para siguiente deducción
@@ -759,7 +761,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al registrar deducción: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al registrar deducción: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -770,23 +772,23 @@ namespace Manga_Rica_P1.UI.Soda
             {
                 if (!_modoEdicion || !_deduccionActualId.HasValue)
                 {
-                    MessageBox.Show("Debe cargar una deducción para anular", "Validación", 
+                    MessageBox.Show("Debe cargar una deducción para anular", "Validación",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                var result = MessageBox.Show("¿Está seguro de anular esta deducción?", "Confirmar Anulación", 
+                var result = MessageBox.Show("¿Está seguro de anular esta deducción?", "Confirmar Anulación",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (result == DialogResult.Yes)
                 {
                     _sodaService.AnularDeduccion(_deduccionActualId.Value, _session.CurrentUser?.Id ?? 0);
-                    
-                    MessageBox.Show("Deducción anulada satisfactoriamente", "Éxito", 
+
+                    MessageBox.Show("Deducción anulada satisfactoriamente", "Éxito",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
+
                     checkBoxAnulada.Checked = true;
-                    
+
                     // Después de anular, limpiar formulario
                     LimpiarFormulario();
                     CambiarEstado(true);
@@ -795,7 +797,7 @@ namespace Manga_Rica_P1.UI.Soda
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al anular deducción: {ex.Message}", "Error", 
+                MessageBox.Show($"Error al anular deducción: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -816,9 +818,38 @@ namespace Manga_Rica_P1.UI.Soda
             }
             else
             {
-                MessageBox.Show("Ingrese un número de carnet para buscar", "Validación", 
+                MessageBox.Show("Ingrese un número de carnet para buscar", "Validación",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textBoxCarnet.Focus();
+            }
+        }
+
+        private void buttonVerReporte_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cfg = Manga_Rica_P1.Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReporteSodaPorEmpleado(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Soda por empleado:\n{ex.Message}",
+                    "Reporte de Soda",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
     }
