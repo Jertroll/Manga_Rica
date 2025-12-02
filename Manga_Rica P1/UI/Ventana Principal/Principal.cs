@@ -40,9 +40,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly AutentificacionService _auth;
         private readonly PuestosService _puestosService;
 
-
-
-        public Principal(IAppSession session,
+        public Principal(
+            IAppSession session,
             AutentificacionService auth,
             UsuariosService usuariosService,
             DepartamentosService departamentosService,
@@ -75,17 +74,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _PagosService = pagosService ?? throw new ArgumentNullException(nameof(pagosService));
             _puestosService = puestosService ?? throw new ArgumentNullException(nameof(puestosService));
 
-
-
-
-
             // Evita recálculos de layout mientras reacomodamos todo
             this.SuspendLayout();
 
             // ====== 1) Crear host del sidebar (contenedor izquierdo) ======
             var sideBarHost = new Panel
             {
-                Width = flowLayoutPanelSideBar.Width,              // el ancho que ya tenías (198 aprox.)
+                Width = flowLayoutPanelSideBar.Width,
                 Dock = DockStyle.Left,
                 BackColor = flowLayoutPanelSideBar.BackColor,
                 Margin = Padding.Empty,
@@ -109,7 +104,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnSalir.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             btnSalir.Margin = new Padding(4);
 
-            // (Opcional) estética similar para Cerrar sesión
+            // Estética similar para Cerrar sesión
             buttonCerrarSesion.FlatStyle = FlatStyle.Flat;
             buttonCerrarSesion.FlatAppearance.BorderSize = 0;
             buttonCerrarSesion.Cursor = Cursors.Hand;
@@ -118,8 +113,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
             // ====== 3) Re-parenting: mover piezas del sidebar al host ======
 
-            // Sacamos el panel de "Cerrar sesión" del FlowLayout para que no
-            // quede flotando en el medio, sino pegado abajo con el botón Salir.
+            // Sacamos el panel de "Cerrar sesión" del FlowLayout
             flowLayoutPanelSideBar.Controls.Remove(panel8);
 
             this.Controls.Remove(flowLayoutPanelSideBar);
@@ -142,11 +136,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             sideBarHost.Controls.Add(botonSalirContenedor);    // Bottom
 
             // ====== 4) Asegurar hermandad de contenedores (mismo padre) ======
-            // panel1  = topbar, sideBarHost = sidebar, panelPrincipal = área de contenido
             if (panelPrincipal.Parent != this)
                 panelPrincipal.Parent = this;
 
-            // Agregar al form si hiciera falta (por seguridad)
             if (!this.Controls.Contains(panelPrincipal))
                 this.Controls.Add(panelPrincipal);
             if (!this.Controls.Contains(sideBarHost))
@@ -157,25 +149,25 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // ====== 5) Docking correcto de cada zona ======
             panel1.Dock = DockStyle.Top;           // barra superior
             sideBarHost.Dock = DockStyle.Left;     // barra lateral
-            panelPrincipal.Dock = DockStyle.Fill;  // contenido (ocupa el resto)
+            panelPrincipal.Dock = DockStyle.Fill;  // contenido
 
-            // Mantener ancho fijo del sidebar (no “respira”)
-            sideBarHost.Width = 198;                       // ajusta si usas otro ancho
+            // Mantener ancho fijo del sidebar
+            sideBarHost.Width = 198;
             sideBarHost.MinimumSize = new Size(198, 0);
 
             // Márgenes/padding limpios en el contenedor central
             panelPrincipal.Margin = Padding.Empty;
             panelPrincipal.Padding = Padding.Empty;
 
-            // ====== 6) Z-order: el Fill al fondo, luego Left, luego Top ======
-            this.Controls.SetChildIndex(panelPrincipal, 0); // fondo (el Fill se calcula primero)
-            this.Controls.SetChildIndex(sideBarHost, 1);    // izquierda por encima del Fill
-            this.Controls.SetChildIndex(panel1, 2);         // top por encima de todo
+            // ====== 6) Z-order ======
+            this.Controls.SetChildIndex(panelPrincipal, 0);
+            this.Controls.SetChildIndex(sideBarHost, 1);
+            this.Controls.SetChildIndex(panel1, 2);
 
             // Reactivar layout
             this.ResumeLayout();
 
-            // ====== 7) Tu lógica existente ======
+            // ====== 7) Lógica existente ======
             ColocarLabelUsuario();
             ActualizarUsuario();
             _session.UserChanged += (_, __) => ActualizarUsuario();
@@ -192,7 +184,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // altoMin = 46 según tu layout actual (alto del “header”)
             _menus = new Dictionary<string, MenuDesplegable>
             {
-                // Si no pasas altoMax, lo calcula automáticamente por contenido
                 { "conf",       new MenuDesplegable(menuConfContenedor,        altoMin: 46) },
                 { "planilla",   new MenuDesplegable(menuPlanillaContenedor,    altoMin: 46) },
                 { "deducc",     new MenuDesplegable(menuDeduccionesContenedor, altoMin: 46) },
@@ -204,11 +195,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         // Conecta los botones de cabecera a ToggleMenu
         private void WireUpHeaderClicks()
         {
-            // Ya tienes btnConfiguraciones con Click en el designer; podemos mantenerlo o reasignarlo aquí:
             btnConfiguraciones.Click -= btnConfiguraciones_Click;
             btnConfiguraciones.Click += (s, e) => ToggleMenu("conf");
 
-            // Los demás headers no tienen handler en el designer: los asignamos aquí
             btnPlanilla.Click += (s, e) => ToggleMenu("planilla");
             btnDeducciones.Click += (s, e) => ToggleMenu("deducc");
             btnPagosPrincipal.Click += (s, e) => ToggleMenu("pagos");
@@ -231,7 +220,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _menus[clave].Toggle();
         }
 
-        // Si más adelante quieres abrir/cerrar desde otros puntos:
         private void ExpandirSolo(string clave)
         {
             foreach (var kv in _menus) kv.Value.Colapsar();
@@ -247,15 +235,15 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void AplicarEstilosHover()
         {
-            ConfigurarHoverBoton(btnConfiguraciones, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White); // #4CAF50 / #388E3C
+            ConfigurarHoverBoton(btnConfiguraciones, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
             ConfigurarHoverBoton(btnPlanilla, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
             ConfigurarHoverBoton(btnDeducciones, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
             ConfigurarHoverBoton(btnPagosPrincipal, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
             ConfigurarHoverBoton(btnReporte, Color.FromArgb(76, 175, 80), Color.FromArgb(56, 142, 60), Color.White);
 
             // VERDES (submenús)
-            var hoverGreen = Color.FromArgb(139, 195, 74);  // Verde lima claro (#8BC34A)
-            var downGreen = Color.FromArgb(104, 159, 56);   // Verde oliva (#689F38)
+            var hoverGreen = Color.FromArgb(139, 195, 74);
+            var downGreen = Color.FromArgb(104, 159, 56);
 
             ConfigurarHoverBoton(btnUsuarios, hoverGreen, downGreen);
             ConfigurarHoverBoton(btnDepartamentos, hoverGreen, downGreen);
@@ -342,6 +330,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             Close();
         }
 
+        // ===================== SUBMENÚ EMPLEADOS (REPORTES) =====================
+
         private void btnEmpleadosReporte_Click(object? sender, EventArgs e)
         {
             PopupMenus.ShowEmpleadosMenu(
@@ -350,7 +340,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 noActivos: MostrarReporteEmpleadosInactivos,
                 uniformeSubmenu: (btnUniforme, closeParent) =>
                 {
-                    // Abre el submenú de Uniforme; cierra el padre SOLO al elegir una opción
                     PopupMenus.ShowUniformeMenu(
                         btnUniforme,
                         general: () => { closeParent(); MostrarReporteUniformeGeneral(); },
@@ -400,13 +389,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void MostrarReporteSodaGeneral()
         {
             try
             {
                 var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
-                         ?? throw new InvalidOperationException(
-                             "Cadena de conexión 'MangaRicaDb' no configurada");
+                         ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
 
                 var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
 
@@ -428,15 +417,12 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         {
             try
             {
-                // 1) Cadena de conexión principal (igual que en otros reportes)
                 var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
                          ?? throw new InvalidOperationException(
                              "Cadena de conexión 'MangaRicaDb' no configurada");
 
-                // 2) Host virtual para WebView2 (la misma clave que usas en otros forms)
                 var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
 
-                // 3) Crear y mostrar el nuevo Form de reporte de uniformes
                 using var dlg = new FormReporteUniformesGeneral(cs, vhost);
                 dlg.StartPosition = FormStartPosition.CenterParent;
                 dlg.ShowDialog(this);
@@ -473,31 +459,136 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
+        // ===================== HOME =====================
+
         private void MostrarHome()
         {
-            // Evitar flicker mientras cambiamos contenido
             panelPrincipal.SuspendLayout();
 
-            // Limpiar cualquier control previo
             foreach (Control c in panelPrincipal.Controls)
                 c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            // Crear e insertar el Home
             var home = new HomeView
             {
                 Dock = DockStyle.Fill
             };
 
             panelPrincipal.Controls.Add(home);
-
             panelPrincipal.ResumeLayout();
         }
 
+        // ===================== SUBMENÚ PLANILLA (REPORTES) =====================
+
         private void btnPlanillaReportes_Click(object sender, EventArgs e)
         {
-            PopupMenus.ShowPlanillaMenu(btnPlanillaReportes);
+            PopupMenus.ShowPlanillaMenu(
+    btnPlanillaReportes,
+    semanaSubmenu: (btnSemana, closeParent) =>
+    {
+        PopupMenus.ShowPlanillaSemanaMenu(
+            btnSemana,
+            general: () =>
+            {
+                closeParent();
+                // TODO: lógica de "Semana General"
+            },
+            porDepartamento: () =>
+            {
+                closeParent();
+                // TODO: lógica de "Semana por Departamento"
+            },
+            onCloseParent: closeParent
+        );
+    },
+    horasDiariasSubmenu: (btnHoras, closeParent) =>   // ✔ nombre correcto
+    {
+        PopupMenus.ShowPlanillaHorasDiariasMenu(
+            btnHoras,
+            general: () =>
+            {
+                closeParent();
+                // TODO: lógica "Horas Diarias General"
+            },
+            porDepartamento: () =>
+            {
+                closeParent();
+                // TODO: lógica "Horas Diarias por Departamento"
+            },
+            onCloseParent: closeParent
+        );
+    },
+    entradaYSalidaSubmenu: (btnES, closeParent) =>    // ✔ nombre correcto
+    {
+        PopupMenus.ShowPlanillaEntradasSalidasMenu(
+            btnES,
+            general: () =>
+            {
+                closeParent();
+                // TODO: lógica "Entradas y Salidas General"
+            },
+            porCarnet: () =>
+            {
+                closeParent();
+                // TODO: lógica "Entradas y Salidas por Carnet"
+            },
+            quincenal: () =>
+            {
+                closeParent();
+                // TODO: lógica "Entradas y Salidas Quincenal"
+            },
+            onCloseParent: closeParent
+        );
+    }
+);
+
         }
+
+        // --- Stubs para los nuevos reportes de Planilla (puedes cambiarlos luego) ---
+
+        private void MostrarPlanillaSemanaGeneral()
+        {
+            MessageBox.Show("Reporte de Planilla - Semana (General) - En desarrollo",
+                "Planilla - Semana", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarPlanillaSemanaPorDepartamento()
+        {
+            MessageBox.Show("Reporte de Planilla - Semana (Por Departamento) - En desarrollo",
+                "Planilla - Semana", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarHorasDiariasGeneral()
+        {
+            MessageBox.Show("Reporte de Planilla - Horas Diarias (General) - En desarrollo",
+                "Planilla - Horas Diarias", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarHorasDiariasPorDepartamento()
+        {
+            MessageBox.Show("Reporte de Planilla - Horas Diarias (Por Departamento) - En desarrollo",
+                "Planilla - Horas Diarias", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarEntradasSalidasGeneral()
+        {
+            MessageBox.Show("Reporte de Entradas y Salidas (General) - En desarrollo",
+                "Entradas y Salidas", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarEntradasSalidasPorCarnet()
+        {
+            MessageBox.Show("Reporte de Entradas y Salidas (Por Carnet) - En desarrollo",
+                "Entradas y Salidas", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void MostrarEntradasSalidasQuincenal()
+        {
+            MessageBox.Show("Reporte de Entradas y Salidas (Quincenal) - En desarrollo",
+                "Entradas y Salidas", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // ===================== VISTAS DE CONFIGURACIONES =====================
 
         private void btnUsuarios_Click(object sender, EventArgs e)
         {
@@ -514,7 +605,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
 
             panelPrincipal.SuspendLayout();
-
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
@@ -532,7 +622,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             vistaDepartamentos();
         }
 
-        // ▼ NUEVO: vista de Departamentos con inyección del servicio y evitando duplicados
         private void vistaDepartamentos()
         {
             var existente = panelPrincipal.Controls.OfType<DepartamentoView>().FirstOrDefault();
@@ -543,7 +632,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
 
             panelPrincipal.SuspendLayout();
-
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
@@ -555,7 +643,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panelPrincipal.Controls.Add(vista);
             panelPrincipal.ResumeLayout();
         }
-
 
         private void btnPuestos_Click(object sender, EventArgs e)
         {
@@ -570,7 +657,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
 
             panelPrincipal.SuspendLayout();
-
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
@@ -592,7 +678,10 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            var vista = new Manga_Rica_P1.UI.Semanas.SemanaView(_semanasService) { Dock = DockStyle.Fill };
+            var vista = new Manga_Rica_P1.UI.Semanas.SemanaView(_semanasService)
+            {
+                Dock = DockStyle.Fill
+            };
             panelPrincipal.Controls.Add(vista);
             panelPrincipal.ResumeLayout();
         }
@@ -606,7 +695,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            // ⬅️ CORREGIDO: pasar el servicio requerido por el ctor
             var vista = new ArticulosView(_articulosService) { Dock = DockStyle.Fill };
             panelPrincipal.Controls.Add(vista);
             panelPrincipal.ResumeLayout();
@@ -614,7 +702,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSolicitudesPlanilla_Click(object sender, EventArgs e)
         {
-
             var existente = panelPrincipal.Controls.OfType<SolicitudView>().FirstOrDefault();
             if (existente is not null) { existente.BringToFront(); return; }
 
@@ -622,7 +709,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            var vista = new SolicitudView(_solicitudesService) { Dock = DockStyle.Fill }; // ✅ pasar servicio
+            var vista = new SolicitudView(_solicitudesService) { Dock = DockStyle.Fill };
             panelPrincipal.Controls.Add(vista);
             panelPrincipal.ResumeLayout();
         }
@@ -630,21 +717,28 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void btnEmpleado_Click(object sender, EventArgs e)
         {
             var existente = panelPrincipal.Controls
-         .OfType<Manga_Rica_P1.UI.Empleados.EmpleadosView>()
-         .FirstOrDefault();
+                .OfType<Manga_Rica_P1.UI.Empleados.EmpleadosView>()
+                .FirstOrDefault();
             if (existente is not null) { existente.BringToFront(); return; }
 
             panelPrincipal.SuspendLayout();
             foreach (Control c in panelPrincipal.Controls) c.Dispose();
             panelPrincipal.Controls.Clear();
 
-            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView(_empleadoService, _solicitudesService, _departamentosService, _puestosService)
+            var vista = new Manga_Rica_P1.UI.Empleados.EmpleadosView(
+                _empleadoService,
+                _solicitudesService,
+                _departamentosService,
+                _puestosService)
             {
                 Dock = DockStyle.Fill
             };
+
             panelPrincipal.Controls.Add(vista);
             panelPrincipal.ResumeLayout();
         }
+
+        // ===================== MÓDULOS DE ASISTENCIA / CIERRE / SODA / UNIFORME =====================
 
         private void btnEntradaYSalida_Click(object sender, EventArgs e)
         {
@@ -655,7 +749,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 return;
             }
 
-            var uid = _session.CurrentUser.Id; // si no es int: var uid = Convert.ToInt32(_session.CurrentUser.Id);
+            var uid = _session.CurrentUser.Id;
 
             var vista = new Manga_Rica_P1.UI.Asistencia.RegistroAsistenciaView(_horasService, uid)
             {
@@ -702,9 +796,13 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void btnPagosSubmenu_Click(object sender, EventArgs e)
         {
             var existente = panelPrincipal.Controls
-       .OfType<Manga_Rica_P1.UI.Pagos.RegistroPagos>()
-       .FirstOrDefault();
-            if (existente is not null) { existente.BringToFront(); return; }
+                .OfType<Manga_Rica_P1.UI.Pagos.RegistroPagos>()
+                .FirstOrDefault();
+            if (existente is not null)
+            {
+                existente.BringToFront();
+                return;
+            }
 
             var vista = new Manga_Rica_P1.UI.Pagos.RegistroPagos(
                 _PagosService, _semanasService, _empleadoService, _session)
@@ -714,6 +812,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             panelPrincipal.Controls.Add(vista);
         }
 
+        // ===================== OTROS =====================
+
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             MostrarHome();
@@ -721,31 +821,22 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void buttonCerrarSesion_Click(object sender, EventArgs e)
         {
-            // 1. Limpiar usuario actual de la sesión
             _session.CurrentUser = null;
 
-            // 2. Ocultar ventana principal mientras se muestra el login
             this.Hide();
 
             using (var login = new Manga_Rica_P1.UI.Login.LoginForm(_auth, _session))
             {
                 var result = login.ShowDialog(this);
 
-                // 3. Si el login fue correcto y hay nuevo usuario:
                 if (result == DialogResult.OK && _session.CurrentUser != null)
                 {
-                    // Actualizar label de usuario arriba a la derecha
                     ActualizarUsuario();
-
-                    // Volver al "Home" por si había otro módulo abierto
-                    // (usa el método que ya tienes)
                     MostrarHome();
-
                     this.Show();
                 }
                 else
                 {
-                    // Si canceló o falló el login, cerramos todo
                     this.Close();
                 }
             }
@@ -778,7 +869,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
-
         }
     }
 }

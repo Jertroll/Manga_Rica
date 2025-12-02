@@ -93,7 +93,7 @@ namespace Manga_Rica_P1.UI.Helpers
 
             dd.Closing += (s, e) =>
             {
-                // Si venimos del click del botón "no-close" (Uniforme), suprime este cierre una única vez.
+                // Si venimos del click del botón "no-close" (submenú), suprime este cierre una única vez.
                 if (suppressCloseOnce &&
                     (e.CloseReason == ToolStripDropDownCloseReason.ItemClicked ||
                      e.CloseReason == ToolStripDropDownCloseReason.AppClicked ||
@@ -139,7 +139,9 @@ namespace Manga_Rica_P1.UI.Helpers
             return dd;
         }
 
-        // ---- Menú Empleados (con submenú Uniforme) --------------------------
+        // =====================================================================
+        //  MENÚ EMPLEADOS (con submenú Uniforme)
+        // =====================================================================
 
         public static void ShowEmpleadosMenu(
             Control anchor,
@@ -207,10 +209,7 @@ namespace Manga_Rica_P1.UI.Helpers
             // cerramos el padre también (a menos que ya esté cerrado).
             _openSubmenu.Closed += (s, e) =>
             {
-                var reason = e.CloseReason;
-
                 // En todos los casos queremos cerrar el padre (para volver al estado limpio).
-                // Usamos CloseCalled para evitar que el padre cancele este cierre.
                 if (_openParent is { IsDisposed: false, Visible: true })
                     _openParent.Close(ToolStripDropDownCloseReason.CloseCalled);
 
@@ -220,14 +219,109 @@ namespace Manga_Rica_P1.UI.Helpers
             return _openSubmenu;
         }
 
-        // ---- Menú Planilla (sin cambios) ------------------------------------
+        // =====================================================================
+        //  SUBMENÚS DE PLANILLA
+        // =====================================================================
+
+        // --- Semana -----------------------------------------------------------
+
+        public static ToolStripDropDown ShowPlanillaSemanaMenu(
+            Control anchor,
+            Action? general = null,
+            Action? porDepartamento = null,
+            Action? onCloseParent = null)
+        {
+            CloseIfOpen(ref _openSubmenu);
+
+            var b1 = MakeItem("General", general);
+            var b2 = MakeItem("Por Departamento", porDepartamento);
+
+            var panel = BuildPanel(b1, b2);
+
+            _openSubmenu = ShowPopup(anchor, panel, new Point(anchor.Width + 5, 0), onCloseParent);
+
+            _openSubmenu.Closed += (s, e) =>
+            {
+                if (_openParent is { IsDisposed: false, Visible: true })
+                    _openParent.Close(ToolStripDropDownCloseReason.CloseCalled);
+
+                _openSubmenu = null;
+            };
+
+            return _openSubmenu;
+        }
+
+        // --- Horas Diarias ----------------------------------------------------
+
+        public static ToolStripDropDown ShowPlanillaHorasDiariasMenu(
+            Control anchor,
+            Action? general = null,
+            Action? porDepartamento = null,
+            Action? onCloseParent = null)
+        {
+            CloseIfOpen(ref _openSubmenu);
+
+            var b1 = MakeItem("General", general);
+            var b2 = MakeItem("Por Departamento", porDepartamento);
+
+            var panel = BuildPanel(b1, b2);
+
+            _openSubmenu = ShowPopup(anchor, panel, new Point(anchor.Width + 5, 0), onCloseParent);
+
+            _openSubmenu.Closed += (s, e) =>
+            {
+                if (_openParent is { IsDisposed: false, Visible: true })
+                    _openParent.Close(ToolStripDropDownCloseReason.CloseCalled);
+
+                _openSubmenu = null;
+            };
+
+            return _openSubmenu;
+        }
+
+        // --- Entradas y Salidas ----------------------------------------------
+
+        public static ToolStripDropDown ShowPlanillaEntradasSalidasMenu(
+            Control anchor,
+            Action? general = null,
+            Action? porCarnet = null,
+            Action? quincenal = null,
+            Action? onCloseParent = null)
+        {
+            CloseIfOpen(ref _openSubmenu);
+
+            var b1 = MakeItem("General", general);
+            var b2 = MakeItem("Por Carnet", porCarnet);
+            var b3 = MakeItem("Quincenal", quincenal);
+
+            var panel = BuildPanel(b1, b2, b3);
+
+            _openSubmenu = ShowPopup(anchor, panel, new Point(anchor.Width + 5, 0), onCloseParent);
+
+            _openSubmenu.Closed += (s, e) =>
+            {
+                if (_openParent is { IsDisposed: false, Visible: true })
+                    _openParent.Close(ToolStripDropDownCloseReason.CloseCalled);
+
+                _openSubmenu = null;
+            };
+
+            return _openSubmenu;
+        }
+
+        // =====================================================================
+        //  MENÚ PLANILLA (padre)
+        // =====================================================================
 
         public static void ShowPlanillaMenu(
             Control anchor,
             Action? semana = null,
+            Action<Button, Action>? semanaSubmenu = null,          // submenú Semana
             Action? comprobante = null,
             Action? horasDiarias = null,
+            Action<Button, Action>? horasDiariasSubmenu = null,    // submenú Horas Diarias
             Action? entradaYSalida = null,
+            Action<Button, Action>? entradaYSalidaSubmenu = null,  // submenú Entradas y Salidas
             Action? horasSemanales = null,
             Action? controlSalidas = null,
             Action? cierreDiario = null)
@@ -235,16 +329,78 @@ namespace Manga_Rica_P1.UI.Helpers
             CloseIfOpen(ref _openSubmenu);
             CloseIfOpen(ref _openParent);
 
-            var b1 = MakeItem("Semana", semana);
+            bool subSemana = semanaSubmenu != null;
+            bool subHoras = horasDiariasSubmenu != null;
+            bool subEyS = entradaYSalidaSubmenu != null;
+
+            var b1 = MakeItem(
+                "Semana",
+                subSemana ? null : semana,
+                null,
+                hasSubmenu: subSemana);
+
             var b2 = MakeItem("Combrobante", comprobante);
-            var b3 = MakeItem("Horas Diarias", horasDiarias);
-            var b4 = MakeItem("Entradas y Salidas", entradaYSalida);
+
+            var b3 = MakeItem(
+                "Horas Diarias",
+                subHoras ? null : horasDiarias,
+                null,
+                hasSubmenu: subHoras);
+
+            var b4 = MakeItem(
+                "Entradas y Salidas",
+                subEyS ? null : entradaYSalida,
+                null,
+                hasSubmenu: subEyS);
+
             var b5 = MakeItem("Horas Semanales", horasSemanales);
             var b6 = MakeItem("Control Salidas", controlSalidas);
             var b7 = MakeItem("Cierre Diario", cierreDiario);
 
             var panel = BuildPanel(b1, b2, b3, b4, b5, b6, b7);
             _openParent = ShowPopup(anchor, panel, new Point(anchor.Width - 40, 20));
+
+            // Submenú de Semana
+            if (semanaSubmenu != null)
+            {
+                b1.Click += (s, e) =>
+                {
+                    semanaSubmenu(
+                        b1,
+                        () => CloseIfOpen(ref _openParent)
+                    );
+                };
+            }
+
+            // Submenú de Horas Diarias
+            if (horasDiariasSubmenu != null)
+            {
+                b3.Click += (s, e) =>
+                {
+                    horasDiariasSubmenu(
+                        b3,
+                        () => CloseIfOpen(ref _openParent)
+                    );
+                };
+            }
+
+            // Submenú de Entradas y Salidas
+            if (entradaYSalidaSubmenu != null)
+            {
+                b4.Click += (s, e) =>
+                {
+                    entradaYSalidaSubmenu(
+                        b4,
+                        () => CloseIfOpen(ref _openParent)
+                    );
+                };
+            }
+
+            // Si el padre se cierra, cerramos cualquier submenú
+            _openParent.Closed += (s, e) =>
+            {
+                CloseIfOpen(ref _openSubmenu);
+            };
         }
     }
 }
