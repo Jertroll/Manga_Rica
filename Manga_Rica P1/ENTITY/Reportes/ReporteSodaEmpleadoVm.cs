@@ -12,7 +12,7 @@ namespace Manga_Rica_P1.Entity.Reports
     public sealed class ReporteSodaEmpleadoVm
     {
         // Encabezado / metadatos
-        public string Titulo { get; set; } = "Detalle de Soda";
+        public string Titulo { get; set; } = "";
         public string PieDePagina { get; set; } = string.Empty;
 
         /// <summary>Carne del empleado mostrado en el encabezado.</summary>
@@ -34,10 +34,7 @@ namespace Manga_Rica_P1.Entity.Reports
         public decimal TotalGeneral { get; set; }
     }
 
-    /// <summary>
-    /// Línea del reporte de soda por empleado.
-    /// Corresponde a una factura / detalle específico.
-    /// </summary>
+ 
     public sealed class SodaEmpleadoLineaVm
     {
         /// <summary>Consecutivo de Soda (Soda.Id).</summary>

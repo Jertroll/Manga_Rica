@@ -35,7 +35,7 @@ namespace Manga_Rica_P1.UI.Pagos
             PagosService pagosService,
             SemanasService semanasService,
             EmpleadosService empleadosService,
-             IAppSession session)
+            IAppSession session)
         {
             InitializeComponent();
 
@@ -43,9 +43,10 @@ namespace Manga_Rica_P1.UI.Pagos
             NombreColumna.DataPropertyName = "Nombre";
             Apellido1Columna.DataPropertyName = "Apellido";
 
-            _pagosService = pagosService;
-            _semanasService = semanasService;
-            _empleadosService = empleadosService;
+            _pagosService = pagosService ?? throw new ArgumentNullException(nameof(pagosService));
+            _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
+            _empleadosService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
+            _session = session ?? throw new ArgumentNullException(nameof(session));   // <<< FIX: asignar sesión
             toolTip1 = new ToolTip();
 
             // >>> Todos los campos de texto quedan editables
@@ -349,7 +350,7 @@ namespace Manga_Rica_P1.UI.Pagos
                 _idEmpleadoSel.Value,
                 _idSemanaSel.Value,
                 DateTime.Today,
-                usuario.Id    
+                usuario.Id
             );
 
             MessageBox.Show("Pago registrado.", "Pagos",

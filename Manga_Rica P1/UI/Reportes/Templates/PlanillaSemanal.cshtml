@@ -1,0 +1,92 @@
+@using Manga_Rica_P1.Entity.Reports
+@model ReportePlanillaSemanalVm
+
+@{
+    Layout = "_ReportBasePlanillaSemanal";
+}
+
+<div class="report-header">
+    <h2>@Model.Titulo</h2>
+    <p>
+        <strong>Semana:</strong> @Model.Semana<br />
+        <strong>Rango:</strong> @Model.FechaInicio.ToString("dd/MM/yyyy")
+        -
+        @Model.FechaFin.ToString("dd/MM/yyyy")
+    </p>
+</div>
+
+<table class="report-table">
+    <thead>
+        <tr>
+        <th class="col-carne">Carne</th>
+        <th class="col-cedula">Cedula</th>
+            <th class="col-empleado">Empleado</th>
+
+            <th class="num">H. Normales</th>
+            <th class="num">H. Extras</th>
+            <th class="num">H. Dobles</th>
+            <th class="num">Feriados</th>
+
+            <th class="num">S/H</th>
+            <th class="num">Soda</th>
+            <th class="num">Uniforme</th>
+
+            <th class="num">Bruto</th>
+            <th class="num">Neto</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (Model.Lineas != null && Model.Lineas.Count > 0)
+    {
+        foreach (var l in Model.Lineas)
+        {
+            <tr>
+                <td>@l.Carne</td>
+                <td>@l.Cedula</td>
+                <td>@l.Empleado</td>
+
+                <td class="num">@l.HorasNormales</td>
+                <td class="num">@l.HorasExtras</td>
+                <td class="num">@l.HorasDobles</td>
+                <td class="num">@l.Feriados</td>
+
+                <td class="num">@l.SalarioHora</td>
+                <td class="num">@l.Soda</td>
+                <td class="num">@l.Uniforme</td>
+
+                <td class="num">@l.SalarioBruto</td>
+                <td class="num">@l.SalarioNeto</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="12" style="text-align:center; padding:12px;">
+                No hay datos para la semana seleccionada.
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (Model.Lineas != null && Model.Lineas.Count > 0)
+{
+    <div class="report-summary">
+        <h4>Totales</h4>
+        <table class="summary-table">
+            <tr>
+                <td><strong>Total Salario Bruto:</strong></td>
+                <td class="num">@Model.TotalSalarioBruto</td>
+            </tr>
+            <tr>
+                <td><strong>Total Deducciones (Soda + Uniforme):</strong></td>
+                <td class="num">@Model.TotalDeducciones</td>
+            </tr>
+            <tr>
+                <td><strong>Total Salario Neto:</strong></td>
+                <td class="num">@Model.TotalSalarioNeto</td>
+            </tr>
+        </table>
+    </div>
+}

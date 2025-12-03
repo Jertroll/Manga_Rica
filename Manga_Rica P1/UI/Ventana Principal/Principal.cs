@@ -491,7 +491,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             general: () =>
             {
                 closeParent();
-                // TODO: lógica de "Semana General"
+                MostrarPlanillaSemanaGeneral();
             },
             porDepartamento: () =>
             {
@@ -548,8 +548,31 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void MostrarPlanillaSemanaGeneral()
         {
-            MessageBox.Show("Reporte de Planilla - Semana (General) - En desarrollo",
-                "Planilla - Semana", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuracion no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new Manga_Rica_P1.UI.Reportes.FormReportePlanillaSemanal(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Planilla Semanal (General):\n{ex.Message}",
+                    "Planilla Semanal",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void MostrarPlanillaSemanaPorDepartamento()
