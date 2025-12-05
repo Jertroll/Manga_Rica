@@ -1,0 +1,132 @@
+@model Manga_Rica_P1.Entity.Reports.ReporteComprobantesPagoVm
+@using System.Globalization
+
+@{
+    Layout = "_ReportBase.cshtml";
+
+    ViewBag.Title  = Model.Titulo;
+    ViewBag.Footer = Model.PieDePagina;
+
+    // Desactivar header fijo SOLO para este reporte
+    ViewBag.FixedHeaderOnPrint = false;
+
+    var cr = new CultureInfo("es-CR");
+    string FormatoMonto(decimal v) => v.ToString("N2", cr);
+    string FormatoHoras(decimal v) => v.ToString("N2", cr);
+}
+<br></br>
+
+
+<section style="margin: 10px 8px 15px 8px;">
+    <div>
+        <strong>Semana:</strong> @Model.Semana
+    </div>
+
+    @if (Model.FechaInicio != default && Model.FechaFin != default)
+    {
+        <div>
+            <strong>Periodo:</strong>
+            @Model.FechaInicio.ToString("dd/MM/yyyy") - @Model.FechaFin.ToString("dd/MM/yyyy")
+        </div>
+    }
+</section>
+
+@foreach (var c in Model.Comprobantes)
+{
+    var apellidos = $"{c.PrimerApellido} {c.SegundoApellido}".Trim();
+
+    <section class="no-break" style="margin-bottom: 12px;">
+        <div style="
+                border: 1px solid #444;
+                padding: 8px 12px;
+                page-break-inside: avoid;
+                font-size: 12px;">
+
+            <!-- Titulo de cada comprobante -->
+            <div style="
+                    text-align: center;
+                    font-weight: bold;
+                    margin-bottom: 6px;
+                    font-size: 12px;
+                    color: #006400;">
+                Comprobante de Pago Semana : @c.Semana
+            </div>
+
+            <!-- Cuerpo principal: datos del empleado + resumen de horas/deducciones -->
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <!-- Columna izquierda: datos del empleado -->
+                    <td style="width: 55%; vertical-align: top;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Carne :</td>
+                                <td>@c.Carne</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Cedula :</td>
+                                <td>@c.Cedula</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Nombre :</td>
+                                <td>@c.Nombre</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Apellidos :</td>
+                                <td>@apellidos</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Departamento :</td>
+                                <td>@c.Departamento</td>
+                            </tr>
+                        </table>
+                    </td>
+
+                    <!-- Columna derecha: horas y deducciones -->
+                    <td style="width: 45%; vertical-align: top;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Normales :</td>
+                                <td style="text-align: right;">@FormatoHoras(c.HorasNormales)</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Extras :</td>
+                                <td style="text-align: right;">@FormatoHoras(c.HorasExtras)</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Dobles :</td>
+                                <td style="text-align: right;">@FormatoHoras(c.HorasDobles)</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Soda :</td>
+                                <td style="text-align: right;">@FormatoMonto(c.DeduccionSoda)</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Uniforme :</td>
+                                <td style="text-align: right;">@FormatoMonto(c.DeduccionUniforme)</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; padding-right: 4px; white-space: nowrap;">Otras :</td>
+                                <td style="text-align: right;">@FormatoMonto(c.DeduccionOtras)</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Separador visual -->
+            <hr style="border: 0; border-top: 1px solid #444; margin: 6px 0;" />
+
+            <!-- Totales Bruto / Neto alineados a la derecha -->
+            <table style="width: 40%; margin-left: auto; border-collapse: collapse;">
+                <tr>
+                    <td style="font-weight: bold; padding-right: 4px;">Bruto :</td>
+                    <td style="text-align: right;">@FormatoMonto(c.SalarioBruto)</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding-right: 4px;">Neto :</td>
+                    <td style="text-align: right;">@FormatoMonto(c.SalarioNeto)</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+}

@@ -496,15 +496,21 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                         porDepartamento: () =>
                         {
                             closeParent();
-                            MostrarPlanillaSemanaPorDepartamento(); // si lo dejas en TODO, no pasa nada
+                            MostrarPlanillaSemanaPorDepartamento();
                         },
                         porCedula: () =>
                         {
                             closeParent();
-                            MostrarPlanillaSemanaPorEmpleado();   // << AQUÍ abrimos tu nuevo módulo
+                            MostrarPlanillaSemanaPorEmpleado();
                         },
                         onCloseParent: closeParent
                     );
+                },
+                comprobante: () =>
+                {
+                    // Al hacer clic en "Comprobante" en el menú de Planilla,
+                    // abrimos el nuevo módulo de Comprobantes de Pago.
+                    MostrarReporteComprobantesPago();
                 },
                 horasDiariasSubmenu: (btnHoras, closeParent) =>
                 {
@@ -547,6 +553,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 }
             );
         }
+
 
 
         // --- Stubs para los nuevos reportes de Planilla (puedes cambiarlos luego) ---
@@ -608,6 +615,36 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     MessageBoxIcon.Error);
             }
         }
+
+        private void MostrarReporteComprobantesPago()
+        {
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReporteComprobantesPago(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Comprobantes de Pago:\n{ex.Message}",
+                    "Comprobantes de Pago",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
 
         private void MostrarPlanillaSemanaPorDepartamento()
         {
