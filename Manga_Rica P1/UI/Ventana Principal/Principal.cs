@@ -483,66 +483,71 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private void btnPlanillaReportes_Click(object sender, EventArgs e)
         {
             PopupMenus.ShowPlanillaMenu(
-    btnPlanillaReportes,
-    semanaSubmenu: (btnSemana, closeParent) =>
-    {
-        PopupMenus.ShowPlanillaSemanaMenu(
-            btnSemana,
-            general: () =>
-            {
-                closeParent();
-                MostrarPlanillaSemanaGeneral();
-            },
-            porDepartamento: () =>
-            {
-                closeParent();
-                // TODO: lógica de "Semana por Departamento"
-            },
-            onCloseParent: closeParent
-        );
-    },
-    horasDiariasSubmenu: (btnHoras, closeParent) =>   // ✔ nombre correcto
-    {
-        PopupMenus.ShowPlanillaHorasDiariasMenu(
-            btnHoras,
-            general: () =>
-            {
-                closeParent();
-                // TODO: lógica "Horas Diarias General"
-            },
-            porDepartamento: () =>
-            {
-                closeParent();
-                // TODO: lógica "Horas Diarias por Departamento"
-            },
-            onCloseParent: closeParent
-        );
-    },
-    entradaYSalidaSubmenu: (btnES, closeParent) =>    // ✔ nombre correcto
-    {
-        PopupMenus.ShowPlanillaEntradasSalidasMenu(
-            btnES,
-            general: () =>
-            {
-                closeParent();
-                // TODO: lógica "Entradas y Salidas General"
-            },
-            porCarnet: () =>
-            {
-                closeParent();
-                // TODO: lógica "Entradas y Salidas por Carnet"
-            },
-            quincenal: () =>
-            {
-                closeParent();
-                // TODO: lógica "Entradas y Salidas Quincenal"
-            },
-            onCloseParent: closeParent
-        );
-    }
-);
-
+                btnPlanillaReportes,
+                semanaSubmenu: (btnSemana, closeParent) =>
+                {
+                    PopupMenus.ShowPlanillaSemanaMenu(
+                        btnSemana,
+                        general: () =>
+                        {
+                            closeParent();
+                            MostrarPlanillaSemanaGeneral();
+                        },
+                        porDepartamento: () =>
+                        {
+                            closeParent();
+                            MostrarPlanillaSemanaPorDepartamento(); // si lo dejas en TODO, no pasa nada
+                        },
+                        porCedula: () =>
+                        {
+                            closeParent();
+                            MostrarPlanillaSemanaPorEmpleado();   // << AQUÍ abrimos tu nuevo módulo
+                        },
+                        onCloseParent: closeParent
+                    );
+                },
+                horasDiariasSubmenu: (btnHoras, closeParent) =>
+                {
+                    PopupMenus.ShowPlanillaHorasDiariasMenu(
+                        btnHoras,
+                        general: () =>
+                        {
+                            closeParent();
+                            // TODO: lógica "Horas Diarias General"
+                        },
+                        porDepartamento: () =>
+                        {
+                            closeParent();
+                            // TODO: lógica "Horas Diarias por Departamento"
+                        },
+                        onCloseParent: closeParent
+                    );
+                },
+                entradaYSalidaSubmenu: (btnES, closeParent) =>
+                {
+                    PopupMenus.ShowPlanillaEntradasSalidasMenu(
+                        btnES,
+                        general: () =>
+                        {
+                            closeParent();
+                            // TODO: lógica "Entradas y Salidas General"
+                        },
+                        porCarnet: () =>
+                        {
+                            closeParent();
+                            // TODO: lógica "Entradas y Salidas por Carnet"
+                        },
+                        quincenal: () =>
+                        {
+                            closeParent();
+                            // TODO: lógica "Entradas y Salidas Quincenal"
+                        },
+                        onCloseParent: closeParent
+                    );
+                }
+            );
         }
+
 
         // --- Stubs para los nuevos reportes de Planilla (puedes cambiarlos luego) ---
 
@@ -575,11 +580,64 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
+        private void MostrarPlanillaSemanaPorEmpleado()
+        {
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReportePlanillaSemanalPorEmpleado(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Planilla Semanal por Empleado:\n{ex.Message}",
+                    "Planilla Semanal por Empleado",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
         private void MostrarPlanillaSemanaPorDepartamento()
         {
-            MessageBox.Show("Reporte de Planilla - Semana (Por Departamento) - En desarrollo",
-                "Planilla - Semana", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReportePlanillaSemanalPorDepartamento(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Planilla Semanal por Departamento:\n{ex.Message}",
+                    "Planilla Semanal por Departamento",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
+
 
         private void MostrarHorasDiariasGeneral()
         {

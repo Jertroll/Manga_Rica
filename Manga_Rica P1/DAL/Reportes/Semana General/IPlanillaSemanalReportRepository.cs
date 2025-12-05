@@ -8,10 +8,23 @@ namespace Manga_Rica_P1.DAL.Reports
     public interface IPlanillaSemanalReportRepository
     {
         /// <summary>
-        /// Devuelve las filas de planilla para una semana específica.
+        /// Devuelve las filas de planilla para una semana específica (todos los empleados).
         /// </summary>
         Task<IReadOnlyList<PlanillaSemanalRowDto>> GetPlanillaSemanalAsync(
             int semana,
+            CancellationToken ct = default);
+
+        /// <summary>
+        /// Devuelve las filas de planilla para una semana y una cédula específica.
+        /// </summary>
+        Task<IReadOnlyList<PlanillaSemanalRowDto>> GetPlanillaSemanalPorEmpleadoAsync(
+            int semana,
+            string cedula,
+            CancellationToken ct = default);
+
+        Task<IReadOnlyList<PlanillaSemanalRowDto>> GetPlanillaSemanalPorDepartamentoAsync(
+            int semana,
+            int idDepartamento,
             CancellationToken ct = default);
     }
 }

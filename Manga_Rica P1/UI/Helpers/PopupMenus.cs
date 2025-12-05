@@ -226,17 +226,19 @@ namespace Manga_Rica_P1.UI.Helpers
         // --- Semana -----------------------------------------------------------
 
         public static ToolStripDropDown ShowPlanillaSemanaMenu(
-            Control anchor,
-            Action? general = null,
-            Action? porDepartamento = null,
-            Action? onCloseParent = null)
+    Control anchor,
+    Action? general = null,
+    Action? porDepartamento = null,
+    Action? porCedula = null,
+    Action? onCloseParent = null)
         {
             CloseIfOpen(ref _openSubmenu);
 
             var b1 = MakeItem("General", general);
             var b2 = MakeItem("Por Departamento", porDepartamento);
+            var b3 = MakeItem("Por Cedula", porCedula);
 
-            var panel = BuildPanel(b1, b2);
+            var panel = BuildPanel(b1, b2, b3);
 
             _openSubmenu = ShowPopup(anchor, panel, new Point(anchor.Width + 5, 0), onCloseParent);
 
@@ -250,6 +252,7 @@ namespace Manga_Rica_P1.UI.Helpers
 
             return _openSubmenu;
         }
+
 
         // --- Horas Diarias ----------------------------------------------------
 

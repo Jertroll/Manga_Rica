@@ -25,7 +25,6 @@ namespace Manga_Rica_P1.UI.Pagos
         private readonly IAppSession _session;
 
         // >>> Factores usados para el cálculo del bruto desde horas
-        //     AJUSTA ESTOS VALORES SI TU LÓGICA DE NEGOCIO ES DIFERENTE
         private const float FACTOR_NORMAL = 1.0f;
         private const float FACTOR_EXTRA = 1.5f;
         private const float FACTOR_DOBLE = 2.0f;
@@ -46,10 +45,8 @@ namespace Manga_Rica_P1.UI.Pagos
             _pagosService = pagosService ?? throw new ArgumentNullException(nameof(pagosService));
             _semanasService = semanasService ?? throw new ArgumentNullException(nameof(semanasService));
             _empleadosService = empleadosService ?? throw new ArgumentNullException(nameof(empleadosService));
-            _session = session ?? throw new ArgumentNullException(nameof(session));   // <<< FIX: asignar sesión
+            _session = session ?? throw new ArgumentNullException(nameof(session));
             toolTip1 = new ToolTip();
-
-            // >>> Todos los campos de texto quedan editables
 
             // ---------------- Eventos de recálculo ----------------
 
@@ -60,8 +57,7 @@ namespace Manga_Rica_P1.UI.Pagos
             textBoxHorasDobles.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
             textBoxFeriados.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
 
-            // Cambios de deducciones también disparan recálculo COMPLETO
-            // (Bruto se recalcula desde salario+horas; Neto = Bruto - deducciones)
+            // Cambios de deducciones también disparan recálculo
             textBoxSoda.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
             textBoxUniforme.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
             textBoxOtras.TextChanged += (_, __) => RecalcularBrutoYNetoDesdeUI();
@@ -218,7 +214,7 @@ namespace Manga_Rica_P1.UI.Pagos
             float hD = ParseFloat(textBoxHorasDobles.Text);
             float hF = ParseFloat(textBoxFeriados.Text);
 
-            // Bruto según reglas (ajusta los factores arriba si lo necesitas)
+            // Bruto según reglas
             float bruto = salario * (
                   FACTOR_NORMAL * hN
                 + FACTOR_EXTRA * hE
@@ -241,6 +237,79 @@ namespace Manga_Rica_P1.UI.Pagos
             float o = ParseFloat(textBoxOtras.Text);
 
             textBoxPagoNeto.Text = (bruto - u - s - o).ToString("0.00");
+        }
+
+        /// <summary>
+        /// Lee y valida todos los valores numéricos de la UI.
+        /// Devuelve false si hay algún error de validación.
+        /// </summary>
+        private bool TryLeerValoresDesdeUi(
+            out float salario,
+            out float horasNormales,
+            out float horasExtras,
+            out float horasDobles,
+            out float feriados,
+            out float dedSoda,
+            out float dedUniforme,
+            out float dedOtras,
+            out float pagoBruto,
+            out float pagoNeto,
+            out string mensajeError)
+        {
+            salario = horasNormales = horasExtras = horasDobles = feriados =
+                dedSoda = dedUniforme = dedOtras = pagoBruto = pagoNeto = 0f;
+            mensajeError = string.Empty;
+
+            if (!ParseCampo(textBoxSalario, "Salario por hora", out salario, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxHorasNormales, "Horas normales", out horasNormales, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxHorasExtras, "Horas extras", out horasExtras, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxHorasDobles, "Horas dobles", out horasDobles, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxFeriados, "Feriados", out feriados, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxSoda, "Soda", out dedSoda, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxUniforme, "Uniforme", out dedUniforme, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxOtras, "Otras deducciones", out dedOtras, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxPagoBruto, "Pago bruto", out pagoBruto, ref mensajeError)) return false;
+            if (!ParseCampo(textBoxPagoNeto, "Pago neto", out pagoNeto, ref mensajeError)) return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Helper estático para validar y parsear un TextBox a float.
+        /// </summary>
+        private static bool ParseCampo(
+            TextBox txt,
+            string nombreCampo,
+            out float valor,
+            ref string mensajeError)
+        {
+            valor = 0f;
+            var texto = txt.Text?.Trim();
+
+            // Vacío se interpreta como 0
+            if (string.IsNullOrEmpty(texto))
+            {
+                valor = 0f;
+                return true;
+            }
+
+            if (!float.TryParse(texto, out valor))
+            {
+                mensajeError = $"El campo '{nombreCampo}' no tiene un número válido.";
+                txt.Focus();
+                txt.SelectAll();
+                return false;
+            }
+
+            if (valor < 0)
+            {
+                mensajeError = $"El campo '{nombreCampo}' no puede ser negativo.";
+                txt.Focus();
+                txt.SelectAll();
+                return false;
+            }
+
+            return true;
         }
 
         private void LimpiarCampos()
@@ -270,11 +339,8 @@ namespace Manga_Rica_P1.UI.Pagos
             toolTip1.RemoveAll();
         }
 
-        // ----------- Carga de foto de empleado (copiada del módulo de Soda) -----------
+        // ----------- Carga de foto de empleado -----------
 
-        /// <summary>
-        /// Carga la foto del empleado en el PictureBox, probando varias rutas posibles.
-        /// </summary>
         private void CargarFotoEmpleado(string? rutaFoto)
         {
             try
@@ -294,9 +360,8 @@ namespace Manga_Rica_P1.UI.Pagos
 
                 string? rutaEncontrada = null;
 
-                // Rutas que se van a probar (igual que en Soda)
                 string[] rutasAProbar = {
-                    rutaFoto,  // Ruta directa
+                    rutaFoto,
                     Path.Combine(Application.StartupPath, rutaFoto),
                     Path.Combine(Application.StartupPath, "Imagenes", rutaFoto),
                     Path.Combine(Application.StartupPath, "Imagenes", "Empleados", rutaFoto)
@@ -317,7 +382,6 @@ namespace Manga_Rica_P1.UI.Pagos
                     return;
                 }
 
-                // Cargar la imagen sin bloquear el archivo
                 using (var fileStream = new FileStream(rutaEncontrada, FileMode.Open, FileAccess.Read))
                 {
                     pictureBoxEmpleado.Image = new System.Drawing.Bitmap(fileStream);
@@ -346,11 +410,46 @@ namespace Manga_Rica_P1.UI.Pagos
             var usuario = _session.CurrentUser
                 ?? throw new InvalidOperationException("No hay usuario autenticado.");
 
-            _pagosService.RegistrarPagoSemana(
-                _idEmpleadoSel.Value,
-                _idSemanaSel.Value,
-                DateTime.Today,
-                usuario.Id
+            if (!TryLeerValoresDesdeUi(
+                    out var salario,
+                    out var horasNormales,
+                    out var horasExtras,
+                    out var horasDobles,
+                    out var feriados,
+                    out var dedSoda,
+                    out var dedUniforme,
+                    out var dedOtras,
+                    out var pagoBruto,
+                    out var pagoNeto,
+                    out var mensajeError))
+            {
+                if (!string.IsNullOrEmpty(mensajeError))
+                {
+                    MessageBox.Show(
+                        mensajeError,
+                        "Validación",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+                return;
+            }
+
+            // Registrar usando exactamente los valores que hay en la UI
+            _pagosService.RegistrarPagoSemanaManual(
+                idEmpleado: _idEmpleadoSel.Value,
+                idSemana: _idSemanaSel.Value,
+                fechaCorte: DateTime.Today,
+                idUsuario: usuario.Id,
+                salarioHora: salario,
+                horasNormales: horasNormales,
+                horasExtras: horasExtras,
+                horasDobles: horasDobles,
+                feriados: feriados,
+                dedSoda: dedSoda,
+                dedUniforme: dedUniforme,
+                dedOtras: dedOtras,
+                salarioBruto: pagoBruto,
+                salarioNeto: pagoNeto
             );
 
             MessageBox.Show("Pago registrado.", "Pagos",

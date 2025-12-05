@@ -1,0 +1,113 @@
+@using Manga_Rica_P1.Entity.Reports
+@model ReportePlanillaSemanalVm
+
+@{
+    // Reutilizamos el layout especial de planilla semanal
+    Layout = "_ReportBasePlanillaSemanal";
+}
+
+@{
+    var tieneLineas = Model.Lineas != null && Model.Lineas.Count > 0;
+    var primera = tieneLineas ? Model.Lineas[0] : null;
+}
+
+<br></br>
+<br></br>
+
+<div class="report-header">
+    <h2>@Model.Titulo</h2>
+
+    <p>
+        <strong>Semana:</strong> @Model.Semana<br />
+        <strong>Rango:</strong>
+        @Model.FechaInicio.ToString("dd/MM/yyyy")
+        -
+        @Model.FechaFin.ToString("dd/MM/yyyy")
+        <br />
+
+        @if (primera != null)
+        {
+            <text>
+                <strong>Carne:</strong> @primera.Carne<br />
+                <strong>Cedula:</strong> @primera.Cedula<br />
+                <strong>Empleado:</strong> @primera.Empleado
+            </text>
+        }
+    </p>
+</div>
+
+<table class="report-table">
+    <thead>
+        <tr>
+            <th style="width: 9%;">Carne</th>
+            <th style="width: 11%;">Cedula</th>
+            <th style="width: 22%;">Empleado</th>
+
+            <th style="width: 7%; text-align:right;">H. Normales</th>
+            <th style="width: 7%; text-align:right;">H. Extras</th>
+            <th style="width: 7%; text-align:right;">H. Dobles</th>
+            <th style="width: 7%; text-align:right;">Feriados</th>
+
+            <th style="width: 7%; text-align:right;">S/H</th>
+            <th style="width: 7%; text-align:right;">Soda</th>
+            <th style="width: 7%; text-align:right;">Uniforme</th>
+
+            <th style="width: 9%; text-align:right;">Bruto</th>
+            <th style="width: 10%; text-align:right;">Neto</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (tieneLineas)
+    {
+        foreach (var l in Model.Lineas)
+        {
+            <tr>
+                <td>@l.Carne</td>
+                <td>@l.Cedula</td>
+                <td>@l.Empleado</td>
+
+                <td class="num">@l.HorasNormales</td>
+                <td class="num">@l.HorasExtras</td>
+                <td class="num">@l.HorasDobles</td>
+                <td class="num">@l.Feriados</td>
+
+                <td class="num">@l.SalarioHora.ToString("N2")</td>
+                <td class="num">@l.Soda.ToString("N2")</td>
+                <td class="num">@l.Uniforme.ToString("N2")</td>
+
+                <td class="num">@l.SalarioBruto.ToString("N2")</td>
+                <td class="num">@l.SalarioNeto.ToString("N2")</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="12" style="text-align:center; padding:12px;">
+                No hay datos para la semana y carné seleccionados.
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (tieneLineas)
+{
+    <div class="report-summary" style="margin-top:16px;">
+        <h4>Totales</h4>
+        <table class="summary-table">
+            <tr>
+                <td><strong>Total Salario Bruto:</strong></td>
+                <td class="num">@Model.TotalSalarioBruto.ToString("N2")</td>
+            </tr>
+            <tr>
+                <td><strong>Total Deducciones (Soda + Uniforme):</strong></td>
+                <td class="num">@Model.TotalDeducciones.ToString("N2")</td>
+            </tr>
+            <tr>
+                <td><strong>Total Salario Neto:</strong></td>
+                <td class="num">@Model.TotalSalarioNeto.ToString("N2")</td>
+            </tr>
+        </table>
+    </div>
+}

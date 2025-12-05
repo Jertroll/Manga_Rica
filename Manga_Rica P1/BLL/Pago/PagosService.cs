@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Linq;
-using Manga_Rica_P1.BLL.ReglasPago;            // ReglasDePago, TotalesSemana
-using Manga_Rica_P1.DAL;                       // Repos
-using Manga_Rica_P1.Entity;                    // Acumulado_Diario, etc.
-using PagosRow = Manga_Rica_P1.Entity.Pagos;   // << alias para evitar choque con namespace BLL.Pagos
+using Manga_Rica_P1.BLL.ReglasPago;            
+using Manga_Rica_P1.DAL;                       
+using Manga_Rica_P1.Entity;                    
+using PagosRow = Manga_Rica_P1.Entity.Pagos;  
 
 namespace Manga_Rica_P1.BLL.Pagos
 {
-    // Nueva implementación
+    
     public sealed class PagosService
     {
         private readonly AcumuladoDiarioRepository _acumRepo;
         private readonly PagosRepository _pagosRepo;
         private readonly DeduccionesRepository _dedRepo;
         private readonly EmpleadoRepository _empRepo;
-        private readonly SodaRepository _sodaRepo; // opcional si descuentas soda
+        private readonly SodaRepository _sodaRepo; 
         private readonly SemanaRepository _semanaRepo;
 
         public PagosService(
@@ -124,6 +124,75 @@ namespace Manga_Rica_P1.BLL.Pagos
         }
 
         /// <summary>
+        /// Registra el pago de la semana usando exactamente los valores
+        /// que vienen desde la UI (salario, horas, deducciones, bruto y neto).
+        /// </summary>
+        public void RegistrarPagoSemanaManual(
+            long idEmpleado,
+            int idSemana,
+            DateTime fechaCorte,
+            int idUsuario,
+            float salarioHora,
+            float horasNormales,
+            float horasExtras,
+            float horasDobles,
+            float feriados,
+            float dedSoda,
+            float dedUniforme,
+            float dedOtras,
+            float salarioBruto,
+            float salarioNeto)
+        {
+            // Validaciones mínimas: que existan semana y empleado
+            var semana = _semanaRepo.GetById(idSemana)
+                ?? throw new InvalidOperationException($"Semana {idSemana} no existe.");
+
+            var emp = _empRepo.GetById(idEmpleado)
+                ?? throw new InvalidOperationException("Empleado no encontrado");
+
+            // Opcional: no permitir que se descuente más uniforme del saldo pendiente
+            var saldoUniformePendiente = (float)_dedRepo.SumSaldoPendiente(idEmpleado);
+            if (dedUniforme > saldoUniformePendiente)
+            {
+                dedUniforme = saldoUniformePendiente;
+            }
+
+            var row = new PagosRow
+            {
+                Id_Empleado = idEmpleado,
+                Id_Semana = idSemana,
+                Fecha = fechaCorte.Date,
+
+                Horas_Normales = horasNormales,
+                Horas_Extras = horasExtras,
+                Horas_Dobles = horasDobles,
+                Feriadas = feriados,
+
+                Deduccion_Soda = dedSoda,
+                Deduccion_Uniforme = dedUniforme,
+                Deduccion_Otras = dedOtras,
+
+                Salario_Bruto = salarioBruto,
+                Salario_Neto = salarioNeto,
+
+                Registrado = true,
+                Id_Usuario = idUsuario
+            };
+
+            var yaRegistrado = _pagosRepo.ExistsRegistrado(idEmpleado, idSemana);
+
+            _pagosRepo.Upsert(row);
+
+            // Si es la primera vez que se registra y hay descuento de uniforme,
+            // se aplica contra el saldo pendiente.
+            if (!yaRegistrado && row.Deduccion_Uniforme > 0f)
+            {
+                _dedRepo.AplicarContraSaldo(idEmpleado, row.Deduccion_Uniforme);
+            }
+        }
+
+
+        /// <summary>
         /// Calcula totales + dinero y registra el pago (equivalente al Registrar_Click del módulo viejo).
         /// </summary>
         public void RegistrarPagoSemana(long idEmpleado, int idSemana, DateTime fechaCorte, int idUsuario)
@@ -162,7 +231,7 @@ namespace Manga_Rica_P1.BLL.Pagos
             var row = new PagosRow
             {
                 Id_Empleado = idEmpleado,
-                Id_Semana = idSemana,                 // << propiedad correcta en tu entidad
+                Id_Semana = idSemana,                 
                 Fecha = fechaCorte.Date,
                 Horas_Normales = tot.Normales,
                 Horas_Extras = tot.Extras,

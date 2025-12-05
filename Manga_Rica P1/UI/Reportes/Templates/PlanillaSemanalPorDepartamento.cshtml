@@ -1,0 +1,170 @@
+@using Manga_Rica_P1.Entity.Reports
+@model ReportePlanillaSemanalVm
+
+@{
+    // Reutilizamos el layout especial de planilla semanal
+    Layout = "_ReportBasePlanillaSemanal";
+
+    var tieneLineas = Model.Lineas != null && Model.Lineas.Count > 0;
+    var primera = tieneLineas ? Model.Lineas[0] : null;
+}
+
+<br></br>
+
+<style>
+    /* Ajustes de tabla para que quepa mejor en landscape */
+    table.tabla-planilla {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        table-layout: fixed;
+    }
+
+    table.tabla-planilla th,
+    table.tabla-planilla td {
+        padding: 2px 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border: 1px solid #ddd;
+    }
+
+    table.tabla-planilla th {
+        background: #f1f5f9;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    table.tabla-planilla td.num {
+        text-align: right;
+    }
+
+    table.tabla-planilla tr:nth-child(even) td {
+        background: #fafafa;
+    }
+
+    /* Ajuste de anchos por columna (puedes tunearlos luego) */
+    table.tabla-planilla th:nth-child(1),
+    table.tabla-planilla td:nth-child(1) { width: 8%; }   /* Carne    */
+    table.tabla-planilla th:nth-child(2),
+    table.tabla-planilla td:nth-child(2) { width: 9%; }   /* Cédula   */
+    table.tabla-planilla th:nth-child(3),
+    table.tabla-planilla td:nth-child(3) { width: 22%; }  /* Empleado */
+    table.tabla-planilla th:nth-child(4),
+    table.tabla-planilla td:nth-child(4) { width: 7%; }   /* H. Norm. */
+    table.tabla-planilla th:nth-child(5),
+    table.tabla-planilla td:nth-child(5) { width: 7%; }   /* H. Extra */
+    table.tabla-planilla th:nth-child(6),
+    table.tabla-planilla td:nth-child(6) { width: 7%; }   /* H. Doble */
+    table.tabla-planilla th:nth-child(7),
+    table.tabla-planilla td:nth-child(7) { width: 7%; }   /* Feriado  */
+    table.tabla-planilla th:nth-child(8),
+    table.tabla-planilla td:nth-child(8) { width: 7%; }   /* S/H      */
+    table.tabla-planilla th:nth-child(9),
+    table.tabla-planilla td:nth-child(9) { width: 8%; }   /* Soda     */
+    table.tabla-planilla th:nth-child(10),
+    table.tabla-planilla td:nth-child(10) { width: 8%; }  /* Uniforme */
+    table.tabla-planilla th:nth-child(11),
+    table.tabla-planilla td:nth-child(11) { width: 9%; }  /* Bruto    */
+    table.tabla-planilla th:nth-child(12),
+    table.tabla-planilla td:nth-child(12) { width: 9%; }  /* Neto     */
+</style>
+
+<br />
+<br />
+
+<div class="report-header">
+    <h2>@Model.Titulo</h2>
+
+    <p>
+        <strong>Semana:</strong> @Model.Semana<br />
+        <strong>Rango:</strong>
+        @Model.FechaInicio.ToString("dd/MM/yyyy")
+        -
+        @Model.FechaFin.ToString("dd/MM/yyyy")
+        <br />
+
+        @if (primera != null)
+        {
+            <text>
+                <strong>Departamento:</strong> @primera.Departamento
+            </text>
+        }
+    </p>
+</div>
+
+<table class="tabla-planilla">
+    <thead>
+        <tr>
+            <th>Carne</th>
+            <th>Cedula</th>
+            <th>Empleado</th>
+
+            <th style="text-align:right;">H. Normales</th>
+            <th style="text-align:right;">H. Extras</th>
+            <th style="text-align:right;">H. Dobles</th>
+            <th style="text-align:right;">Feriados</th>
+
+            <th style="text-align:right;">S/H</th>
+            <th style="text-align:right;">Soda</th>
+            <th style="text-align:right;">Uniforme</th>
+
+            <th style="text-align:right;">Bruto</th>
+            <th style="text-align:right;">Neto</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (tieneLineas)
+    {
+        foreach (var l in Model.Lineas)
+        {
+            <tr>
+                <td>@l.Carne</td>
+                <td>@l.Cedula</td>
+                <td>@l.Empleado</td>
+
+                <td class="num">@l.HorasNormales</td>
+                <td class="num">@l.HorasExtras</td>
+                <td class="num">@l.HorasDobles</td>
+                <td class="num">@l.Feriados</td>
+
+                <td class="num">@l.SalarioHora.ToString("N2")</td>
+                <td class="num">@l.Soda.ToString("N2")</td>
+                <td class="num">@l.Uniforme.ToString("N2")</td>
+
+                <td class="num">@l.SalarioBruto.ToString("N2")</td>
+                <td class="num">@l.SalarioNeto.ToString("N2")</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="12" style="text-align:center; padding:12px;">
+                No hay datos para la semana y departamento seleccionados.
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if (tieneLineas)
+{
+    <div class="report-summary" style="margin-top:16px;">
+        <h4>Totales</h4>
+        <table class="summary-table">
+            <tr>
+                <td><strong>Total Salario Bruto:</strong></td>
+                <td class="num">@Model.TotalSalarioBruto.ToString("N2")</td>
+            </tr>
+            <tr>
+                <td><strong>Total Deducciones (Soda + Uniforme):</strong></td>
+                <td class="num">@Model.TotalDeducciones.ToString("N2")</td>
+            </tr>
+            <tr>
+                <td><strong>Total Salario Neto:</strong></td>
+                <td class="num">@Model.TotalSalarioNeto.ToString("N2")</td>
+            </tr>
+        </table>
+    </div>
+}
