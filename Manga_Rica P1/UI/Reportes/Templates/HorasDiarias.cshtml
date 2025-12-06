@@ -1,0 +1,119 @@
+@model Manga_Rica_P1.Entity.Reports.ReporteHorasDiariasVm
+@using System.Globalization
+
+@{
+    // Layout ESPECIAL sin header fijo
+    Layout = "_ReportBaseNoFixedHeader.cshtml";
+
+    ViewBag.Title  = Model.Titulo;
+    ViewBag.Footer = Model.PieDePagina;
+
+    var cr = new CultureInfo("es-CR");
+    string fechaTexto = Model.Fecha.ToString("dd-MMM-yyyy", cr);
+}
+
+<style>
+  /* Estilos específicos de este reporte (no afectan a otros) */
+  .horas-wrapper {
+      /* nada especial en pantalla */
+  }
+
+  table.horas-diarias {
+      width: 100%;
+      table-layout: fixed;  /* reparte el ancho y evita desbordes */
+  }
+
+  table.horas-diarias th,
+  table.horas-diarias td {
+      padding: 4px;
+      font-size: 11px;
+  }
+
+  table.horas-diarias td.num {
+      text-align: right;
+  }
+
+  /* columnas más compactas */
+  table.horas-diarias th.col-carne     { width: 70px;  }
+  table.horas-diarias th.col-apellidos { width: 180px; }
+  table.horas-diarias th.col-nombre    { width: 150px; }
+  table.horas-diarias th.col-horas     { width: 65px;  }
+
+  /* Solo en impresión/PDF, reducimos un poco la escala del bloque */
+  @@media print {
+      .horas-wrapper {
+          transform: scale(0.92);
+          transform-origin: top left;
+      }
+  }
+</style>
+
+<div class="horas-wrapper">
+    <h2 style="text-align:center; margin:16px 0 6px 0; font-size:16px;">
+        Horas Laboradas Dia : @fechaTexto
+    </h2>
+    <hr style="border:0; border-top:1px solid #444; margin:0 0 8px 0;" />
+
+    <table class="horas-diarias">
+        <thead>
+            <tr>
+                <th class="col-carne">Carne</th>
+                <th class="col-apellidos">Apellidos</th>
+                <th class="col-nombre">Nombre</th>
+
+                <th class="col-horas" style="text-align:right;">Normales</th>
+                <th class="col-horas" style="text-align:right;">Extras</th>
+                <th class="col-horas" style="text-align:right;">Dobles</th>
+                <th class="col-horas" style="text-align:right;">Feriado</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.Lineas == null || Model.Lineas.Count == 0)
+        {
+            <tr>
+                <td colspan="7" style="text-align:center; padding:12px;">
+                    No hay registros de horas para la fecha seleccionada.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var l in Model.Lineas)
+            {
+                <tr>
+                    <td>@l.Carne</td>
+                    <td>@l.Apellidos</td>
+                    <td>@l.Nombre</td>
+                    <td class="num">@l.HorasNormales.ToString("N2", cr)</td>
+                    <td class="num">@l.HorasExtras.ToString("N2", cr)</td>
+                    <td class="num">@l.HorasDobles.ToString("N2", cr)</td>
+                    <td class="num">@l.HorasFeriado.ToString("N2", cr)</td>
+                </tr>
+            }
+        }
+        </tbody>
+
+        @if (Model.Lineas != null && Model.Lineas.Count > 0)
+        {
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align:right; font-weight:bold;">
+                        Total:
+                    </td>
+                    <td class="num" style="font-weight:bold;">
+                        @Model.TotalNormales.ToString("N2", cr)
+                    </td>
+                    <td class="num" style="font-weight:bold;">
+                        @Model.TotalExtras.ToString("N2", cr)
+                    </td>
+                    <td class="num" style="font-weight:bold;">
+                        @Model.TotalDobles.ToString("N2", cr)
+                    </td>
+                    <td class="num" style="font-weight:bold;">
+                        @Model.TotalFeriado.ToString("N2", cr)
+                    </td>
+                </tr>
+            </tfoot>
+        }
+    </table>
+</div>

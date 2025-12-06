@@ -509,7 +509,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 comprobante: () =>
                 {
                     // Al hacer clic en "Comprobante" en el menú de Planilla,
-                    // abrimos el nuevo módulo de Comprobantes de Pago.
+                    // abrimos el módulo de Comprobantes de Pago.
                     MostrarReporteComprobantesPago();
                 },
                 horasDiariasSubmenu: (btnHoras, closeParent) =>
@@ -519,12 +519,14 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                         general: () =>
                         {
                             closeParent();
-                            // TODO: lógica "Horas Diarias General"
+                            // >>> AQUÍ abrimos el nuevo formulario de Horas Diarias (General)
+                            MostrarHorasDiariasGeneral();
                         },
-                        porDepartamento: () =>
+                        porCarnet: () =>
                         {
                             closeParent();
-                            // TODO: lógica "Horas Diarias por Departamento"
+                            // Por ahora dejamos este en desarrollo
+                            MostrarHorasDiariasPorCarnet();
                         },
                         onCloseParent: closeParent
                     );
@@ -553,6 +555,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 }
             );
         }
+
 
 
 
@@ -678,15 +681,62 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void MostrarHorasDiariasGeneral()
         {
-            MessageBox.Show("Reporte de Planilla - Horas Diarias (General) - En desarrollo",
-                "Planilla - Horas Diarias", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReporteHorasDiarias(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Planilla - Horas Diarias (General):\n{ex.Message}",
+                    "Planilla - Horas Diarias",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
-        private void MostrarHorasDiariasPorDepartamento()
+        private void MostrarHorasDiariasPorCarnet()
         {
-            MessageBox.Show("Reporte de Planilla - Horas Diarias (Por Departamento) - En desarrollo",
-                "Planilla - Horas Diarias", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReporteHorasDiariasPorEmpleado(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Planilla - Horas Diarias por Carnet:\n{ex.Message}",
+                    "Planilla - Horas Diarias por Carnet",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
+
 
         private void MostrarEntradasSalidasGeneral()
         {

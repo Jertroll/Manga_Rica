@@ -230,6 +230,7 @@ namespace Manga_Rica_P1.UI.Helpers
     Action? general = null,
     Action? porDepartamento = null,
     Action? porCedula = null,
+    Action? porEmpleado = null,
     Action? onCloseParent = null)
         {
             CloseIfOpen(ref _openSubmenu);
@@ -259,13 +260,13 @@ namespace Manga_Rica_P1.UI.Helpers
         public static ToolStripDropDown ShowPlanillaHorasDiariasMenu(
             Control anchor,
             Action? general = null,
-            Action? porDepartamento = null,
+            Action? porCarnet = null,
             Action? onCloseParent = null)
         {
             CloseIfOpen(ref _openSubmenu);
 
             var b1 = MakeItem("General", general);
-            var b2 = MakeItem("Por Departamento", porDepartamento);
+            var b2 = MakeItem("Por Carnet", porCarnet);
 
             var panel = BuildPanel(b1, b2);
 
@@ -281,6 +282,7 @@ namespace Manga_Rica_P1.UI.Helpers
 
             return _openSubmenu;
         }
+
 
         // --- Entradas y Salidas ----------------------------------------------
 

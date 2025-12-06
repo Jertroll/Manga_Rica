@@ -1,0 +1,169 @@
+@* Layout base para reportes **sin** header fijo en impresión *@
+@using System
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>@ViewBag?.Title</title>
+
+  <!-- Fuerza esquema de color claro -->
+  <meta name="color-scheme" content="light" />
+
+  <style>
+    :root { color-scheme: light; }
+
+    html {
+      height: 100%;
+      overflow-y: scroll;
+      scrollbar-gutter: stable both-edges;
+      background: #ffffff;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: system-ui, Segoe UI, Arial;
+      background: #ffffff;
+      color: #111;
+    }
+
+    h1, h2, h3 { margin: 0; }
+
+    .content {
+      min-height: 100vh;
+      margin-top: 100px;
+      margin-bottom: 40px;
+      padding-bottom: 120px;
+      background: #ffffff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 6px;
+      font-size: 13px;
+      background: #ffffff;
+      color: #111;
+    }
+
+    th {
+      background: #f1f5f9;
+      text-align: left;
+    }
+
+    td.num { text-align: right; }
+
+    tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    /* Cabecera corporativa */
+    .hdr {
+      display: grid;
+      grid-template-columns: 180px 1fr 180px;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 8px 6px 8px;
+      border-bottom: 3px solid #eab308;
+      background: #ffffff;
+    }
+
+    .hdr .logo-wrap {
+      grid-column: 1;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+    }
+
+    .hdr .logo-wrap img {
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .hdr .info {
+      grid-column: 2;
+      text-align: center;
+      line-height: 1.3;
+      color: #111;
+    }
+
+    .hdr .info .company {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .hdr .info .phones,
+    .hdr .info .address {
+      font-size: 13px;
+    }
+
+    .hdr .spacer { grid-column: 3; }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 12px 8px;
+      color: #111;
+    }
+
+    /* ===== Estilos de impresión ===== */
+    @@page { size: Letter; margin: 12.7mm; }
+
+    @@media print {
+      html, body {
+        -webkit-print-color-adjust: exact;
+        zoom: 0.9;
+      }
+
+      .no-break { break-inside: avoid; }
+
+      /* OJO: aquí NO usamos position:fixed */
+      .header { position: static; }
+      .footer { position: static; font-size: 11px; color: #555; }
+    }
+
+    /* Neutraliza dark-mode del SO */
+    @@media (prefers-color-scheme: dark) {
+      html, body, .hdr, .content, table, th, td {
+        background: #ffffff !important;
+        color: #111 !important;
+      }
+      th { background: #f1f5f9 !important; }
+      tr:nth-child(even) td { background: #fafafa !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabecera corporativa -->
+  <div class="header">
+    <div class="hdr">
+      <div class="logo-wrap">
+        <img src="https://@ViewBag.VirtualHost/@ViewBag.LogoFile"
+             alt="logo" onerror="this.style.display='none'" />
+      </div>
+      <div class="info">
+        <div class="company">@ViewBag.Company</div>
+        <div class="phones">Telefonos: @ViewBag.Phones</div>
+        <div class="address">Direccion: @ViewBag.Address</div>
+      </div>
+      <div class="spacer"></div>
+    </div>
+
+    <div class="title">@ViewBag.Title</div>
+  </div>
+
+  <div class="footer">
+    @ViewBag?.Footer
+  </div>
+
+  <div class="content">
+    @RenderBody()
+  </div>
+</body>
+</html>
