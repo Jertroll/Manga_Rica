@@ -1,13 +1,13 @@
-﻿using System;
-using System.Windows.Forms;
-using Microsoft.Extensions.Configuration;
-
-using Manga_Rica_P1.DAL;
-using Manga_Rica_P1.BLL;
+﻿using Manga_Rica_P1.BLL;
 using Manga_Rica_P1.BLL.AutentificacionService;
 using Manga_Rica_P1.BLL.Session;
+using Manga_Rica_P1.DAL;
+using Manga_Rica_P1.DAL.Reports;
 using Manga_Rica_P1.UI.Login;
 using Manga_Rica_P1.UI.Ventana_Principal;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Windows.Forms;
 
 namespace Manga_Rica_P1
 {
@@ -18,7 +18,7 @@ namespace Manga_Rica_P1
         [STAThread]
         static void Main()
         {
-            // Config
+            // Configuración
             Configuration = new ConfigurationBuilder()
                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
@@ -30,7 +30,7 @@ namespace Manga_Rica_P1
             string csClock = Configuration.GetConnectionString("ClockDb")
                 ?? throw new InvalidOperationException("Falta 'ClockDb', no hay conexion");
 
-
+            // Repositorios (DB principal)
             var usuarioRepo = new UsuarioRepository(cs);
             var departamentoRepo = new DepartamentoRepository(cs);
             var semanaRepo = new SemanaRepository(cs);
@@ -44,18 +44,21 @@ namespace Manga_Rica_P1
             var deduccionesDetallesRepo = new DeduccionesDetallesRepository(cs);
             var puestoRepo = new PuestoRepository(cs);
 
-
-            //CLock
+            // Repositorios (Reloj marcador)
             var clockEmployeesRepo = new Manga_Rica_P1.DAL.Clock.EmployeesClockRepository(csClock);
             var clockGlogsRepo = new Manga_Rica_P1.DAL.Clock.GLogsRepository(csClock);
             var clockCalcAttRepo = new Manga_Rica_P1.DAL.Clock.CalculatedAttendanceRepository(csClock);
 
             var acumuladoRepo = new AcumuladoDiarioRepository(cs, empleadoRepo, clockCalcAttRepo);
             var pagosRowRepo = new PagosRepository(cs);
-            // Nueva implementacion: repo específico para activar pagos
             var pagosRepo = new ActivarPagosRepository(cs);
 
-            // Servicios (BLL)
+            // Repositorios de reportes
+            var entradasSalidasRepo = new EntradasSalidasReportRepository(csClock); // este sí va contra ClockDb
+            var horasSemanalesRepo = new HorasSemanalesReportRepository(cs);       // <-- usar MangaRicaDb
+
+
+            // Servicios (BLL principales)
             var usuariosService = new UsuariosService(usuarioRepo);
             var departamentosService = new DepartamentosService(departamentoRepo);
             var semanasService = new SemanasService(semanaRepo);
@@ -66,13 +69,21 @@ namespace Manga_Rica_P1
             var sodaService = new SodaService(sodaRepo, sodaDetallesRepo, articulosRepo, empleadoRepo);
             var deduccionesService = new DeduccionesService(deduccionesRepo, deduccionesDetallesRepo, articulosRepo, empleadoRepo);
             var cierreService = new CierreDiarioService(acumuladoRepo);
-            var pagosService = new Manga_Rica_P1.BLL.Pagos.PagosService(acumuladoRepo, pagosRowRepo, deduccionesRepo, empleadoRepo, sodaRepo, semanaRepo);
+            var pagosService = new Manga_Rica_P1.BLL.Pagos.PagosService(
+                acumuladoRepo,
+                pagosRowRepo,
+                deduccionesRepo,
+                empleadoRepo,
+                sodaRepo,
+                semanaRepo);
             var puestosService = new PuestosService(puestoRepo);
-
-
             var activarPagosService = new ActivarPagosService(pagosRepo, empleadoRepo, semanaRepo);
 
-            
+            // Servicios de reportes (BLL)
+            var entradasSalidasService = new ReportesEntradasSalidasService(entradasSalidasRepo);
+            var horasSemanalesService = new ReportesHorasSemanalesService(horasSemanalesRepo);
+
+            // AUTH + sesión
             var autentificacionService = new AutentificacionService(usuarioRepo);
             IAppSession session = new AppSession();
 
@@ -88,12 +99,12 @@ namespace Manga_Rica_P1
                     return;
                 }
 
-                // ✅ Revisar flag que nos dejó el login
+                // Revisar flag que nos dejó el login
                 bool esUsuarioSoda = login.EsUsuarioSoda;
 
                 if (esUsuarioSoda)
                 {
-                    // Ir directo al módulo Soda
+                    // Ir directo al módulo de Soda
                     Application.Run(new Manga_Rica_P1.UI.Soda.Soda(sodaService, session));
                     return;
                 }
@@ -115,7 +126,9 @@ namespace Manga_Rica_P1
                 cierreService,
                 activarPagosService,
                 pagosService,
-                puestosService
+                puestosService,
+                entradasSalidasService,
+                horasSemanalesService
             ));
         }
     }

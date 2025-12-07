@@ -40,6 +40,10 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         private readonly AutentificacionService _auth;
         private readonly PuestosService _puestosService;
 
+        // BD Reloj marcador - servicios de reportes
+        private readonly ReportesEntradasSalidasService _entradasSalidasService;
+        private readonly ReportesHorasSemanalesService _horasSemanalesService;
+
         public Principal(
             IAppSession session,
             AutentificacionService auth,
@@ -55,7 +59,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             CierreDiarioService cierreService,
             ActivarPagosService activarPagosService,
             PagosService pagosService,
-            PuestosService puestosService)
+            PuestosService puestosService,
+            ReportesEntradasSalidasService entradasSalidasService,
+            ReportesHorasSemanalesService horasSemanalesService)
         {
             InitializeComponent();
             _session = session ?? throw new ArgumentNullException(nameof(session));
@@ -73,6 +79,8 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             _activarPagosService = activarPagosService ?? throw new ArgumentNullException(nameof(activarPagosService));
             _PagosService = pagosService ?? throw new ArgumentNullException(nameof(pagosService));
             _puestosService = puestosService ?? throw new ArgumentNullException(nameof(puestosService));
+            _entradasSalidasService = entradasSalidasService ?? throw new ArgumentNullException(nameof(entradasSalidasService));
+            _horasSemanalesService = horasSemanalesService ?? throw new ArgumentNullException(nameof(horasSemanalesService));
 
             // Evita recálculos de layout mientras reacomodamos todo
             this.SuspendLayout();
@@ -351,7 +359,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             );
         }
 
-        //Funciones para abrir los reportes
+        // Funciones para abrir los reportes
         private void MostrarReporteEmpleadosActivos()
         {
             try
@@ -366,8 +374,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
-                    "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Error al abrir el reporte: {ex.Message}",
+                    "Reporte de Empleados",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
@@ -385,8 +396,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al abrir el reporte: {ex.Message}",
-                    "Reporte de Empleados", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Error al abrir el reporte: {ex.Message}",
+                    "Reporte de Empleados",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
@@ -418,8 +432,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             try
             {
                 var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
-                         ?? throw new InvalidOperationException(
-                             "Cadena de conexión 'MangaRicaDb' no configurada");
+                         ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
 
                 var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
 
@@ -443,6 +456,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             {
                 var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
                          ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
+
                 var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
 
                 using var dlg = new FormReporteUniformesPorEmpleado(cs, vhost);
@@ -508,8 +522,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                 },
                 comprobante: () =>
                 {
-                    // Al hacer clic en "Comprobante" en el menú de Planilla,
-                    // abrimos el módulo de Comprobantes de Pago.
                     MostrarReporteComprobantesPago();
                 },
                 horasDiariasSubmenu: (btnHoras, closeParent) =>
@@ -519,13 +531,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                         general: () =>
                         {
                             closeParent();
-                            // >>> AQUÍ abrimos el nuevo formulario de Horas Diarias (General)
                             MostrarHorasDiariasGeneral();
                         },
                         porCarnet: () =>
                         {
                             closeParent();
-                            // Por ahora dejamos este en desarrollo
                             MostrarHorasDiariasPorCarnet();
                         },
                         onCloseParent: closeParent
@@ -538,28 +548,46 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                         general: () =>
                         {
                             closeParent();
-                            // TODO: lógica "Entradas y Salidas General"
+                            MostrarEntradasSalidasGeneral();
                         },
-                        porCarnet: () =>
-                        {
-                            closeParent();
-                            // TODO: lógica "Entradas y Salidas por Carnet"
-                        },
-                        quincenal: () =>
-                        {
-                            closeParent();
-                            // TODO: lógica "Entradas y Salidas Quincenal"
-                        },
+                        porCarnet: null,
+                        quincenal: null,
                         onCloseParent: closeParent
                     );
+                },
+                horasSemanales: () =>
+                {
+                    MostrarHorasSemanales();
                 }
             );
         }
 
+        // --- Nuevos reportes de Planilla ---
 
+        private void MostrarHorasSemanales()
+        {
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
 
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
 
-        // --- Stubs para los nuevos reportes de Planilla (puedes cambiarlos luego) ---
+                using (var dlg = new FormReporteHorasSemanales(_horasSemanalesService, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Horas Semanales:\n{ex.Message}",
+                    "Horas Semanales",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
 
         private void MostrarPlanillaSemanaGeneral()
         {
@@ -574,7 +602,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
                 var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
 
-                using (var dlg = new Manga_Rica_P1.UI.Reportes.FormReportePlanillaSemanal(cs, vhost))
+                using (var dlg = new FormReportePlanillaSemanal(cs, vhost))
                 {
                     dlg.StartPosition = FormStartPosition.CenterParent;
                     dlg.ShowDialog(this);
@@ -648,7 +676,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
-
         private void MostrarPlanillaSemanaPorDepartamento()
         {
             try
@@ -677,7 +704,6 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     MessageBoxIcon.Error);
             }
         }
-
 
         private void MostrarHorasDiariasGeneral()
         {
@@ -737,23 +763,47 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             }
         }
 
-
         private void MostrarEntradasSalidasGeneral()
         {
-            MessageBox.Show("Reporte de Entradas y Salidas (General) - En desarrollo",
-                "Entradas y Salidas", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReporteEntradasSalidas(_entradasSalidasService, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Entradas y Salidas (General):\n{ex.Message}",
+                    "Entradas y Salidas",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
         }
 
         private void MostrarEntradasSalidasPorCarnet()
         {
-            MessageBox.Show("Reporte de Entradas y Salidas (Por Carnet) - En desarrollo",
-                "Entradas y Salidas", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                "Reporte de Entradas y Salidas (Por Carnet) - En desarrollo",
+                "Entradas y Salidas",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         private void MostrarEntradasSalidasQuincenal()
         {
-            MessageBox.Show("Reporte de Entradas y Salidas (Quincenal) - En desarrollo",
-                "Entradas y Salidas", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(
+                "Reporte de Entradas y Salidas (Quincenal) - En desarrollo",
+                "Entradas y Salidas",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
         }
 
         // ===================== VISTAS DE CONFIGURACIONES =====================
@@ -765,7 +815,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void vistaUsuario()
         {
-            var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.User.UserView>().FirstOrDefault();
+            var existente = panelPrincipal.Controls
+                .OfType<Manga_Rica_P1.UI.User.UserView>()
+                .FirstOrDefault();
             if (existente is not null)
             {
                 existente.BringToFront();
@@ -839,7 +891,9 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
 
         private void btnSemanas_Click(object sender, EventArgs e)
         {
-            var existente = panelPrincipal.Controls.OfType<Manga_Rica_P1.UI.Semanas.SemanaView>().FirstOrDefault();
+            var existente = panelPrincipal.Controls
+                .OfType<Manga_Rica_P1.UI.Semanas.SemanaView>()
+                .FirstOrDefault();
             if (existente is not null) { existente.BringToFront(); return; }
 
             panelPrincipal.SuspendLayout();
@@ -912,8 +966,11 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         {
             if (_session.CurrentUser is null)
             {
-                MessageBox.Show("No hay un usuario autenticado.", "Asistencia",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    "No hay un usuario autenticado.",
+                    "Asistencia",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
                 return;
             }
 

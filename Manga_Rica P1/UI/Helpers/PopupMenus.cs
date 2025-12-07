@@ -159,9 +159,9 @@ namespace Manga_Rica_P1.UI.Helpers
             var b2 = MakeItem("No Activos", noActivos);
             var b3 = MakeItem("Uniforme", null, null, hasSubmenu: true); // abre submenú
             var b4 = MakeItem("Soda General", sodaGeneral);
-            var b5 = MakeItem("Ausencias", ausencias);
 
-            var panel = BuildPanel(b1, b2, b3, b4, b5);
+
+            var panel = BuildPanel(b1, b2, b3, b4);
 
             // Abrimos y retenemos referencia del padre
             _openParent = ShowPopup(anchor, panel, new Point(anchor.Width - 40, 20));
@@ -296,10 +296,9 @@ namespace Manga_Rica_P1.UI.Helpers
             CloseIfOpen(ref _openSubmenu);
 
             var b1 = MakeItem("General", general);
-            var b2 = MakeItem("Por Carnet", porCarnet);
-            var b3 = MakeItem("Quincenal", quincenal);
 
-            var panel = BuildPanel(b1, b2, b3);
+
+            var panel = BuildPanel(b1);
 
             _openSubmenu = ShowPopup(anchor, panel, new Point(anchor.Width + 5, 0), onCloseParent);
 
@@ -319,17 +318,17 @@ namespace Manga_Rica_P1.UI.Helpers
         // =====================================================================
 
         public static void ShowPlanillaMenu(
-            Control anchor,
-            Action? semana = null,
-            Action<Button, Action>? semanaSubmenu = null,          // submenú Semana
-            Action? comprobante = null,
-            Action? horasDiarias = null,
-            Action<Button, Action>? horasDiariasSubmenu = null,    // submenú Horas Diarias
-            Action? entradaYSalida = null,
-            Action<Button, Action>? entradaYSalidaSubmenu = null,  // submenú Entradas y Salidas
-            Action? horasSemanales = null,
-            Action? controlSalidas = null,
-            Action? cierreDiario = null)
+    Control anchor,
+    Action? semana = null,
+    Action<Button, Action>? semanaSubmenu = null,          // submenú Semana
+    Action? comprobante = null,
+    Action? horasDiarias = null,
+    Action<Button, Action>? horasDiariasSubmenu = null,    // submenú Horas Diarias
+    Action? entradaYSalida = null,
+    Action<Button, Action>? entradaYSalidaSubmenu = null,  // submenú Entradas y Salidas
+    Action? horasSemanales = null,
+    Action? controlSalidas = null,                         // <- se ignoran
+    Action? cierreDiario = null)                           // <- se ignoran
         {
             CloseIfOpen(ref _openSubmenu);
             CloseIfOpen(ref _openParent);
@@ -359,10 +358,14 @@ namespace Manga_Rica_P1.UI.Helpers
                 hasSubmenu: subEyS);
 
             var b5 = MakeItem("Horas Semanales", horasSemanales);
-            var b6 = MakeItem("Control Salidas", controlSalidas);
-            var b7 = MakeItem("Cierre Diario", cierreDiario);
 
-            var panel = BuildPanel(b1, b2, b3, b4, b5, b6, b7);
+            // 🔴 Eliminados del menú visual:
+            // var b6 = MakeItem("Control Salidas", controlSalidas);
+            // var b7 = MakeItem("Cierre Diario", cierreDiario);
+
+            // Solo se agregan hasta Horas Semanales
+            var panel = BuildPanel(b1, b2, b3, b4, b5);
+
             _openParent = ShowPopup(anchor, panel, new Point(anchor.Width - 40, 20));
 
             // Submenú de Semana
@@ -407,5 +410,6 @@ namespace Manga_Rica_P1.UI.Helpers
                 CloseIfOpen(ref _openSubmenu);
             };
         }
+
     }
 }

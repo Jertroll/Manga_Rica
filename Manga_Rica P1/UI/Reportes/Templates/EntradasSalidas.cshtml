@@ -1,0 +1,110 @@
+@model Manga_Rica_P1.Entity.Reports.ReporteEntradasSalidasVm
+@using System.Globalization
+
+@{
+    // Usamos el layout ESPECIAL sin header fijo
+    Layout = "_ReportBaseNoFixedHeader.cshtml";
+
+    ViewBag.Title  = Model.Titulo;
+    ViewBag.Footer = Model.PieDePagina;
+
+    var cr = new CultureInfo("es-CR");
+    string rangoTexto = $"{Model.Desde.ToString("dd-MMM-yyyy", cr)} al {Model.Hasta.ToString("dd-MMM-yyyy", cr)}";
+}
+
+<style>
+  /* Estilos específicos de este reporte (no afectan a otros) */
+  .entradas-wrapper {
+      /* nada especial en pantalla por ahora */
+  }
+
+  table.entradas-salidas {
+      width: 100%;
+      table-layout: fixed;  /* reparte el ancho y ayuda a evitar desbordes */
+  }
+
+  table.entradas-salidas th,
+  table.entradas-salidas td {
+      padding: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  table.entradas-salidas td.num {
+      text-align: right;
+  }
+
+  /* columnas compactas orientadas a fechas/horas */
+  table.entradas-salidas th.col-fecha     { width: 80px;  }
+  table.entradas-salidas th.col-carne     { width: 80px;  }
+  table.entradas-salidas th.col-apellidos { width: 180px; }
+  table.entradas-salidas th.col-nombre    { width: 140px; }
+  table.entradas-salidas th.col-hora      { width: 70px;  }
+  table.entradas-salidas th.col-total     { width: 80px;  }
+
+  /* Solo en impresión/PDF, reducimos un poco la escala del bloque */
+  @@media print {
+      .entradas-wrapper {
+          transform: scale(0.92);
+          transform-origin: top left;
+      }
+  }
+</style>
+
+<div class="entradas-wrapper">
+    <h2 style="text-align:center; margin:16px 0 4px 0; font-size:16px;">
+        Entradas y Salidas
+    </h2>
+    <div style="text-align:center; font-size:12px; margin-bottom:8px;">
+        Rango: @rangoTexto
+    </div>
+
+    <hr style="border:0; border-top:1px solid #444; margin:0 0 8px 0;" />
+
+    <table class="entradas-salidas">
+        <thead>
+            <tr>
+                <th class="col-fecha">Fecha</th>
+                <th class="col-carne">Carné</th>
+                <th class="col-apellidos">Apellidos</th>
+                <th class="col-nombre">Nombre</th>
+                <th class="col-hora" style="text-align:center;">Entrada</th>
+                <th class="col-hora" style="text-align:center;">Salida</th>
+                <th class="col-total" style="text-align:right;">Horas</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (Model.Lineas == null || Model.Lineas.Count == 0)
+        {
+            <tr>
+                <td colspan="7" style="text-align:center; padding:12px;">
+                    No hay registros de entradas y salidas para el rango seleccionado.
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var l in Model.Lineas)
+            {
+                <tr>
+                    <td>@l.Fecha.ToString("dd/MM/yyyy")</td>
+                    <td>@l.Carne</td>
+                    <td>@l.Apellidos</td>
+                    <td>@l.Nombre</td>
+                    <td style="text-align:center;">
+                        @(l.HoraEntrada.HasValue ? l.HoraEntrada.Value.ToString("HH:mm") : "")
+                    </td>
+                    <td style="text-align:center;">
+                        @(l.HoraSalida.HasValue ? l.HoraSalida.Value.ToString("HH:mm") : "")
+                    </td>
+                    <td class="num">
+                        @l.TotalHoras.ToString("N2", cr)
+                    </td>
+                </tr>
+            }
+        }
+        </tbody>
+    </table>
+</div>

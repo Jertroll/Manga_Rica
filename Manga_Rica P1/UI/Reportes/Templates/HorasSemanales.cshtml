@@ -1,0 +1,154 @@
+﻿@using Manga_Rica_P1.Entity.Reports
+@model ReporteHorasSemanalesVm
+
+@{
+    // Layout genérico de reportes
+    Layout = "_ReportBaseNoFixedHeader.cshtml";
+
+    var tieneLineas = Model.Lineas != null && Model.Lineas.Count > 0;
+}
+
+<style>
+    /* Contenedor SOLO para este reporte */
+    .hs-wrapper {
+        margin: 0 6px 10px 6px;
+    }
+
+    /* Encabezado de rango de fechas */
+    table.hs-header {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+        border: 0;
+        margin-bottom: 4px;
+    }
+
+    table.hs-header td {
+        border: 0;
+        padding: 2px 4px;
+    }
+
+    /* === Tabla compacta para Horas Semanales === */
+    table.tabla-horas-semanales {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;   /* reparte el ancho entre columnas */
+        font-size: 10px;       /* más pequeño para que quepa */
+    }
+
+    table.tabla-horas-semanales th,
+    table.tabla-horas-semanales td {
+        border: 1px solid #ddd;
+        padding: 2px 3px;      /* mínimo padding */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    table.tabla-horas-semanales th {
+        background: #f1f5f9;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    table.tabla-horas-semanales td.num {
+        text-align: right;
+    }
+
+    table.tabla-horas-semanales tr:nth-child(even) td {
+        background: #fafafa;
+    }
+
+    /* Anchos por columna (≈100%) */
+    table.tabla-horas-semanales th:nth-child(1),
+    table.tabla-horas-semanales td:nth-child(1) { width: 32%; }  /* Apellidos */
+    table.tabla-horas-semanales th:nth-child(2),
+    table.tabla-horas-semanales td:nth-child(2) { width: 24%; }  /* Nombre    */
+    table.tabla-horas-semanales th:nth-child(3),
+    table.tabla-horas-semanales td:nth-child(3) { width: 11%; }  /* Normales  */
+    table.tabla-horas-semanales th:nth-child(4),
+    table.tabla-horas-semanales td:nth-child(4) { width: 11%; }  /* Extras    */
+    table.tabla-horas-semanales th:nth-child(5),
+    table.tabla-horas-semanales td:nth-child(5) { width: 11%; }  /* Dobles    */
+    table.tabla-horas-semanales th:nth-child(6),
+    table.tabla-horas-semanales td:nth-child(6) { width: 11%; }  /* Feriado   */
+
+    /* Extra: al imprimir, reducimos un poco todo el bloque
+       SOLO de este reporte para que nunca se corte la última columna */
+    @@media print {
+        .hs-wrapper {
+            transform: scale(0.92);
+            transform-origin: top left;
+        }
+    }
+</style>
+
+<div class="no-break hs-wrapper">
+    <!-- Rango de fechas -->
+    <table class="hs-header">
+        <tr>
+            <td>
+                <strong>Desde:</strong> @Model.Desde.ToString("dd/MM/yyyy")
+            </td>
+            <td style="text-align:right;">
+                <strong>Hasta:</strong> @Model.Hasta.ToString("dd/MM/yyyy")
+            </td>
+        </tr>
+    </table>
+
+    <!-- Tabla principal -->
+    <table class="tabla-horas-semanales">
+        <thead>
+            <tr>
+                <th>Apellidos</th>
+                <th>Nombre</th>
+                <th class="num">Normales</th>
+                <th class="num">Extras</th>
+                <th class="num">Dobles</th>
+                <th class="num">Feriado</th>
+            </tr>
+        </thead>
+        <tbody>
+        @if (tieneLineas)
+        {
+            foreach (var linea in Model.Lineas)
+            {
+                <tr>
+                    <td>@linea.Apellidos</td>
+                    <td>@linea.Nombre</td>
+                    <td class="num">@linea.HorasNormales.ToString("0.##")</td>
+                    <td class="num">@linea.HorasExtras.ToString("0.##")</td>
+                    <td class="num">@linea.HorasDobles.ToString("0.##")</td>
+                    <td class="num">@linea.HorasFeriado.ToString("0.##")</td>
+                </tr>
+            }
+
+            <tr>
+                <td colspan="2" style="font-weight:600; text-align:right;">
+                    Total
+                </td>
+                <td class="num" style="font-weight:600;">
+                    @Model.TotalNormales.ToString("0.##")
+                </td>
+                <td class="num" style="font-weight:600;">
+                    @Model.TotalExtras.ToString("0.##")
+                </td>
+                <td class="num" style="font-weight:600;">
+                    @Model.TotalDobles.ToString("0.##")
+                </td>
+                <td class="num" style="font-weight:600;">
+                    @Model.TotalFeriado.ToString("0.##")
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="6" style="text-align:center; padding:12px; font-style:italic;">
+                    No hay registros de horas para el rango seleccionado.
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

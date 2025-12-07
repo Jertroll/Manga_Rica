@@ -1,0 +1,274 @@
+﻿using Manga_Rica_P1.BLL;                     // ReportesHorasSemanalesService
+using Manga_Rica_P1.Entity.Reports;         // ReporteHorasSemanalesVm
+using Manga_Rica_P1.UI.Reportes.Export;     // ReportExportHelper, ReportTableBuilder
+using Manga_Rica_P1.UI.Reportes.Shared;     // FechaRangoFiltroSidebar
+using MangaRica.UI.Reports;                 // HtmlReportRenderer
+using Microsoft.Web.WebView2.Core;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Manga_Rica_P1.UI.Reportes
+{
+    public partial class FormReporteHorasSemanales : Form
+    {
+        private readonly ReportesHorasSemanalesService _service;
+        private readonly HtmlReportRenderer _renderer;
+
+        private readonly string _assetsFolder;
+        private readonly string _templatesFolder;
+        private readonly string _virtualHost;
+
+        private ReporteHorasSemanalesVm? _vm;
+        private string _titulo = "Horas_Semanales";
+
+        public FormReporteHorasSemanales(
+            ReportesHorasSemanalesService service,
+            string virtualHost = "appassets")
+        {
+            if (service is null) throw new ArgumentNullException(nameof(service));
+            if (virtualHost is null) throw new ArgumentNullException(nameof(virtualHost));
+
+            InitializeComponent();
+
+            _service = service;
+            _virtualHost = virtualHost;
+
+            Text = "Reporte: Horas Semanales";
+            Width = 1100;
+            Height = 700;
+
+            // ===== Carpetas de plantillas y assets =====
+            _templatesFolder = Path.Combine(AppContext.BaseDirectory, "UI", "Reportes", "Templates");
+            _assetsFolder = Path.Combine(AppContext.BaseDirectory, "UI", "Reportes", "Assets");
+
+            // Fallback para entorno de desarrollo
+            if (!Directory.Exists(_templatesFolder))
+            {
+                var devRoot = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
+                var devTemplates = Path.Combine(devRoot, "UI", "Reportes", "Templates");
+                if (Directory.Exists(devTemplates))
+                    _templatesFolder = devTemplates;
+            }
+
+            if (!Directory.Exists(_templatesFolder))
+            {
+                throw new DirectoryNotFoundException(
+                    $"No se encontraron las plantillas Razor en:\n{_templatesFolder}\n\n" +
+                    "Asegúrate de copiarlas al output en el .csproj.");
+            }
+
+            Directory.CreateDirectory(_assetsFolder);
+
+            _renderer = new HtmlReportRenderer(_templatesFolder);
+
+            // Sidebar: texto del botón
+            fechaRangoFiltro.TextoBoton = "Generar reporte";
+            fechaRangoFiltro.BuscarPorRango += FechaRangoFiltro_BuscarPorRango;
+
+            // Inicializar WebView2 al cargar el form
+            Load += FormReporteHorasSemanales_Load;
+        }
+
+        // Inicializar WebView2 sin cargar reporte aún
+        private async void FormReporteHorasSemanales_Load(object? sender, EventArgs e)
+        {
+            try
+            {
+                var opts = new CoreWebView2EnvironmentOptions
+                {
+                    AdditionalBrowserArguments =
+                        "--disable-features=WebContentsForceDark --force-dark-mode=0"
+                };
+
+                var env = await CoreWebView2Environment.CreateAsync(null, null, opts);
+                await webView.EnsureCoreWebView2Async(env);
+                webView.DefaultBackgroundColor = System.Drawing.Color.White;
+
+                webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
+                    _virtualHost,
+                    _assetsFolder,
+                    CoreWebView2HostResourceAccessKind.DenyCors);
+
+                // HTML inicial
+                var htmlInicio = @"
+<html>
+<head>
+<meta charset='utf-8' />
+<style>
+ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 13px; }
+</style>
+</head>
+<body>
+  <h3>Horas Semanales</h3>
+  <p>Seleccione un <b>rango de fechas</b> en el panel izquierdo y presione <b>Generar reporte</b>.</p>
+  <p>El reporte mostrará las horas <b>Normales, Extras, Dobles y Feriado</b> por empleado, junto con los totales generales.</p>
+</body>
+</html>";
+                webView.CoreWebView2.NavigateToString(htmlInicio);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al inicializar el visor de reportes: {ex.Message}",
+                    "Horas Semanales",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        // Evento del sidebar
+        private async void FechaRangoFiltro_BuscarPorRango(
+            object? sender,
+            FechaRangoFiltroSidebar.BuscarPorRangoFechasEventArgs e)
+        {
+            try
+            {
+                await CargarReporteAsync(e.Desde, e.Hasta);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al generar el reporte de Horas Semanales:\n{ex.Message}",
+                    "Horas Semanales",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        }
+
+        private async Task CargarReporteAsync(DateTime desde, DateTime hasta)
+        {
+            var vm = await _service.GenerarReporteAsync(desde, hasta);
+
+            await RenderVmAsync(
+                vm,
+                string.IsNullOrWhiteSpace(vm.Titulo)
+                    ? $"Horas_Semanales_{desde:yyyyMMdd}_{hasta:yyyyMMdd}"
+                    : vm.Titulo);
+        }
+
+        private async Task RenderVmAsync(ReporteHorasSemanalesVm vm, string tituloSugerido)
+        {
+            var cfg = Program.Configuration;
+            var company = cfg?["Brand:Company"] ?? "Manga Rica S.A.";
+            var phones = cfg?["Brand:Phones"] ?? "";
+            var address = cfg?["Brand:Address"] ?? "";
+            var logoFile = cfg?["Brand:LogoFile"] ?? "Manga Rica Logo.jpeg";
+
+            var html = await _renderer.RenderAsync(
+                templateName: "HorasSemanales.cshtml",
+                model: vm,
+                title: vm.Titulo,
+                footer: vm.PieDePagina,
+                virtualHost: _virtualHost,
+                company: company,
+                phones: phones,
+                address: address,
+                logoFile: logoFile
+            );
+
+            webView.CoreWebView2.NavigateToString(html);
+
+            _vm = vm;
+            _titulo = tituloSugerido;
+        }
+
+        // ===== Exportar PDF =====
+        private async void btnExportPdf_Click(object? sender, EventArgs e)
+        {
+            if (webView?.CoreWebView2 == null)
+            {
+                MessageBox.Show(
+                    "El visor aún no está listo.",
+                    "Exportar PDF",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
+            await ReportExportHelper.ExportWebView2ToPdfAsync(
+                this,
+                webView,
+                ReportExportHelper.SanitizeFileName(_titulo));
+        }
+
+        // ===== Exportar Excel =====
+        private async void btnExportExcel_Click(object? sender, EventArgs e)
+        {
+            if (_vm == null || _vm.Lineas == null || !_vm.Lineas.Any())
+            {
+                MessageBox.Show(
+                    "Primero genere el reporte para algún rango de fechas.",
+                    "Exportar Excel",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+                return;
+            }
+
+            var vm = _vm;
+
+            // Proyección a filas para el DataTable
+            var rows = vm.Lineas.Select(l => new Row
+            {
+                Apellidos = l.Apellidos,
+                Nombre = l.Nombre,
+                Normales = l.HorasNormales,
+                Extras = l.HorasExtras,
+                Dobles = l.HorasDobles,
+                Feriado = l.HorasFeriado
+            });
+
+            var table = ReportTableBuilder.From(
+                rows,
+                new ReportTableBuilder.Column<Row>("Apellidos", r => r.Apellidos, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Nombre", r => r.Nombre, typeof(string)),
+                new ReportTableBuilder.Column<Row>("Normales", r => r.Normales, typeof(decimal)),
+                new ReportTableBuilder.Column<Row>("Extras", r => r.Extras, typeof(decimal)),
+                new ReportTableBuilder.Column<Row>("Dobles", r => r.Dobles, typeof(decimal)),
+                new ReportTableBuilder.Column<Row>("Feriado", r => r.Feriado, typeof(decimal))
+            );
+
+            var cfg = Program.Configuration;
+            var company = cfg?["Brand:Company"] ?? string.Empty;
+            var phones = cfg?["Brand:Phones"] ?? string.Empty;
+            var address = cfg?["Brand:Address"] ?? string.Empty;
+            var title = _titulo ?? "Horas Semanales";
+
+            var logoFile = cfg?["Brand:LogoFile"];
+            var logoPath = !string.IsNullOrWhiteSpace(logoFile) && Path.IsPathRooted(logoFile)
+                ? logoFile
+                : Path.Combine(_assetsFolder, logoFile ?? string.Empty);
+            var logo = File.Exists(logoPath) ? logoPath : null;
+
+            await ReportExportHelper.ExportStyledXlsxOrCsvAsync(
+                owner: this,
+                table: table,
+                suggestedFileName: ReportExportHelper.SanitizeFileName(title),
+                company: company,
+                phones: phones,
+                address: address,
+                title: title,
+                logoPath: logo,
+                prependPhonesLabel: true,
+                groupByColumn: null,               // sin agrupaciones
+                subtotalColumns: Array.Empty<string>(),
+                moneyColumns: Array.Empty<string>(),
+                decimalColumns: new[] { "Normales", "Extras", "Dobles", "Feriado" },
+                logoHeightPx: 42
+            );
+        }
+
+        // Clase auxiliar para proyectar al DataTable (Excel)
+        private sealed class Row
+        {
+            public string Apellidos { get; set; } = "";
+            public string Nombre { get; set; } = "";
+            public decimal Normales { get; set; }
+            public decimal Extras { get; set; }
+            public decimal Dobles { get; set; }
+            public decimal Feriado { get; set; }
+        }
+    }
+}

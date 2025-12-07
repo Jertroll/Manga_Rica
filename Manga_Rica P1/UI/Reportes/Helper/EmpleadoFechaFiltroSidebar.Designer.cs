@@ -45,7 +45,7 @@ namespace Manga_Rica_P1.UI.Reportes.Shared
             lblTitulo.Padding = new Padding(8, 8, 8, 4);
             lblTitulo.Size = new Size(200, 30);
             lblTitulo.TabIndex = 0;
-            lblTitulo.Text = "Filtro Soda por empleado";
+            lblTitulo.Text = "Filtro por Carnet y Fecha";
             // 
             // lblCarne
             // 
