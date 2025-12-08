@@ -22,6 +22,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteEmpleadosInactivos));
             _web = new Microsoft.Web.WebView2.WinForms.WebView2();
             panelSuperior = new FlowLayoutPanel();
             _btnExportar = new Button();
@@ -83,6 +84,7 @@ namespace Manga_Rica_P1.UI.Reportes
             ClientSize = new Size(1084, 661);
             Controls.Add(_web);
             Controls.Add(panelSuperior);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MinimumSize = new Size(800, 500);
             Name = "FormReporteEmpleadosInactivos";
             StartPosition = FormStartPosition.CenterParent;

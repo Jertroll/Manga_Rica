@@ -25,6 +25,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteHorasDiarias));
             panelSidebar = new Panel();
             filtroFecha = new FechaFiltroSidebar();
             panelTop = new Panel();
@@ -52,10 +53,14 @@ namespace Manga_Rica_P1.UI.Reportes
             // 
             filtroFecha.BackColor = SystemColors.Control;
             filtroFecha.Dock = DockStyle.Top;
+            filtroFecha.EtiquetaCampo = "Fecha :";
+            filtroFecha.Fecha = new DateTime(2025, 12, 7, 0, 0, 0, 0);
             filtroFecha.Location = new Point(0, 8);
             filtroFecha.Name = "filtroFecha";
             filtroFecha.Size = new Size(200, 160);
             filtroFecha.TabIndex = 0;
+            filtroFecha.TextoBoton = "Generar reporte";
+            filtroFecha.Titulo = "Filtro de Fecha";
             // 
             // panelTop
             // 
@@ -119,6 +124,7 @@ namespace Manga_Rica_P1.UI.Reportes
             Controls.Add(lblHint);
             Controls.Add(panelTop);
             Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReporteHorasDiarias";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Reporte: Horas Diarias";

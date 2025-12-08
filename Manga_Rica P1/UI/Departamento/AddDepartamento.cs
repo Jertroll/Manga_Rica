@@ -182,6 +182,11 @@ namespace Manga_Rica_P1.UI.Departamentos
             return baseCode;
         }
 
+        private void InitializeComponent()
+        {
+
+        }
+
         private static string RemoverDiacriticos(string texto)
         {
             var normalized = texto.Normalize(NormalizationForm.FormD);

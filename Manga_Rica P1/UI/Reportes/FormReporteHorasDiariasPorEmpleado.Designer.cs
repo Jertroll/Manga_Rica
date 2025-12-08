@@ -25,6 +25,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteHorasDiariasPorEmpleado));
             panelSidebar = new Panel();
             filtroFechaCarne = new FechaCarneFiltroSidebar();
             panelTop = new Panel();
@@ -51,11 +52,17 @@ namespace Manga_Rica_P1.UI.Reportes
             // filtroFechaCarne
             // 
             filtroFechaCarne.BackColor = SystemColors.Control;
+            filtroFechaCarne.Carne = null;
             filtroFechaCarne.Dock = DockStyle.Top;
+            filtroFechaCarne.EtiquetaCarne = "Carnet :";
+            filtroFechaCarne.EtiquetaFecha = "Fecha :";
+            filtroFechaCarne.Fecha = new DateTime(2025, 12, 7, 0, 0, 0, 0);
             filtroFechaCarne.Location = new Point(0, 8);
             filtroFechaCarne.Name = "filtroFechaCarne";
             filtroFechaCarne.Size = new Size(200, 150);
             filtroFechaCarne.TabIndex = 0;
+            filtroFechaCarne.TextoBoton = "Generar reporte";
+            filtroFechaCarne.Titulo = "Filtro de Fecha";
             // 
             // panelTop
             // 
@@ -119,6 +126,7 @@ namespace Manga_Rica_P1.UI.Reportes
             Controls.Add(lblHint);
             Controls.Add(panelTop);
             Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReporteHorasDiariasPorEmpleado";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Reporte: Horas Diarias por Empleado";

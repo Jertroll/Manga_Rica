@@ -27,6 +27,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteEntradasSalidas));
             panelSidebar = new Panel();
             empleadoFechaFiltro = new EmpleadoFechaFiltroSidebar();
             panelTop = new Panel();
@@ -124,6 +125,7 @@ namespace Manga_Rica_P1.UI.Reportes
             Controls.Add(lblHint);
             Controls.Add(panelTop);
             Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReporteEntradasSalidas";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Reporte: Entradas y Salidas";

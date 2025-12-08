@@ -34,111 +34,117 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
-            this.panelSidebar = new System.Windows.Forms.Panel();
-            this.fechaRangoFiltro = new Manga_Rica_P1.UI.Reportes.Shared.FechaRangoFiltroSidebar();
-            this.panelRight = new System.Windows.Forms.Panel();
-            this.webView = new Microsoft.Web.WebView2.WinForms.WebView2();
-            this.panelTop = new System.Windows.Forms.Panel();
-            this.btnExportExcel = new System.Windows.Forms.Button();
-            this.btnExportPdf = new System.Windows.Forms.Button();
-            this.panelSidebar.SuspendLayout();
-            this.panelRight.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.webView)).BeginInit();
-            this.panelTop.SuspendLayout();
-            this.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteHorasSemanales));
+            panelSidebar = new Panel();
+            fechaRangoFiltro = new Manga_Rica_P1.UI.Reportes.Shared.FechaRangoFiltroSidebar();
+            panelRight = new Panel();
+            webView = new WebView2();
+            panelTop = new Panel();
+            btnExportExcel = new Button();
+            btnExportPdf = new Button();
+            panelSidebar.SuspendLayout();
+            panelRight.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
+            panelTop.SuspendLayout();
+            SuspendLayout();
             // 
             // panelSidebar
             // 
-            this.panelSidebar.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.panelSidebar.Controls.Add(this.fechaRangoFiltro);
-            this.panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelSidebar.Location = new System.Drawing.Point(0, 0);
-            this.panelSidebar.Name = "panelSidebar";
-            this.panelSidebar.Padding = new System.Windows.Forms.Padding(4);
-            this.panelSidebar.Size = new System.Drawing.Size(230, 561);
-            this.panelSidebar.TabIndex = 0;
+            panelSidebar.BackColor = Color.WhiteSmoke;
+            panelSidebar.Controls.Add(fechaRangoFiltro);
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Location = new Point(0, 0);
+            panelSidebar.Name = "panelSidebar";
+            panelSidebar.Padding = new Padding(4);
+            panelSidebar.Size = new Size(230, 561);
+            panelSidebar.TabIndex = 0;
             // 
             // fechaRangoFiltro
             // 
-            this.fechaRangoFiltro.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fechaRangoFiltro.Location = new System.Drawing.Point(4, 4);
-            this.fechaRangoFiltro.Name = "fechaRangoFiltro";
-            this.fechaRangoFiltro.Size = new System.Drawing.Size(222, 553);
-            this.fechaRangoFiltro.TabIndex = 0;
+            fechaRangoFiltro.BackColor = SystemColors.Control;
+            fechaRangoFiltro.Dock = DockStyle.Fill;
+            fechaRangoFiltro.FechaDesde = new DateTime(2025, 12, 7, 0, 0, 0, 0);
+            fechaRangoFiltro.FechaHasta = new DateTime(2025, 12, 7, 0, 0, 0, 0);
+            fechaRangoFiltro.Location = new Point(4, 4);
+            fechaRangoFiltro.Name = "fechaRangoFiltro";
+            fechaRangoFiltro.Size = new Size(222, 553);
+            fechaRangoFiltro.TabIndex = 0;
+            fechaRangoFiltro.TextoBoton = "Generar reporte";
             // 
             // panelRight
             // 
-            this.panelRight.Controls.Add(this.webView);
-            this.panelRight.Controls.Add(this.panelTop);
-            this.panelRight.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelRight.Location = new System.Drawing.Point(230, 0);
-            this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(654, 561);
-            this.panelRight.TabIndex = 1;
+            panelRight.Controls.Add(webView);
+            panelRight.Controls.Add(panelTop);
+            panelRight.Dock = DockStyle.Fill;
+            panelRight.Location = new Point(230, 0);
+            panelRight.Name = "panelRight";
+            panelRight.Size = new Size(654, 561);
+            panelRight.TabIndex = 1;
             // 
             // webView
             // 
-            this.webView.AllowExternalDrop = true;
-            this.webView.CreationProperties = null;
-            this.webView.DefaultBackgroundColor = System.Drawing.Color.White;
-            this.webView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.webView.Location = new System.Drawing.Point(0, 40);
-            this.webView.Name = "webView";
-            this.webView.Size = new System.Drawing.Size(654, 521);
-            this.webView.TabIndex = 1;
-            this.webView.ZoomFactor = 1D;
+            webView.AllowExternalDrop = true;
+            webView.CreationProperties = null;
+            webView.DefaultBackgroundColor = Color.White;
+            webView.Dock = DockStyle.Fill;
+            webView.Location = new Point(0, 40);
+            webView.Name = "webView";
+            webView.Size = new Size(654, 521);
+            webView.TabIndex = 1;
+            webView.ZoomFactor = 1D;
             // 
             // panelTop
             // 
-            this.panelTop.BackColor = System.Drawing.Color.White;
-            this.panelTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelTop.Controls.Add(this.btnExportExcel);
-            this.panelTop.Controls.Add(this.btnExportPdf);
-            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTop.Location = new System.Drawing.Point(0, 0);
-            this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(654, 40);
-            this.panelTop.TabIndex = 0;
+            panelTop.BackColor = Color.White;
+            panelTop.BorderStyle = BorderStyle.FixedSingle;
+            panelTop.Controls.Add(btnExportExcel);
+            panelTop.Controls.Add(btnExportPdf);
+            panelTop.Dock = DockStyle.Top;
+            panelTop.Location = new Point(0, 0);
+            panelTop.Name = "panelTop";
+            panelTop.Size = new Size(654, 40);
+            panelTop.TabIndex = 0;
             // 
             // btnExportExcel
             // 
-            this.btnExportExcel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btnExportExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExportExcel.Location = new System.Drawing.Point(104, 7);
-            this.btnExportExcel.Name = "btnExportExcel";
-            this.btnExportExcel.Size = new System.Drawing.Size(90, 26);
-            this.btnExportExcel.TabIndex = 1;
-            this.btnExportExcel.Text = "Exportar Excel";
-            this.btnExportExcel.UseVisualStyleBackColor = true;
-            this.btnExportExcel.Click += new System.EventHandler(this.btnExportExcel_Click);
+            btnExportExcel.Anchor = AnchorStyles.Left;
+            btnExportExcel.FlatStyle = FlatStyle.Flat;
+            btnExportExcel.Location = new Point(104, 7);
+            btnExportExcel.Name = "btnExportExcel";
+            btnExportExcel.Size = new Size(90, 26);
+            btnExportExcel.TabIndex = 1;
+            btnExportExcel.Text = "Exportar Excel";
+            btnExportExcel.UseVisualStyleBackColor = true;
+            btnExportExcel.Click += btnExportExcel_Click;
             // 
             // btnExportPdf
             // 
-            this.btnExportPdf.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.btnExportPdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExportPdf.Location = new System.Drawing.Point(8, 7);
-            this.btnExportPdf.Name = "btnExportPdf";
-            this.btnExportPdf.Size = new System.Drawing.Size(90, 26);
-            this.btnExportPdf.TabIndex = 0;
-            this.btnExportPdf.Text = "Exportar PDF";
-            this.btnExportPdf.UseVisualStyleBackColor = true;
-            this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
+            btnExportPdf.Anchor = AnchorStyles.Left;
+            btnExportPdf.FlatStyle = FlatStyle.Flat;
+            btnExportPdf.Location = new Point(8, 7);
+            btnExportPdf.Name = "btnExportPdf";
+            btnExportPdf.Size = new Size(90, 26);
+            btnExportPdf.TabIndex = 0;
+            btnExportPdf.Text = "Exportar PDF";
+            btnExportPdf.UseVisualStyleBackColor = true;
+            btnExportPdf.Click += btnExportPdf_Click;
             // 
             // FormReporteHorasSemanales
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(884, 561);
-            this.Controls.Add(this.panelRight);
-            this.Controls.Add(this.panelSidebar);
-            this.Name = "FormReporteHorasSemanales";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Reporte: Horas Semanales";
-            this.panelSidebar.ResumeLayout(false);
-            this.panelRight.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.webView)).EndInit();
-            this.panelTop.ResumeLayout(false);
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(884, 561);
+            Controls.Add(panelRight);
+            Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "FormReporteHorasSemanales";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Reporte: Horas Semanales";
+            panelSidebar.ResumeLayout(false);
+            panelRight.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)webView).EndInit();
+            panelTop.ResumeLayout(false);
+            ResumeLayout(false);
 
         }
 

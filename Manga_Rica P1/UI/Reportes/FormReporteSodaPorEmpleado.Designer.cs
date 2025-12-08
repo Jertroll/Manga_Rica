@@ -25,6 +25,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteSodaPorEmpleado));
             panelSidebar = new Panel();
             filtroEmpleadoFechas = new EmpleadoFechaFiltroSidebar();
             panelTop = new Panel();
@@ -122,6 +123,7 @@ namespace Manga_Rica_P1.UI.Reportes
             Controls.Add(lblHint);
             Controls.Add(panelTop);
             Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReporteSodaPorEmpleado";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Reporte: Soda por Empleado";

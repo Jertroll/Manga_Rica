@@ -25,6 +25,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReportePlanillaSemanalPorEmpleado));
             panelSidebar = new Panel();
             filtroSemanaEmpleado = new SemanaEmpleadoFiltroSidebar();
             panelTop = new Panel();
@@ -51,11 +52,19 @@ namespace Manga_Rica_P1.UI.Reportes
             // filtroSemanaEmpleado
             // 
             filtroSemanaEmpleado.BackColor = SystemColors.Control;
+            filtroSemanaEmpleado.CedulaTexto = "";
+            filtroSemanaEmpleado.DataSourceSemana = null;
+            filtroSemanaEmpleado.DisplayMemberSemana = "";
             filtroSemanaEmpleado.Dock = DockStyle.Top;
+            filtroSemanaEmpleado.EtiquetaCedula = "Cédula :";
+            filtroSemanaEmpleado.EtiquetaSemana = "Semana :";
             filtroSemanaEmpleado.Location = new Point(0, 8);
             filtroSemanaEmpleado.Name = "filtroSemanaEmpleado";
             filtroSemanaEmpleado.Size = new Size(200, 170);
             filtroSemanaEmpleado.TabIndex = 0;
+            filtroSemanaEmpleado.TextoBoton = "Generar reporte";
+            filtroSemanaEmpleado.Titulo = "Filtro Planilla por Empleado";
+            filtroSemanaEmpleado.ValueMemberSemana = "";
             // 
             // panelTop
             // 
@@ -119,6 +128,7 @@ namespace Manga_Rica_P1.UI.Reportes
             Controls.Add(lblHint);
             Controls.Add(panelTop);
             Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReportePlanillaSemanalPorEmpleado";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Reporte: Planilla Semanal por Empleado";

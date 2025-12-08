@@ -116,5 +116,10 @@ namespace Manga_Rica_P1.UI.Semanas.Modales
 
             DialogResult = DialogResult.OK;
         }
+
+        private void InitializeComponent()
+        {
+
+        }
     }
 }

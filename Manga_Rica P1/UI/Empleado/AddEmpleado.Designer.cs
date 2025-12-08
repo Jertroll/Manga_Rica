@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddEmpleado));
             labelCedula = new Label();
             textBoxCedula = new TextBox();
             textBoxApellido1 = new TextBox();
@@ -69,12 +70,12 @@
             labelTelefono = new Label();
             textBoxTelefono = new TextBox();
             TabEmpleado = new TabPage();
+            comboBoxPuestoLaborar = new ComboBox();
             textBoxCarnet = new TextBox();
             labelCarne = new Label();
             buttonBuscarFoto = new Button();
             fotoEmpleado = new PictureBox();
             flowLayoutPanel1 = new FlowLayoutPanel();
-            comboBoxPuestoLaborar = new ComboBox();
             tabControlEmpleado.SuspendLayout();
             TabSolicitud.SuspendLayout();
             TabEmpleado.SuspendLayout();
@@ -503,6 +504,14 @@
             TabEmpleado.TabIndex = 1;
             TabEmpleado.Text = "Empleado";
             // 
+            // comboBoxPuestoLaborar
+            // 
+            comboBoxPuestoLaborar.FormattingEnabled = true;
+            comboBoxPuestoLaborar.Location = new Point(447, 65);
+            comboBoxPuestoLaborar.Name = "comboBoxPuestoLaborar";
+            comboBoxPuestoLaborar.Size = new Size(177, 29);
+            comboBoxPuestoLaborar.TabIndex = 43;
+            // 
             // textBoxCarnet
             // 
             textBoxCarnet.Location = new Point(721, 216);
@@ -550,14 +559,6 @@
             flowLayoutPanel1.Size = new Size(885, 59);
             flowLayoutPanel1.TabIndex = 42;
             // 
-            // comboBoxPuestoLaborar
-            // 
-            comboBoxPuestoLaborar.FormattingEnabled = true;
-            comboBoxPuestoLaborar.Location = new Point(447, 65);
-            comboBoxPuestoLaborar.Name = "comboBoxPuestoLaborar";
-            comboBoxPuestoLaborar.Size = new Size(177, 29);
-            comboBoxPuestoLaborar.TabIndex = 43;
-            // 
             // AddEmpleado
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -565,9 +566,10 @@
             ClientSize = new Size(885, 450);
             Controls.Add(flowLayoutPanel1);
             Controls.Add(tabControlEmpleado);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AddEmpleado";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "AddEmpleado";
+            Text = "Agregar Empleado";
             tabControlEmpleado.ResumeLayout(false);
             TabSolicitud.ResumeLayout(false);
             TabSolicitud.PerformLayout();

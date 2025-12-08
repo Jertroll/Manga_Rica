@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RegistroEntradaYSalida));
             labelTituloSalida = new Label();
             labelCarneSalida = new Label();
             textBoxCarneSalida = new TextBox();
@@ -384,8 +385,9 @@
             Controls.Add(textBoxBuscarEmpleado);
             Controls.Add(BttnBuscarEmpleado);
             Controls.Add(tabControlSalida);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "RegistroEntradaYSalida";
-            Text = "RegistroEntradaYSalida";
+            Text = "Registro de Entrada Y Salida";
             tabControlSalida.ResumeLayout(false);
             tabPageEntrada.ResumeLayout(false);
             tabPageEntrada.PerformLayout();

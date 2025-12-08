@@ -24,76 +24,87 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
-            panelSidebar = new System.Windows.Forms.Panel();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReportePlanillaSemanalPorDepartamento));
+            panelSidebar = new Panel();
             filtroSemanaDepartamento = new SemanaDepartamentoFiltroSidebar();
-            panelTop = new System.Windows.Forms.Panel();
-            btnExportExcel = new System.Windows.Forms.Button();
-            btnExportPdf = new System.Windows.Forms.Button();
-            lblHint = new System.Windows.Forms.Label();
-            webView = new Microsoft.Web.WebView2.WinForms.WebView2();
+            panelTop = new Panel();
+            btnExportExcel = new Button();
+            btnExportPdf = new Button();
+            lblHint = new Label();
+            webView = new WebView2();
             panelSidebar.SuspendLayout();
             panelTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
-            this.SuspendLayout();
+            SuspendLayout();
             // 
             // panelSidebar
             // 
-            panelSidebar.BackColor = System.Drawing.Color.FromArgb(245, 245, 245);
+            panelSidebar.BackColor = Color.FromArgb(245, 245, 245);
             panelSidebar.Controls.Add(filtroSemanaDepartamento);
-            panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
-            panelSidebar.Location = new System.Drawing.Point(0, 0);
+            panelSidebar.Dock = DockStyle.Left;
+            panelSidebar.Location = new Point(0, 0);
             panelSidebar.Name = "panelSidebar";
-            panelSidebar.Padding = new System.Windows.Forms.Padding(0, 8, 0, 0);
-            panelSidebar.Size = new System.Drawing.Size(200, 600);
+            panelSidebar.Padding = new Padding(0, 8, 0, 0);
+            panelSidebar.Size = new Size(200, 600);
             panelSidebar.TabIndex = 0;
             // 
             // filtroSemanaDepartamento
             // 
-            filtroSemanaDepartamento.BackColor = System.Drawing.SystemColors.Control;
-            filtroSemanaDepartamento.Dock = System.Windows.Forms.DockStyle.Top;
-            filtroSemanaDepartamento.Location = new System.Drawing.Point(0, 8);
+            filtroSemanaDepartamento.BackColor = SystemColors.Control;
+            filtroSemanaDepartamento.DataSourceDepartamento = null;
+            filtroSemanaDepartamento.DataSourceSemana = null;
+            filtroSemanaDepartamento.DisplayMemberDepartamento = "";
+            filtroSemanaDepartamento.DisplayMemberSemana = "";
+            filtroSemanaDepartamento.Dock = DockStyle.Top;
+            filtroSemanaDepartamento.EtiquetaDepartamento = "Departamento :";
+            filtroSemanaDepartamento.EtiquetaSemana = "Semana :";
+            filtroSemanaDepartamento.Location = new Point(0, 8);
             filtroSemanaDepartamento.Name = "filtroSemanaDepartamento";
-            filtroSemanaDepartamento.Size = new System.Drawing.Size(200, 170);
+            filtroSemanaDepartamento.Size = new Size(200, 170);
             filtroSemanaDepartamento.TabIndex = 0;
+            filtroSemanaDepartamento.TextoBoton = "Generar reporte";
+            filtroSemanaDepartamento.Titulo = "Filtro Planilla por Departamento";
+            filtroSemanaDepartamento.ValueMemberDepartamento = "";
+            filtroSemanaDepartamento.ValueMemberSemana = "";
             // 
             // panelTop
             // 
-            panelTop.BackColor = System.Drawing.Color.WhiteSmoke;
+            panelTop.BackColor = Color.WhiteSmoke;
             panelTop.Controls.Add(btnExportExcel);
             panelTop.Controls.Add(btnExportPdf);
-            panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            panelTop.Location = new System.Drawing.Point(200, 0);
+            panelTop.Dock = DockStyle.Top;
+            panelTop.Location = new Point(200, 0);
             panelTop.Name = "panelTop";
-            panelTop.Size = new System.Drawing.Size(824, 40);
+            panelTop.Size = new Size(824, 40);
             panelTop.TabIndex = 1;
             // 
             // btnExportExcel
             // 
-            btnExportExcel.Location = new System.Drawing.Point(118, 8);
+            btnExportExcel.Location = new Point(118, 8);
             btnExportExcel.Name = "btnExportExcel";
-            btnExportExcel.Size = new System.Drawing.Size(100, 24);
+            btnExportExcel.Size = new Size(100, 24);
             btnExportExcel.TabIndex = 1;
             btnExportExcel.Text = "Exportar Excel";
             btnExportExcel.UseVisualStyleBackColor = true;
-            btnExportExcel.Click += new System.EventHandler(this.btnExportExcel_Click);
+            btnExportExcel.Click += btnExportExcel_Click;
             // 
             // btnExportPdf
             // 
-            btnExportPdf.Location = new System.Drawing.Point(12, 8);
+            btnExportPdf.Location = new Point(12, 8);
             btnExportPdf.Name = "btnExportPdf";
-            btnExportPdf.Size = new System.Drawing.Size(100, 24);
+            btnExportPdf.Size = new Size(100, 24);
             btnExportPdf.TabIndex = 0;
             btnExportPdf.Text = "Exportar PDF";
             btnExportPdf.UseVisualStyleBackColor = true;
-            btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
+            btnExportPdf.Click += btnExportPdf_Click;
             // 
             // lblHint
             // 
-            lblHint.Dock = System.Windows.Forms.DockStyle.Top;
-            lblHint.Location = new System.Drawing.Point(200, 40);
+            lblHint.Dock = DockStyle.Top;
+            lblHint.Location = new Point(200, 40);
             lblHint.Name = "lblHint";
-            lblHint.Padding = new System.Windows.Forms.Padding(8);
-            lblHint.Size = new System.Drawing.Size(824, 40);
+            lblHint.Padding = new Padding(8);
+            lblHint.Size = new Size(824, 40);
             lblHint.TabIndex = 2;
             lblHint.Text = "Seleccione una semana y un departamento en el panel izquierdo y presione \"Generar reporte\".";
             // 
@@ -101,30 +112,31 @@ namespace Manga_Rica_P1.UI.Reportes
             // 
             webView.AllowExternalDrop = false;
             webView.CreationProperties = null;
-            webView.DefaultBackgroundColor = System.Drawing.Color.White;
-            webView.Dock = System.Windows.Forms.DockStyle.Fill;
-            webView.Location = new System.Drawing.Point(200, 80);
+            webView.DefaultBackgroundColor = Color.White;
+            webView.Dock = DockStyle.Fill;
+            webView.Location = new Point(200, 80);
             webView.Name = "webView";
-            webView.Size = new System.Drawing.Size(824, 520);
+            webView.Size = new Size(824, 520);
             webView.TabIndex = 3;
             webView.ZoomFactor = 1D;
             // 
             // FormReportePlanillaSemanalPorDepartamento
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1024, 600);
-            this.Controls.Add(webView);
-            this.Controls.Add(lblHint);
-            this.Controls.Add(panelTop);
-            this.Controls.Add(panelSidebar);
-            this.Name = "FormReportePlanillaSemanalPorDepartamento";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Reporte: Planilla Semanal por Departamento";
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1024, 600);
+            Controls.Add(webView);
+            Controls.Add(lblHint);
+            Controls.Add(panelTop);
+            Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "FormReportePlanillaSemanalPorDepartamento";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Reporte: Planilla Semanal por Departamento";
             panelSidebar.ResumeLayout(false);
             panelTop.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)webView).EndInit();
-            this.ResumeLayout(false);
+            ResumeLayout(false);
         }
     }
 }

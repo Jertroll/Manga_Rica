@@ -24,6 +24,7 @@ namespace Manga_Rica_P1.UI.User
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddUser));
             labelNombre = new Label();
             labelTitulo = new Label();
             pictureBox1 = new PictureBox();
@@ -189,6 +190,7 @@ namespace Manga_Rica_P1.UI.User
             Controls.Add(labelClave);
             Controls.Add(labelNombre);
             Controls.Add(pictureBox1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AddUser";
             Text = "Agregar Usuario";
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();

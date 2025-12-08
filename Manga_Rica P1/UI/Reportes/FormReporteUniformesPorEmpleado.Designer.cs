@@ -23,105 +23,111 @@
 
         private void InitializeComponent()
         {
-            this.panelLeft = new System.Windows.Forms.Panel();
-            this.empleadoFiltroSidebar1 = new Manga_Rica_P1.UI.Reportes.Shared.EmpleadoFiltroSidebar();
-            this.panelTop = new System.Windows.Forms.Panel();
-            this.panelBotones = new System.Windows.Forms.FlowLayoutPanel();
-            this._btnExportarPdf = new System.Windows.Forms.Button();
-            this._btnExportarExcel = new System.Windows.Forms.Button();
-            this._web = new Microsoft.Web.WebView2.WinForms.WebView2();
-            this.panelLeft.SuspendLayout();
-            this.panelTop.SuspendLayout();
-            this.panelBotones.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this._web)).BeginInit();
-            this.SuspendLayout();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteUniformesPorEmpleado));
+            panelLeft = new Panel();
+            empleadoFiltroSidebar1 = new Manga_Rica_P1.UI.Reportes.Shared.EmpleadoFiltroSidebar();
+            panelTop = new Panel();
+            panelBotones = new FlowLayoutPanel();
+            _btnExportarPdf = new Button();
+            _btnExportarExcel = new Button();
+            _web = new Microsoft.Web.WebView2.WinForms.WebView2();
+            panelLeft.SuspendLayout();
+            panelTop.SuspendLayout();
+            panelBotones.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)_web).BeginInit();
+            SuspendLayout();
             // 
             // panelLeft
             // 
-            this.panelLeft.BackColor = System.Drawing.SystemColors.ControlLight;
-            this.panelLeft.Controls.Add(this.empleadoFiltroSidebar1);
-            this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelLeft.Location = new System.Drawing.Point(0, 0);
-            this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Padding = new System.Windows.Forms.Padding(4);
-            this.panelLeft.Size = new System.Drawing.Size(190, 700);
-            this.panelLeft.TabIndex = 0;
+            panelLeft.BackColor = SystemColors.ControlLight;
+            panelLeft.Controls.Add(empleadoFiltroSidebar1);
+            panelLeft.Dock = DockStyle.Left;
+            panelLeft.Location = new Point(0, 0);
+            panelLeft.Name = "panelLeft";
+            panelLeft.Padding = new Padding(4);
+            panelLeft.Size = new Size(190, 700);
+            panelLeft.TabIndex = 0;
             // 
             // empleadoFiltroSidebar1
             // 
-            this.empleadoFiltroSidebar1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.empleadoFiltroSidebar1.Location = new System.Drawing.Point(4, 4);
-            this.empleadoFiltroSidebar1.Name = "empleadoFiltroSidebar1";
-            this.empleadoFiltroSidebar1.Size = new System.Drawing.Size(182, 150);
-            this.empleadoFiltroSidebar1.TabIndex = 0;
+            empleadoFiltroSidebar1.BackColor = SystemColors.Control;
+            empleadoFiltroSidebar1.CarneTexto = "";
+            empleadoFiltroSidebar1.Dock = DockStyle.Top;
+            empleadoFiltroSidebar1.EtiquetaCampo = "Carne :";
+            empleadoFiltroSidebar1.Location = new Point(4, 4);
+            empleadoFiltroSidebar1.Name = "empleadoFiltroSidebar1";
+            empleadoFiltroSidebar1.Size = new Size(182, 150);
+            empleadoFiltroSidebar1.TabIndex = 0;
+            empleadoFiltroSidebar1.TextoBoton = "Generar reporte";
             // 
             // panelTop
             // 
-            this.panelTop.Controls.Add(this.panelBotones);
-            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTop.Location = new System.Drawing.Point(190, 0);
-            this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(910, 40);
-            this.panelTop.TabIndex = 1;
+            panelTop.Controls.Add(panelBotones);
+            panelTop.Dock = DockStyle.Top;
+            panelTop.Location = new Point(190, 0);
+            panelTop.Name = "panelTop";
+            panelTop.Size = new Size(910, 40);
+            panelTop.TabIndex = 1;
             // 
             // panelBotones
             // 
-            this.panelBotones.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.panelBotones.Controls.Add(this._btnExportarPdf);
-            this.panelBotones.Controls.Add(this._btnExportarExcel);
-            this.panelBotones.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelBotones.Location = new System.Drawing.Point(0, 0);
-            this.panelBotones.Name = "panelBotones";
-            this.panelBotones.Size = new System.Drawing.Size(910, 40);
-            this.panelBotones.TabIndex = 0;
+            panelBotones.BackColor = SystemColors.AppWorkspace;
+            panelBotones.Controls.Add(_btnExportarPdf);
+            panelBotones.Controls.Add(_btnExportarExcel);
+            panelBotones.Dock = DockStyle.Fill;
+            panelBotones.Location = new Point(0, 0);
+            panelBotones.Name = "panelBotones";
+            panelBotones.Size = new Size(910, 40);
+            panelBotones.TabIndex = 0;
             // 
             // _btnExportarPdf
             // 
-            this._btnExportarPdf.Location = new System.Drawing.Point(3, 3);
-            this._btnExportarPdf.Name = "_btnExportarPdf";
-            this._btnExportarPdf.Size = new System.Drawing.Size(108, 27);
-            this._btnExportarPdf.TabIndex = 0;
-            this._btnExportarPdf.Text = "Exportar PDF";
-            this._btnExportarPdf.UseVisualStyleBackColor = true;
-            this._btnExportarPdf.Click += new System.EventHandler(this._btnExportarPdf_Click);
+            _btnExportarPdf.Location = new Point(3, 3);
+            _btnExportarPdf.Name = "_btnExportarPdf";
+            _btnExportarPdf.Size = new Size(108, 27);
+            _btnExportarPdf.TabIndex = 0;
+            _btnExportarPdf.Text = "Exportar PDF";
+            _btnExportarPdf.UseVisualStyleBackColor = true;
+            _btnExportarPdf.Click += _btnExportarPdf_Click;
             // 
             // _btnExportarExcel
             // 
-            this._btnExportarExcel.Location = new System.Drawing.Point(117, 3);
-            this._btnExportarExcel.Name = "_btnExportarExcel";
-            this._btnExportarExcel.Size = new System.Drawing.Size(108, 27);
-            this._btnExportarExcel.TabIndex = 1;
-            this._btnExportarExcel.Text = "Exportar Excel";
-            this._btnExportarExcel.UseVisualStyleBackColor = true;
-            this._btnExportarExcel.Click += new System.EventHandler(this._btnExportarExcel_Click);
+            _btnExportarExcel.Location = new Point(117, 3);
+            _btnExportarExcel.Name = "_btnExportarExcel";
+            _btnExportarExcel.Size = new Size(108, 27);
+            _btnExportarExcel.TabIndex = 1;
+            _btnExportarExcel.Text = "Exportar Excel";
+            _btnExportarExcel.UseVisualStyleBackColor = true;
+            _btnExportarExcel.Click += _btnExportarExcel_Click;
             // 
             // _web
             // 
-            this._web.AllowExternalDrop = true;
-            this._web.CreationProperties = null;
-            this._web.DefaultBackgroundColor = System.Drawing.Color.White;
-            this._web.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._web.Location = new System.Drawing.Point(190, 40);
-            this._web.Name = "_web";
-            this._web.Size = new System.Drawing.Size(910, 660);
-            this._web.TabIndex = 2;
-            this._web.ZoomFactor = 1D;
+            _web.AllowExternalDrop = true;
+            _web.CreationProperties = null;
+            _web.DefaultBackgroundColor = Color.White;
+            _web.Dock = DockStyle.Fill;
+            _web.Location = new Point(190, 40);
+            _web.Name = "_web";
+            _web.Size = new Size(910, 660);
+            _web.TabIndex = 2;
+            _web.ZoomFactor = 1D;
             // 
             // FormReporteUniformesPorEmpleado
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1100, 700);
-            this.Controls.Add(this._web);
-            this.Controls.Add(this.panelTop);
-            this.Controls.Add(this.panelLeft);
-            this.Name = "FormReporteUniformesPorEmpleado";
-            this.Text = "Reporte de Uniformes por Empleado";
-            this.panelLeft.ResumeLayout(false);
-            this.panelTop.ResumeLayout(false);
-            this.panelBotones.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this._web)).EndInit();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1100, 700);
+            Controls.Add(_web);
+            Controls.Add(panelTop);
+            Controls.Add(panelLeft);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "FormReporteUniformesPorEmpleado";
+            Text = "Reporte de Uniformes por Empleado";
+            panelLeft.ResumeLayout(false);
+            panelTop.ResumeLayout(false);
+            panelBotones.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)_web).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

@@ -30,6 +30,7 @@ namespace MangaRica.UI.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReporteEmpleadosActivos));
             _btnExportarPdf = new Button();
             _web = new Microsoft.Web.WebView2.WinForms.WebView2();
             panelSuperior = new FlowLayoutPanel();
@@ -86,6 +87,7 @@ namespace MangaRica.UI.Forms
             ClientSize = new Size(1100, 700);
             Controls.Add(panelSuperior);
             Controls.Add(_web);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReporteEmpleadosActivos";
             Text = "Reporte: Empleados Activos";
             ((System.ComponentModel.ISupportInitialize)_web).EndInit();

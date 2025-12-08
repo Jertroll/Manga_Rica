@@ -25,6 +25,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormReportePlanillaSemanal));
             panelSidebar = new Panel();
             filtroSemana = new SemanaFiltroSidebar();
             panelTop = new Panel();
@@ -51,11 +52,18 @@ namespace Manga_Rica_P1.UI.Reportes
             // filtroSemana
             // 
             filtroSemana.BackColor = SystemColors.Control;
+            filtroSemana.DataSource = null;
+            filtroSemana.DisplayMember = "";
             filtroSemana.Dock = DockStyle.Top;
+            filtroSemana.EtiquetaCampo = "Semana :";
             filtroSemana.Location = new Point(0, 8);
             filtroSemana.Name = "filtroSemana";
+            filtroSemana.SelectedValue = null;
             filtroSemana.Size = new Size(200, 120);
             filtroSemana.TabIndex = 0;
+            filtroSemana.TextoBoton = "Generar";
+            filtroSemana.Titulo = "Filtro de Semana";
+            filtroSemana.ValueMember = "";
             // 
             // panelTop
             // 
@@ -119,6 +127,7 @@ namespace Manga_Rica_P1.UI.Reportes
             Controls.Add(lblHint);
             Controls.Add(panelTop);
             Controls.Add(panelSidebar);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "FormReportePlanillaSemanal";
             StartPosition = FormStartPosition.CenterParent;
             Text = "Reporte: Planilla Semanal";

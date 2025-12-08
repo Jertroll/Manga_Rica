@@ -229,5 +229,10 @@ namespace Manga_Rica_P1.UI.Solicitudes.Modales
 
             DialogResult = DialogResult.OK;
         }
+
+        private void InitializeComponent()
+        {
+
+        }
     }
 }
