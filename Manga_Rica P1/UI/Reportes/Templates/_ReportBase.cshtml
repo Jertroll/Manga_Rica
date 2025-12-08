@@ -3,8 +3,8 @@
 @using System.Collections.Generic
 
 @{
-    // Valor por defecto: header/footer fijos en impresión (comportamiento original)
-    bool fixedHeaderOnPrint = true;
+    // AHORA el valor por defecto es: header/footer NO fijos en impresión
+    bool fixedHeaderOnPrint = false;
 
     // ViewBag suele ser un ExpandoObject que implementa IDictionary<string, object>
     var dict = ViewBag as IDictionary<string, object>;

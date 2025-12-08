@@ -1,5 +1,19 @@
 @* Layout base ESPECIAL para Planilla Semanal *@
 @using System
+@using System.Collections.Generic
+
+@{
+    // Por defecto: header/footer NO fijos al imprimir
+    bool fixedHeaderOnPrint = false;
+
+    var dict = ViewBag as IDictionary<string, object>;
+    if (dict != null &&
+        dict.TryGetValue("FixedHeaderOnPrint", out var raw) &&
+        raw is bool b)
+    {
+        fixedHeaderOnPrint = b;
+    }
+}
 
 <!DOCTYPE html>
 <html lang="es">
@@ -45,28 +59,46 @@
         width: 108%;
       }
 
-      .header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-      }
-
-      .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        font-size: 10px;
-        color: #555;
-      }
-
-      .content {
-        margin-top: 95px;
-        margin-bottom: 40px;
-      }
-
       .no-break { break-inside: avoid; }
+
+@{
+    if (fixedHeaderOnPrint)
+    {
+@:     .header {
+@:       position: fixed;
+@:       top: 0;
+@:       left: 0;
+@:       right: 0;
+@:     }
+@:     .footer {
+@:       position: fixed;
+@:       bottom: 0;
+@:       left: 0;
+@:       right: 0;
+@:       font-size: 10px;
+@:       color: #555;
+@:     }
+@:     .content {
+@:       margin-top: 95px;
+@:       margin-bottom: 40px;
+@:     }
+    }
+    else
+    {
+@:     .header {
+@:       position: static;
+@:     }
+@:     .footer {
+@:       position: static;
+@:       font-size: 10px;
+@:       color: #555;
+@:     }
+@:     .content {
+@:       margin-top: 0;
+@:       margin-bottom: 0;
+@:     }
+    }
+}
     }
 
     h1, h2, h3 { margin: 0; }
@@ -91,22 +123,22 @@
     }
 
     th.col-carne,
-td.col-carne {
-  width: 8%;               /* suficiente para el número completo */
-  white-space: nowrap;     /* no hace salto de línea */
-  overflow: visible;       /* no recorta el contenido */
-  text-overflow: clip;     /* sin puntos suspensivos */
-}
+    td.col-carne {
+      width: 8%;               /* suficiente para el número completo */
+      white-space: nowrap;     /* no hace salto de línea */
+      overflow: visible;       /* no recorta el contenido */
+      text-overflow: clip;     /* sin puntos suspensivos */
+    }
 
-th.col-cedula,
-td.col-cedula {
-  width: 8%;              /* un poco más ancha que Carne */
-  white-space: nowrap;
-  overflow: visible;
-  text-overflow: clip;
-}
+    th.col-cedula,
+    td.col-cedula {
+      width: 8%;              /* un poco más ancha que Carne */
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
 
-        th.col-empleado,
+    th.col-empleado,
     td.col-empleado {
       width: 22%;
       white-space: normal;
@@ -207,8 +239,6 @@ td.col-cedula {
         </div>
         <div class="spacer"></div>
       </div>
-
-      
     </div>
 
     <div class="footer">

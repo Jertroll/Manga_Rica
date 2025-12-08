@@ -33,11 +33,32 @@ namespace Manga_Rica_P1.BLL
 
             // Si quieres filtrar por categoría "SODA", úsala aquí.
             const string categoriaSoda = "SODA";
-            var rows = await _repo.GetSodaGeneralAsync(fechaDesde, fechaHasta, categoriaSoda, ct);
+
+            // 1) Traemos los datos reales desde el repo (DAL)
+            var rows = (await _repo.GetSodaGeneralAsync(
+                fechaDesde,
+                fechaHasta,
+                categoriaSoda,
+                ct)).ToList();
+
+#if DEBUG
+            // 2) DEBUG: duplicar los registros x20 para probar el PDF en muchas páginas
+            const int factorDuplicacion = 20;
+            var original = rows.ToList(); // copia de la lista original
+
+            for (int i = 0; i < factorDuplicacion - 1; i++)
+            {
+                rows.AddRange(original);
+            }
+#endif
 
             var vm = new ReporteSodaGeneralVm
             {
+#if DEBUG
+                Titulo = "Detalle de Soda General (TEST x20)",
+#else
                 Titulo = "Detalle de Soda General",
+#endif
                 PieDePagina = " ",
                 FechaInicio = fechaDesde,
                 FechaFin = fechaHasta
