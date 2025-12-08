@@ -874,7 +874,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             // 
             // panelPrincipal
             // 
-            panelPrincipal.BackColor = Color.FromArgb(238, 238, 238, 238);
+            panelPrincipal.BackColor = Color.White;
             panelPrincipal.Location = new Point(192, 37);
             panelPrincipal.Name = "panelPrincipal";
             panelPrincipal.Size = new Size(730, 473);
