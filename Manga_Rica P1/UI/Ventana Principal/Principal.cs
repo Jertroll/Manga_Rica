@@ -1095,5 +1095,59 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     MessageBoxIcon.Error);
             }
         }
+
+        private void btnReporteEmpleadoDeducciones_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cfg = Program.Configuration
+                          ?? throw new InvalidOperationException("Configuración no inicializada.");
+
+                var cs = cfg.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException(
+                             "Cadena de conexión 'MangaRicaDb' no configurada.");
+
+                var vhost = cfg["WebView2:VirtualHost"] ?? "appassets";
+
+                using (var dlg = new FormReporteSodaPorEmpleado(cs, vhost))
+                {
+                    dlg.StartPosition = FormStartPosition.CenterParent;
+                    dlg.ShowDialog(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de Soda por empleado:\n{ex.Message}",
+                    "Reporte de Soda",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void btnReporteGneralDeducciones_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cs = Program.Configuration?.GetConnectionString("MangaRicaDb")
+                         ?? throw new InvalidOperationException("Cadena de conexión 'MangaRicaDb' no configurada");
+
+                var vhost = Program.Configuration?["WebView2:VirtualHost"] ?? "appassets";
+
+                using var dlg = new FormReporteSodaGeneral(cs, vhost);
+                dlg.StartPosition = FormStartPosition.CenterParent;
+                dlg.ShowDialog(this);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error al abrir el reporte de soda general:\n{ex.Message}",
+                    "Reporte de Soda",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+            }
+        
+        }
     }
 }

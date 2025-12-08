@@ -582,6 +582,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnReporteEmpleadoDeducciones.Text = "       Reporte  Empleado";
             btnReporteEmpleadoDeducciones.TextAlign = ContentAlignment.MiddleLeft;
             btnReporteEmpleadoDeducciones.UseVisualStyleBackColor = false;
+            btnReporteEmpleadoDeducciones.Click += btnReporteEmpleadoDeducciones_Click;
             // 
             // panel20
             // 
@@ -607,6 +608,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnReporteGneralDeducciones.Text = "       Reporte General";
             btnReporteGneralDeducciones.TextAlign = ContentAlignment.MiddleLeft;
             btnReporteGneralDeducciones.UseVisualStyleBackColor = false;
+            btnReporteGneralDeducciones.Click += btnReporteGneralDeducciones_Click;
             // 
             // menuPagosContenedor
             // 
