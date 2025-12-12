@@ -85,36 +85,59 @@ namespace Manga_Rica_P1.DAL
         /// </summary>
         public double GetHorasTrabajadasEnteras(long idEmpleado, DateTime fecha)
         {
-            
+            // ===== 1) Preferencia: reloj marcador (Clock) =====
             if (_empRepo is not null && _clockRepo is not null)
             {
                 var emp = _empRepo.GetById(idEmpleado);
                 if (emp is not null && emp.MC_Numero > 0)
                 {
-                    var minutos = _clockRepo.GetHorasDiaByCode(emp.MC_Numero, fecha); // minutos del día
-                    var horas = minutos / 60.0;
-                    return Math.Truncate(horas); 
+                    // minutos totales del día según Clock
+                    var totalMinutos = _clockRepo.GetHorasDiaByCode(emp.MC_Numero, fecha);
+
+                    // Parte entera de horas y minutos restantes
+                    var horasEnteras = (int)(totalMinutos / 60.0);
+                    var minutosRestantes = totalMinutos - (horasEnteras * 60.0);
+
+                    // Regla: <= 30 baja, > 30 sube
+                    if (minutosRestantes > 29.9)
+                    {
+                        horasEnteras += 1;
+                    }
+
+                    return horasEnteras;
                 }
             }
 
-
-            // ========== Plan B: tabla Horas (tu SQL original) ==========
+            // ===== 2) Plan B: tabla Horas (Total_Horas en horas decimales) =====
             using (var cn = Open())
             using (var cmd = cn.CreateCommand())
             {
                 cmd.CommandText = @"
-                SELECT ISNULL(SUM(CAST(Total_Horas AS float)), 0)
-                FROM dbo.Horas
-                WHERE Id_Empleado = @id 
-                  AND CAST(Fecha AS date) = @f
-                  AND Hora_Salida IS NOT NULL;";
+            SELECT ISNULL(SUM(CAST(Total_Horas AS float)), 0)
+            FROM dbo.Horas
+            WHERE Id_Empleado = @id 
+              AND CAST(Fecha AS date) = @f
+              AND Hora_Salida IS NOT NULL;";
                 cmd.Parameters.Add("@id", SqlDbType.BigInt).Value = idEmpleado;
                 cmd.Parameters.Add("@f", SqlDbType.Date).Value = fecha.Date;
                 cn.Open();
-                var total = Convert.ToDouble(cmd.ExecuteScalar());
-                return Math.Truncate(total); // igual que el sistema viejo (CInt)
+                var totalHoras = Convert.ToDouble(cmd.ExecuteScalar());
+
+                // Separamos parte entera y fracción
+                var horasEnteras = Math.Truncate(totalHoras);
+                var fraccion = totalHoras - horasEnteras;
+                var minutos = fraccion * 60.0;
+
+                // Regla: <= 30 baja, > 30 sube
+                if (minutos > 30.0)
+                {
+                    horasEnteras += 1.0;
+                }
+
+                return horasEnteras;
             }
         }
+
 
         public long Insert(Acumulado_Diario fila)
         {

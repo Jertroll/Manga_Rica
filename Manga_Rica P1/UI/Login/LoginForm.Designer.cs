@@ -11,7 +11,6 @@ namespace Manga_Rica_P1.UI.Login
         private TextBox txtPassword;
         private Button btnLogin;
         private Button btnSalir;
-        private LinkLabel lnkOlvido;
 
         protected override void Dispose(bool disposing)
         {
@@ -29,7 +28,6 @@ namespace Manga_Rica_P1.UI.Login
             label2 = new Label();
             label1 = new Label();
             txtPassword = new TextBox();
-            lnkOlvido = new LinkLabel();
             btnLogin = new Button();
             btnSalir = new Button();
             picLogo = new PictureBox();
@@ -58,7 +56,6 @@ namespace Manga_Rica_P1.UI.Login
             panel1.Controls.Add(label2);
             panel1.Controls.Add(label1);
             panel1.Controls.Add(txtPassword);
-            panel1.Controls.Add(lnkOlvido);
             panel1.Controls.Add(btnLogin);
             panel1.Location = new Point(402, 27);
             panel1.Name = "panel1";
@@ -119,17 +116,6 @@ namespace Manga_Rica_P1.UI.Login
             txtPassword.Size = new Size(293, 27);
             txtPassword.TabIndex = 1;
             txtPassword.TextChanged += txtPassword_TextChanged;
-            // 
-            // lnkOlvido
-            // 
-            lnkOlvido.AutoSize = true;
-            lnkOlvido.BackColor = Color.White;
-            lnkOlvido.Location = new Point(18, 218);
-            lnkOlvido.Name = "lnkOlvido";
-            lnkOlvido.Size = new Size(128, 15);
-            lnkOlvido.TabIndex = 3;
-            lnkOlvido.TabStop = true;
-            lnkOlvido.Text = "¿Olvidó su contraseña?";
             // 
             // btnLogin
             // 
