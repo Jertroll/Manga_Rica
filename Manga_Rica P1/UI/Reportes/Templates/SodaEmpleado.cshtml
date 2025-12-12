@@ -4,7 +4,12 @@
 
 @{
     Layout = "_ReportBase.cshtml";
+
+    // Cultura para fechas (dd/MM/yyyy)
     var culture = CultureInfo.GetCultureInfo("es-CR");
+
+    // Cultura fija para montos: 45,389.00
+    var enUs = new CultureInfo("en-US");
 }
 
 <br></br>
@@ -12,7 +17,6 @@
 <h1 style="text-align:center; margin-bottom:10px;">
     @Model.Titulo
 </h1>
-
 
 <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:10px;">
     <tr>
@@ -57,10 +61,10 @@
                     <td>@l.Descripcion</td>
                     <td style="text-align:right;">@l.Cantidad</td>
                     <td style="text-align:right;">
-                        @l.Precio.ToString("N2", culture)
+                        @l.Precio.ToString("N2", enUs)
                     </td>
                     <td style="text-align:right;">
-                        @l.Total.ToString("N2", culture)
+                        @l.Total.ToString("N2", enUs)
                     </td>
                 </tr>
             }
@@ -71,7 +75,7 @@
                     Total
                 </td>
                 <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
-                    @Model.TotalGeneral.ToString("N2", culture)
+                    @Model.TotalGeneral.ToString("N2", enUs)
                 </td>
             </tr>
         }

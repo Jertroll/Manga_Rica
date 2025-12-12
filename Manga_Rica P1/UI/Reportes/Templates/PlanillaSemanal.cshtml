@@ -1,9 +1,95 @@
 @using Manga_Rica_P1.Entity.Reports
+@using System.Globalization
 @model ReportePlanillaSemanalVm
 
 @{
     Layout = "_ReportBasePlanillaSemanal";
+
+    // Cultura fija para montos: 45,389.00
+    var enUs = new CultureInfo("en-US");
 }
+
+<style>
+    /* Tabla compacta específica de este reporte */
+    table.report-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;      /* más pequeña que el estándar */
+        table-layout: fixed;  /* reparte el ancho entre columnas */
+    }
+
+    table.report-table th,
+    table.report-table td {
+        padding: 2px 3px;     /* menos padding para ganar espacio */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border: 1px solid #ddd;
+    }
+
+    table.report-table th {
+        background: #f1f5f9;
+        font-weight: 600;
+        text-align: left;
+    }
+
+    table.report-table td.num {
+        text-align: right;
+    }
+
+    table.report-table tr:nth-child(even) td {
+        background: #fafafa;
+    }
+
+    /* Ajuste de anchos por columna (similar a versión compacta anterior) */
+    table.report-table th.col-carne,
+    table.report-table td.col-carne { width: 8%; }
+
+    table.report-table th.col-cedula,
+    table.report-table td.col-cedula { width: 9%; }
+
+    table.report-table th.col-empleado,
+    table.report-table td.col-empleado { width: 22%; }
+
+    /* Horas */
+    table.report-table th:nth-child(4),
+    table.report-table td:nth-child(4) { width: 7%; }  /* H. Normales */
+    table.report-table th:nth-child(5),
+    table.report-table td:nth-child(5) { width: 7%; }  /* H. Extras   */
+    table.report-table th:nth-child(6),
+    table.report-table td:nth-child(6) { width: 7%; }  /* H. Dobles   */
+    table.report-table th:nth-child(7),
+    table.report-table td:nth-child(7) { width: 7%; }  /* Feriados    */
+
+    /* Montos */
+    table.report-table th:nth-child(8),
+    table.report-table td:nth-child(8) { width: 8%; }  /* S/H        */
+    table.report-table th:nth-child(9),
+    table.report-table td:nth-child(9) { width: 8%; }  /* Soda       */
+    table.report-table th:nth-child(10),
+    table.report-table td:nth-child(10) { width: 8%; } /* Uniforme   */
+    table.report-table th:nth-child(11),
+    table.report-table td:nth-child(11) { width: 9%; } /* Bruto      */
+    table.report-table th:nth-child(12),
+    table.report-table td:nth-child(12) { width: 9%; } /* Neto       */
+
+    /* Tabla de resumen también compacta */
+    .report-summary .summary-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10px;
+        margin-top: 8px;
+    }
+
+    .report-summary .summary-table td {
+        padding: 2px 3px;
+        border: none;
+    }
+
+    .report-summary .summary-table td.num {
+        text-align: right;
+    }
+</style>
 
 <div class="report-header">
     <h2>@Model.Titulo</h2>
@@ -18,8 +104,8 @@
 <table class="report-table">
     <thead>
         <tr>
-        <th class="col-carne">Carne</th>
-        <th class="col-cedula">Cedula</th>
+            <th class="col-carne">Carne</th>
+            <th class="col-cedula">Cedula</th>
             <th class="col-empleado">Empleado</th>
 
             <th class="num">H. Normales</th>
@@ -41,21 +127,23 @@
         foreach (var l in Model.Lineas)
         {
             <tr>
-                <td>@l.Carne</td>
-                <td>@l.Cedula</td>
-                <td>@l.Empleado</td>
+                <td class="col-carne">@l.Carne</td>
+                <td class="col-cedula">@l.Cedula</td>
+                <td class="col-empleado">@l.Empleado</td>
 
+                @* Horas: las dejamos como valor numérico simple *@
                 <td class="num">@l.HorasNormales</td>
                 <td class="num">@l.HorasExtras</td>
                 <td class="num">@l.HorasDobles</td>
                 <td class="num">@l.Feriados</td>
 
-                <td class="num">@l.SalarioHora</td>
-                <td class="num">@l.Soda</td>
-                <td class="num">@l.Uniforme</td>
+                @* Montos con formato 45,389.00 *@
+                <td class="num">@l.SalarioHora.ToString("N2", enUs)</td>
+                <td class="num">@l.Soda.ToString("N2", enUs)</td>
+                <td class="num">@l.Uniforme.ToString("N2", enUs)</td>
 
-                <td class="num">@l.SalarioBruto</td>
-                <td class="num">@l.SalarioNeto</td>
+                <td class="num">@l.SalarioBruto.ToString("N2", enUs)</td>
+                <td class="num">@l.SalarioNeto.ToString("N2", enUs)</td>
             </tr>
         }
     }
@@ -77,15 +165,15 @@
         <table class="summary-table">
             <tr>
                 <td><strong>Total Salario Bruto:</strong></td>
-                <td class="num">@Model.TotalSalarioBruto</td>
+                <td class="num">@Model.TotalSalarioBruto.ToString("N2", enUs)</td>
             </tr>
             <tr>
                 <td><strong>Total Deducciones (Soda + Uniforme):</strong></td>
-                <td class="num">@Model.TotalDeducciones</td>
+                <td class="num">@Model.TotalDeducciones.ToString("N2", enUs)</td>
             </tr>
             <tr>
                 <td><strong>Total Salario Neto:</strong></td>
-                <td class="num">@Model.TotalSalarioNeto</td>
+                <td class="num">@Model.TotalSalarioNeto.ToString("N2", enUs)</td>
             </tr>
         </table>
     </div>

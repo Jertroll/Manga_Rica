@@ -3,7 +3,9 @@
 
 @{
     Layout = "_ReportBase.cshtml";  // Reutilizamos el layout corporativo
-    var culture = CultureInfo.GetCultureInfo("es-CR");
+
+    // Cultura fija en-US para montos: 45,389.00
+    var enUs = new CultureInfo("en-US");
 }
 <br></br>
 
@@ -43,7 +45,7 @@
             {
                 <tr>
                     <td>
-                        @linea.Fecha.ToString("dd/MM/yyyy", culture)
+                        @linea.Fecha.ToString("dd/MM/yyyy")
                     </td>
                     <td>
                         @linea.IdDeduccion
@@ -58,10 +60,10 @@
                         @linea.Cantidad
                     </td>
                     <td style="text-align:right;">
-                        @linea.PrecioUnitario.ToString("N2", culture)
+                        @linea.PrecioUnitario.ToString("N2", enUs)
                     </td>
                     <td style="text-align:right;">
-                        @linea.TotalLinea.ToString("N2", culture)
+                        @linea.TotalLinea.ToString("N2", enUs)
                     </td>
                 </tr>
             }
@@ -72,7 +74,7 @@
                     Total
                 </td>
                 <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
-                    @Model.TotalGeneral.ToString("N2", culture)
+                    @Model.TotalGeneral.ToString("N2", enUs)
                 </td>
             </tr>
         }

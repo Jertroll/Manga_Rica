@@ -1,10 +1,15 @@
 @model Manga_Rica_P1.Entity.Reports.ReporteUniformesVm
 @using System.Linq
+@using System.Globalization
 
 @{
     Layout = "_ReportBase.cshtml";  
     // Si el layout usa ViewBag.Title, ya se lo pasamos desde el Form via HtmlReportRenderer
+
+    // Cultura fija en-US para formatear montos como 45,389.00
+    var enUs = new CultureInfo("en-US");
 }
+
 <br></br>
 <h1 style="text-align:center; margin-bottom:10px;">
     @Model.Titulo
@@ -50,13 +55,13 @@
                         <td>@det.Descripcion</td>
                         <td style="text-align:right;">@det.Cantidad</td>
                         <td style="text-align:right;">
-                            @det.Precio.ToString("N2")
+                            @det.Precio.ToString("N2", enUs)
                         </td>
                         <td style="text-align:right;">
-                            @det.Total.ToString("N2")
+                            @det.Total.ToString("N2", enUs)
                         </td>
                         <td style="text-align:right;">
-                            @det.SaldoDeduccion.ToString("N2")
+                            @det.SaldoDeduccion.ToString("N2", enUs)
                         </td>
                     </tr>
                 }
@@ -67,18 +72,16 @@
                         Total articulos:
                     </td>
                     <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
-                        @emp.TotalDeducciones.ToString("N2")
+                        @emp.TotalDeducciones.ToString("N2", enUs)
                     </td>
                     <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
-                        @emp.SaldoPendiente.ToString("N2")
+                        @emp.SaldoPendiente.ToString("N2", enUs)
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 }
-
-
 
 @if (Model.Empleados != null && Model.Empleados.Any())
 {
@@ -93,13 +96,13 @@
                         TOTAL GENERAL:
                     </td>
                     <td style="text-align:right; font-weight:bold; border-top:2px solid #000; padding-top:5px;">
-                        @totalGeneralDeducciones.ToString("N2")
+                        @totalGeneralDeducciones.ToString("N2", enUs)
                     </td>
                     <td style="text-align:right; font-weight:bold; border-top:2px solid #000; padding-top:5px;">
-                        @totalGeneralSaldo.ToString("N2")
+                        @totalGeneralSaldo.ToString("N2", enUs)
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    }
+}

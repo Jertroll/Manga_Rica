@@ -10,12 +10,12 @@
     // Desactivar header fijo SOLO para este reporte
     ViewBag.FixedHeaderOnPrint = false;
 
-    var cr = new CultureInfo("es-CR");
-    string FormatoMonto(decimal v) => v.ToString("N2", cr);
-    string FormatoHoras(decimal v) => v.ToString("N2", cr);
+    // Formato tipo 45,389.00
+    var enUs = CultureInfo.GetCultureInfo("en-US");
+    string FormatoMonto(decimal v) => v.ToString("N2", enUs);
+    string FormatoHoras(decimal v) => v.ToString("N2", enUs);
 }
 <br></br>
-
 
 <section style="margin: 10px 8px 15px 8px;">
     <div>

@@ -3,7 +3,9 @@
 
 @{
     Layout = "_ReportBase.cshtml";
-    var culture = CultureInfo.GetCultureInfo("es-CR");
+
+    // Cultura fija en-US para montos: 45,389.00
+    var enUs = new CultureInfo("en-US");
 }
 
 <br></br>
@@ -16,15 +18,15 @@
     <tr>
         <td style="width:80%;"></td>
         <td style="font-weight:bold; width:80px; text-align:right;">Fecha Inicio:</td>
-        <td style="width:80px; text-align:rightDetalle de Soda General
-            @Model.FechaInicio.ToString("dd/MM/yyyy", culture)
+        <td style="width:80px; text-align:right;">
+            @Model.FechaInicio.ToString("dd/MM/yyyy")
         </td>
     </tr>
     <tr>
         <td></td>
         <td style="font-weight:bold; text-align:right;">Fecha Final:</td>
         <td style="text-align:right;">
-            @Model.FechaFin.ToString("dd/MM/yyyy", culture)
+            @Model.FechaFin.ToString("dd/MM/yyyy")
         </td>
     </tr>
 </table>
@@ -49,16 +51,16 @@
             {
                 <tr>
                     <td>@l.Factura</td>
-                    <td>@l.Fecha.ToString("dd/MM/yyyy", culture)</td>
+                    <td>@l.Fecha.ToString("dd/MM/yyyy")</td>
                     <td>@l.Carne</td>
                     <td>@l.Nombre</td>
                     <td>@l.Descripcion</td>
                     <td style="text-align:right;">@l.Cantidad</td>
                     <td style="text-align:right;">
-                        @l.Precio.ToString("N2", culture)
+                        @l.Precio.ToString("N2", enUs)
                     </td>
                     <td style="text-align:right;">
-                        @l.Total.ToString("N2", culture)
+                        @l.Total.ToString("N2", enUs)
                     </td>
                 </tr>
             }
@@ -69,7 +71,7 @@
                     Total
                 </td>
                 <td style="text-align:right; font-weight:bold; border-top:1px solid #000;">
-                    @Model.TotalGeneral.ToString("N2", culture)
+                    @Model.TotalGeneral.ToString("N2", enUs)
                 </td>
             </tr>
         }
