@@ -9,7 +9,7 @@ namespace Manga_Rica_P1.UI.Reportes.Shared
         private Label lblTitulo;
         private Label lblSemana;
         private ComboBox cboSemana;
-        private Label lblCedula;
+        private Label lblCarnet;
         private TextBox txtCedula;
         private Button btnGenerar;
 
@@ -25,7 +25,7 @@ namespace Manga_Rica_P1.UI.Reportes.Shared
             lblTitulo = new Label();
             lblSemana = new Label();
             cboSemana = new ComboBox();
-            lblCedula = new Label();
+            lblCarnet = new Label();
             txtCedula = new TextBox();
             btnGenerar = new Button();
             SuspendLayout();
@@ -65,16 +65,16 @@ namespace Manga_Rica_P1.UI.Reportes.Shared
             cboSemana.Size = new Size(200, 23);
             cboSemana.TabIndex = 2;
             // 
-            // lblCedula
+            // lblCarnet
             // 
-            lblCedula.Dock = DockStyle.Top;
-            lblCedula.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblCedula.Location = new Point(0, 74);
-            lblCedula.Name = "lblCedula";
-            lblCedula.Padding = new Padding(8, 8, 8, 0);
-            lblCedula.Size = new Size(200, 24);
-            lblCedula.TabIndex = 3;
-            lblCedula.Text = "Cédula :";
+            lblCarnet.Dock = DockStyle.Top;
+            lblCarnet.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblCarnet.Location = new Point(0, 74);
+            lblCarnet.Name = "lblCarnet";
+            lblCarnet.Padding = new Padding(8, 8, 8, 0);
+            lblCarnet.Size = new Size(200, 24);
+            lblCarnet.TabIndex = 3;
+            lblCarnet.Text = "Carnet :";
             // 
             // txtCedula
             // 
@@ -105,7 +105,7 @@ namespace Manga_Rica_P1.UI.Reportes.Shared
             BackColor = SystemColors.Control;
             Controls.Add(btnGenerar);
             Controls.Add(txtCedula);
-            Controls.Add(lblCedula);
+            Controls.Add(lblCarnet);
             Controls.Add(cboSemana);
             Controls.Add(lblSemana);
             Controls.Add(lblTitulo);

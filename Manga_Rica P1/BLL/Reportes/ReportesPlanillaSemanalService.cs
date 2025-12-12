@@ -41,46 +41,46 @@ namespace Manga_Rica_P1.BLL
         }
 
         /// <summary>
-        /// Reporte de planilla por semana filtrado por cédula (un solo empleado).
+        /// Reporte de planilla por semana filtrado por carnet (un solo empleado).
         /// </summary>
         public async Task<ReportePlanillaSemanalVm> GenerarReportePorSemanaYEmpleadoAsync(
             int semana,
-            string cedula,
+            string carnetTexto,
             CancellationToken ct = default)
         {
-            if (string.IsNullOrWhiteSpace(cedula))
-                throw new ArgumentException("La cédula no puede estar vacía.", nameof(cedula));
+            if (string.IsNullOrWhiteSpace(carnetTexto))
+                throw new ArgumentException("El carnet no puede estar vacío.", nameof(carnetTexto));
+
+            if (!long.TryParse(carnetTexto.Trim(), out var carne))
+                throw new ArgumentException("El carnet debe ser numérico.", nameof(carnetTexto));
 
             var rows = await _repo
-                .GetPlanillaSemanalPorEmpleadoAsync(semana, cedula, ct)
+                .GetPlanillaSemanalPorEmpleadoAsync(semana, carne, ct)
                 .ConfigureAwait(false);
 
             return ConstruirVmComun(
                 rows,
-                titulo: $"Planilla Semanal - Semana {semana} - Cédula {cedula}",
+                titulo: $"Planilla Semanal - Semana {semana} - Carnet {carnetTexto.Trim()}",
                 pieDePagina: string.Empty);
         }
-
 
         public async Task<ReportePlanillaSemanalVm> GenerarReportePorSemanaYDepartamentoAsync(
             int semana,
             int idDepartamento,
             string nombreDepartamento,
             CancellationToken ct = default)
-            {
-                var rows = await _repo
-                    .GetPlanillaSemanalPorDepartamentoAsync(semana, idDepartamento, ct)
-                    .ConfigureAwait(false);
+        {
+            var rows = await _repo
+                .GetPlanillaSemanalPorDepartamentoAsync(semana, idDepartamento, ct)
+                .ConfigureAwait(false);
 
-                var titulo = $"Planilla Semanal - Semana {semana} - Departamento {nombreDepartamento}";
+            var titulo = $"Planilla Semanal - Semana {semana} - Departamento {nombreDepartamento}";
 
             return ConstruirVmComun(
                 rows,
                 titulo: titulo,
                 pieDePagina: string.Empty);
-         }
-
-
+        }
 
         /// <summary>
         /// Arma el ViewModel a partir de las filas devueltas por el repositorio.

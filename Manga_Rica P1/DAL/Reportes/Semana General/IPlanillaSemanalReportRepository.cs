@@ -15,11 +15,11 @@ namespace Manga_Rica_P1.DAL.Reports
             CancellationToken ct = default);
 
         /// <summary>
-        /// Devuelve las filas de planilla para una semana y una cédula específica.
+        /// Devuelve las filas de planilla para una semana y un carnet específico.
         /// </summary>
         Task<IReadOnlyList<PlanillaSemanalRowDto>> GetPlanillaSemanalPorEmpleadoAsync(
             int semana,
-            string cedula,
+            long carne,
             CancellationToken ct = default);
 
         Task<IReadOnlyList<PlanillaSemanalRowDto>> GetPlanillaSemanalPorDepartamentoAsync(

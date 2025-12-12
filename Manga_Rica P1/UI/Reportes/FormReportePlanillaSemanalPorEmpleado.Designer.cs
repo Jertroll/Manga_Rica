@@ -65,6 +65,7 @@ namespace Manga_Rica_P1.UI.Reportes
             filtroSemanaEmpleado.TextoBoton = "Generar reporte";
             filtroSemanaEmpleado.Titulo = "Filtro Planilla por Empleado";
             filtroSemanaEmpleado.ValueMemberSemana = "";
+
             // 
             // panelTop
             // 

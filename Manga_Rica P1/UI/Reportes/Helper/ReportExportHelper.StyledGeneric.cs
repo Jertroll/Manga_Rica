@@ -11,13 +11,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClosedXML.Excel;
 
-
-
 namespace Manga_Rica_P1.UI.Reportes.Export
 {
     // Partial de la clase base ReportExportHelper (donde ya tienes CsvEscape, SanitizeFileName, etc.)
     public static partial class ReportExportHelper
     {
+        // Cultura base para exportes numéricos (45,389.00 -> separador miles = ',', decimal = '.')
+        private static readonly CultureInfo ExportNumberCulture = CultureInfo.InvariantCulture;
+
         /// <summary>
         /// Exporta un reporte en XLSX/CSV con plantilla estilo corporativo similar a “Planilla”.
         /// No hay defaults: si falta algún parámetro, se muestra error y NO se exporta.
@@ -189,7 +190,8 @@ namespace Manga_Rica_P1.UI.Reportes.Export
 
             r++; // primera fila de datos
 
-            var moneyFmt = "[$₡-es-CR] #,##0.00";
+            // Formato estándar para dinero y decimales (45,389.00)
+            var moneyFmt = "#,##0.00";
             var decFmt = "#,##0.00";
             var zebraBg = XLColor.FromHtml("#fafafa");
 
@@ -317,7 +319,7 @@ namespace Manga_Rica_P1.UI.Reportes.Export
                 int mergeEnd = firstSubIdx > 1 ? firstSubIdx - 1 : colCount;
                 ws.Range(r, 1, r, mergeEnd).Merge();
 
-                var moneyFmtTotal = "[$₡-es-CR] #,##0.00";
+                var moneyFmtTotal = "#,##0.00";
                 for (int i = 0; i < subtotalColumns.Length; i++)
                 {
                     var colName = subtotalColumns[i];
@@ -374,7 +376,8 @@ namespace Manga_Rica_P1.UI.Reportes.Export
                 await sw.WriteLineAsync($"TITULO;{CsvEscape(title)}");
             await sw.WriteLineAsync();
 
-            var headers = table.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToArray();
+            var columns = table.Columns.Cast<DataColumn>().ToArray();
+            var headers = columns.Select(c => c.ColumnName).ToArray();
             await sw.WriteLineAsync(string.Join(";", headers.Select(CsvEscape)));
 
             decimal[] totals = new decimal[subtotalColumns.Length];
@@ -394,7 +397,16 @@ namespace Manga_Rica_P1.UI.Reportes.Export
 
                     foreach (var row in grp)
                     {
-                        var cells = headers.Select(h => Convert.ToString(row[h], CultureInfo.InvariantCulture) ?? "");
+                        var cells = columns.Select(col =>
+                        {
+                            var v = row[col];
+                            if (v == null || v == DBNull.Value) return "";
+                            var t = col.DataType;
+                            if (t == typeof(decimal) || t == typeof(double) || t == typeof(float))
+                                return FormatDecimalForCsv(ToDecimal(v));
+                            return Convert.ToString(v, ExportNumberCulture) ?? "";
+                        });
+
                         await sw.WriteLineAsync(string.Join(";", cells.Select(CsvEscape)));
 
                         for (int i = 0; i < subtotalColumns.Length; i++)
@@ -419,7 +431,16 @@ namespace Manga_Rica_P1.UI.Reportes.Export
             {
                 foreach (DataRow row in table.Rows)
                 {
-                    var cells = headers.Select(h => Convert.ToString(row[h], CultureInfo.InvariantCulture) ?? "");
+                    var cells = columns.Select(col =>
+                    {
+                        var v = row[col];
+                        if (v == null || v == DBNull.Value) return "";
+                        var t = col.DataType;
+                        if (t == typeof(decimal) || t == typeof(double) || t == typeof(float))
+                            return FormatDecimalForCsv(ToDecimal(v));
+                        return Convert.ToString(v, ExportNumberCulture) ?? "";
+                    });
+
                     await sw.WriteLineAsync(string.Join(";", cells.Select(CsvEscape)));
 
                     for (int i = 0; i < subtotalColumns.Length; i++)
@@ -460,6 +481,9 @@ namespace Manga_Rica_P1.UI.Reportes.Export
             return Math.Max(1, idx);
         }
 
+        private static string FormatDecimalForCsv(decimal value)
+            => value.ToString("#,##0.00", ExportNumberCulture);
+
         private static string BuildSubtotalCsvLine(int headerCount, string[] subtotalColumns, DataTable table, decimal[] subTotals)
         {
             var cells = Enumerable.Repeat("", headerCount).ToArray();
@@ -470,7 +494,7 @@ namespace Manga_Rica_P1.UI.Reportes.Export
                 var colName = subtotalColumns[i];
                 if (!table.Columns.Contains(colName)) continue;
                 int idx = table.Columns[colName].Ordinal;
-                cells[idx] = subTotals[i].ToString(CultureInfo.InvariantCulture);
+                cells[idx] = FormatDecimalForCsv(subTotals[i]);
             }
             return string.Join(";", cells);
         }
@@ -485,12 +509,12 @@ namespace Manga_Rica_P1.UI.Reportes.Export
                 var colName = subtotalColumns[i];
                 if (!table.Columns.Contains(colName)) continue;
                 int idx = table.Columns[colName].Ordinal;
-                cells[idx] = totals[i].ToString(CultureInfo.InvariantCulture);
+                cells[idx] = FormatDecimalForCsv(totals[i]);
             }
             return string.Join(";", cells);
         }
 
-        // Aplica formatos por nombre de columna (genérico)
+        // Aplica formatos por nombre de columna (genérico) para XLSX
         private static void ApplyFormats(
             IXLWorksheet ws, int rowIndex, DataTable table,
             string[] moneyColumns, string moneyFmt,
@@ -535,7 +559,6 @@ namespace Manga_Rica_P1.UI.Reportes.Export
                 case decimal m: cell.SetValue(m); break;
                 case TimeSpan ts: cell.SetValue(ts); break;
                 default:
-                    // Si el DataColumn está tipado, intenta convertir por DataType
                     try
                     {
                         cell.SetValue(Convert.ToString(value, CultureInfo.CurrentCulture) ?? string.Empty);

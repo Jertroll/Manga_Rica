@@ -65,11 +65,11 @@ ORDER BY
             ).ConfigureAwait(false);
         }
 
-        // ================== MÉTODO POR CÉDULA ==================
+        // ================== MÉTODO POR CARNET ==================
 
         public async Task<IReadOnlyList<PlanillaSemanalRowDto>> GetPlanillaSemanalPorEmpleadoAsync(
             int semana,
-            string cedula,
+            long carne,
             CancellationToken ct = default)
         {
             const string sql = @"
@@ -100,7 +100,7 @@ INNER JOIN dbo.Semanas s
 WHERE
     p.Registrado = 1
     AND s.Semana = @Semana
-    AND e.Cedula = @Cedula
+    AND e.Carne = @Carne
 ORDER BY
     d.Departamento,
     e.Carne;";
@@ -111,9 +111,8 @@ ORDER BY
                 {
                     cmd.Parameters.Add("@Semana", SqlDbType.Int).Value = semana;
 
-                    // Ajusta la longitud (50) si tu columna Cedula es de otro tamaño
-                    cmd.Parameters.Add("@Cedula", SqlDbType.VarChar, 50).Value =
-                        (cedula ?? string.Empty).Trim();
+                    // Ajusta el tipo (BigInt/Int) según el tipo real de la columna Carne en la BD.
+                    cmd.Parameters.Add("@Carne", SqlDbType.BigInt).Value = carne;
                 },
                 ct
             ).ConfigureAwait(false);

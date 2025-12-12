@@ -31,8 +31,8 @@ namespace Manga_Rica_P1.UI.Reportes.Shared
         /// <summary>Texto de la etiqueta para la cédula.</summary>
         public string EtiquetaCedula
         {
-            get => lblCedula.Text;
-            set => lblCedula.Text = value;
+            get => lblCarnet.Text;
+            set => lblCarnet.Text = value;
         }
 
         /// <summary>Texto del botón principal.</summary>

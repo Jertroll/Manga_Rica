@@ -69,10 +69,12 @@ namespace Manga_Rica_P1.UI.Reportes
             _virtualHost = virtualHost;
             _renderer = new HtmlReportRenderer(_templatesFolder);
 
-            // ===== Configurar sidebar de semana + cédula =====
+            // ===== Configurar sidebar de semana + carnét =====
             filtroSemanaEmpleado.Titulo = "Filtro Planilla por Empleado";
             filtroSemanaEmpleado.EtiquetaSemana = "Semana :";
-            filtroSemanaEmpleado.EtiquetaCedula = "Cédula :";
+            // El control sigue usando la propiedad CedulaTexto internamente,
+            // pero aquí lo re-interpretamos como CARNET.
+            filtroSemanaEmpleado.EtiquetaCedula = "Carnet :";
             filtroSemanaEmpleado.TextoBoton = "Generar reporte";
 
             CargarSemanasEnSidebar();
@@ -132,7 +134,7 @@ namespace Manga_Rica_P1.UI.Reportes
 </head>
 <body>
   <h3>Planilla Semanal por Empleado</h3>
-  <p>Seleccione una <b>semana</b>, digite la <b>cédula</b> y presione <b>Generar reporte</b>.</p>
+  <p>Seleccione una <b>semana</b>, digite el <b>carnet</b> y presione <b>Generar reporte</b>.</p>
 </body>
 </html>";
                 webView.CoreWebView2.NavigateToString(htmlInicio);
@@ -162,25 +164,30 @@ namespace Manga_Rica_P1.UI.Reportes
                 return;
             }
 
+            // CedulaTexto ahora lo interpretamos como texto de CARNET
             if (string.IsNullOrWhiteSpace(e.CedulaTexto))
             {
                 MessageBox.Show(
-                    "Debe digitar una cédula para filtrar al empleado.",
+                    "Debe digitar un carnet para filtrar al empleado.",
                     "Planilla por Empleado",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Warning);
                 return;
             }
 
-            await CargarReporteAsync(e.SemanaNumero.Value, e.CedulaTexto.Trim());
+            var carnetTexto = e.CedulaTexto.Trim();
+
+            await CargarReporteAsync(e.SemanaNumero.Value, carnetTexto);
         }
 
-        private async Task CargarReporteAsync(int semana, string cedula)
+        // Ahora el segundo parámetro conceptualmente es el CARNET (aunque el servicio aún use string)
+        private async Task CargarReporteAsync(int semana, string carnet)
         {
             try
             {
                 // 1) Llamar al servicio SIN ConfigureAwait(false) para conservar el hilo de UI
-                var vm = await _service.GenerarReportePorSemanaYEmpleadoAsync(semana, cedula);
+                //    Aquí asumimos que el servicio se adaptará para filtrar por CARNET usando este string.
+                var vm = await _service.GenerarReportePorSemanaYEmpleadoAsync(semana, carnet);
 
                 // 2) Branding para el layout base
                 var cfg = Manga_Rica_P1.Program.Configuration;
@@ -219,7 +226,7 @@ namespace Manga_Rica_P1.UI.Reportes
 
                 _vm = vm;
                 _titulo = string.IsNullOrWhiteSpace(vm.Titulo)
-                    ? $"Planilla_Semanal_Empleado_{semana}_{cedula}"
+                    ? $"Planilla_Semanal_Empleado_{semana}_{carnet}"
                     : vm.Titulo;
             }
             catch (Exception ex)
@@ -255,7 +262,7 @@ namespace Manga_Rica_P1.UI.Reportes
             if (_vm == null || _vm.Lineas == null || !_vm.Lineas.Any())
             {
                 MessageBox.Show(
-                    "Primero genere el reporte para alguna semana y cédula.",
+                    "Primero genere el reporte para alguna semana y carnet.",
                     "Exportar Excel",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
@@ -330,7 +337,7 @@ namespace Manga_Rica_P1.UI.Reportes
                 title: title,
                 logoPath: logo,
                 prependPhonesLabel: true,
-                groupByColumn: "Departamento", // en este reporte normalmente será 1 depto, pero se mantiene
+                groupByColumn: "Departamento", // normalmente será 1 depto, pero se mantiene por si acaso
                 subtotalColumns: new[] { "SalarioBruto", "Soda", "Uniforme", "SalarioNeto" },
                 moneyColumns: new[]
                 {
