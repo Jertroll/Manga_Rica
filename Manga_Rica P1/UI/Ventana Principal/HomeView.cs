@@ -17,15 +17,19 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
         {
             try
             {
-                // Ajusta la ruta si tu PDF está en otra carpeta
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-                string pdfPath = Path.Combine(baseDir, "Manual_Usuario.pdf");
+                string pdfPath = Path.Combine(
+                    baseDir,
+                    "Imagenes",
+                    "docs",
+                    "Manual de Usuario Manga Rica Software.pdf"
+                );
 
                 if (!File.Exists(pdfPath))
                 {
                     MessageBox.Show(
                         $"No se encontró el archivo:\n{pdfPath}",
-                        "Manual de usuario",
+                        "Manual de Usuario Manga Rica Software",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Warning);
                     return;
@@ -46,6 +50,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
                     MessageBoxIcon.Error);
             }
         }
+
 
 
     }
