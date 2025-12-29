@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Manga_Rica P1", "Manga_Rica P1.csproj", "{7C824AEA-D4E7-0358-85DD-D7AF4E1E08F0}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup Manga Rica", "..\Setup Manga Rica\Setup Manga Rica.vdproj", "{17080968-CEAC-0AF8-6EC6-DC209C54B539}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,8 @@ Global
 		{7C824AEA-D4E7-0358-85DD-D7AF4E1E08F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C824AEA-D4E7-0358-85DD-D7AF4E1E08F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C824AEA-D4E7-0358-85DD-D7AF4E1E08F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17080968-CEAC-0AF8-6EC6-DC209C54B539}.Debug|Any CPU.ActiveCfg = Debug
+		{17080968-CEAC-0AF8-6EC6-DC209C54B539}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

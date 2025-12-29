@@ -12,6 +12,13 @@
 		<PreserveCompilationContext>true</PreserveCompilationContext>
 		<CopyRefAssembliesToPublishDirectory>true</CopyRefAssembliesToPublishDirectory>
 		<GenerateRuntimeConfigDevFile>true</GenerateRuntimeConfigDevFile>
+		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<AssemblyName>MangaRica Software</AssemblyName>
+		<ApplicationIcon>Imagenes\Recursos\users_theuser_6177.ico</ApplicationIcon>
+		<PackageId>MangaRica_Software</PackageId>
+		<Title>MangaRica_Software</Title>
+		<Authors>jertroll</Authors>
+		<Description>Sistema de planilla para la administracion y pagos de los empleados</Description>
 	</PropertyGroup>
 
 	<ItemGroup>

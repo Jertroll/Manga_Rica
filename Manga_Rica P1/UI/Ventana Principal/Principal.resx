@@ -121,7 +121,7 @@
   <data name="bttnHome.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
-        cQAAAHEBHD+AdwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADtSURBVDhPpdG/
+        cAAAAHABznhikwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADtSURBVDhPpdG/
         LgRRFAbwX6LYN/AQW2jVio1SRKMUD6Ak8Q4SnV7jAbaRiFKvXB1PQCI6jJzNmbh75w+h+HK/Od+fuXNG
         0zT+g85gRWQjUDxvYR+bPxbgBB/4xGnO7hHkerAAE1ym8TYR/AqL0QKs4y5NFzhMBI9Zi25Bfu8T3nGE
         syIQPGahdQuwg1c8YzcM1RuXodTC8xY8s45zWQ/YzrMOtyg9sdxYtJvEHl56QjXCE942t9z62sC1hxDe
@@ -129,13 +129,15 @@
         SUVORK5CYII=
 </value>
   </data>
-  <data name="btnReporteGneralDeducciones.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="btnPlanillaReportes.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
-        cAAAAHABznhikwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAClSURBVDhPjZLB
-        CcJAFETf1RKE9ODFVjx5SEViH7YgnjykDu9iBYLydRf0zyS7A0PI5GX4f1n4ag1cgSfwMr4Dm8JaHYEb
-        sAd2yYeeklOxU5REwWWppKdgBZyBB7DNUE9BPMcyhUzSU5D9xy8VOAkvQUPC/wZzI9dzyLwEg7kL1fEt
-        8xK4gvqj4yVwK9TRHe+DhoSXoCHh42Uyu885WCnIe7f8KXgDYG1bPPBdfRUAAAAASUVORK5CYII=
+        cAAAAHABznhikwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEZSURBVDhPldLL
+        KkdhFAXwn8vAwEDGGCqJYijKe4hHYKzkVoxNSCYmJiJPIGOZkEt5AiO3DIiItrac/0kdZ9Wu/e2119rf
+        /s7hF/N4wF3mTQWukp/EB5Yxh3dM1eDt4LBwjny7Bm8R9xjAIG4xW4PXgVN8ZhyjvQb/jVaMYyTzIWxh
+        M/My34Bu7OMJKyl4wQXOMh/GavYcoLcojk9zjuk8x9TLnNScJhvoyZ4wDk1XGOyluK1wozC4SnGYRL5W
+        4KM3THbjEFcK1yJ+VghhxDP6Sz0zeIwk9oqrlREm6zm5LA6EJt7rT7RgIveOiDxq/0InTvCKo4y3rAVX
+        iZgYf1pfoRYrxKsHV4kbLJSLWEquEtcYLRcxllwDvgD0EFHCiXhyWAAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="btnConfiguraciones.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -286,6 +288,15 @@
         NR7wmgJPc+ACLwsu0y6W0s53aXI0f+FkHrCBSeU632ALK9nQaD77AQJRU4A0uqtMAAAAAElFTkSuQmCC
 </value>
   </data>
+  <data name="btnReporteGneralDeducciones.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
+        cAAAAHABznhikwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAClSURBVDhPjZLB
+        CcJAFETf1RKE9ODFVjx5SEViH7YgnjykDu9iBYLydRf0zyS7A0PI5GX4f1n4ag1cgSfwMr4Dm8JaHYEb
+        sAd2yYeeklOxU5REwWWppKdgBZyBB7DNUE9BPMcyhUzSU5D9xy8VOAkvQUPC/wZzI9dzyLwEg7kL1fEt
+        8xK4gvqj4yVwK9TRHe+DhoSXoCHh42Uyu885WCnIe7f8KXgDYG1bPPBdfRUAAAAASUVORK5CYII=
+</value>
+  </data>
   <data name="btnPagosPrincipal.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
@@ -340,17 +351,6 @@
         ZFI85yWZnOJbTNXkIcbatKdWeNAa/x8T2MReiw2M16Q+RrCNN9zgtEVsRNtqOYPs4gFLJTHn5bYHOx39
         G4t4x2y96DCPDyzUi3Dyx1XNniR+EM+rVewhe3FdxXCFuSr2EBvJ/eITfU8ycur3sykAAAAASUVORK5C
         YII=
-</value>
-  </data>
-  <data name="btnPlanillaReportes.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAA
-        cAAAAHABznhikwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEZSURBVDhPldLL
-        KkdhFAXwn8vAwEDGGCqJYijKe4hHYKzkVoxNSCYmJiJPIGOZkEt5AiO3DIiItrac/0kdZ9Wu/e2119rf
-        /s7hF/N4wF3mTQWukp/EB5Yxh3dM1eDt4LBwjny7Bm8R9xjAIG4xW4PXgVN8ZhyjvQb/jVaMYyTzIWxh
-        M/My34Bu7OMJKyl4wQXOMh/GavYcoLcojk9zjuk8x9TLnNScJhvoyZ4wDk1XGOyluK1wozC4SnGYRL5W
-        4KM3THbjEFcK1yJ+VghhxDP6Sz0zeIwk9oqrlREm6zm5LA6EJt7rT7RgIveOiDxq/0InTvCKo4y3rAVX
-        iZgYf1pfoRYrxKsHV4kbLJSLWEquEtcYLRcxllwDvgD0EFHCiXhyWAAAAABJRU5ErkJggg==
 </value>
   </data>
   <data name="btnSodaReportes.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

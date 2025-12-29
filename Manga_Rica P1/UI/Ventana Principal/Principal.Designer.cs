@@ -788,7 +788,7 @@ namespace Manga_Rica_P1.UI.Ventana_Principal
             btnPlanillaReportes.Padding = new Padding(40, 0, 0, 0);
             btnPlanillaReportes.Size = new Size(273, 89);
             btnPlanillaReportes.TabIndex = 2;
-            btnPlanillaReportes.Text = "       Planilla                     >";
+            btnPlanillaReportes.Text = "       Planilla                   >";
             btnPlanillaReportes.TextAlign = ContentAlignment.MiddleLeft;
             btnPlanillaReportes.UseVisualStyleBackColor = false;
             btnPlanillaReportes.Click += btnPlanillaReportes_Click;
