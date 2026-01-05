@@ -28,6 +28,7 @@ namespace Manga_Rica_P1.UI.Empleados
         private enum GridMode { Solicitudes, Empleados }
         private GridMode _mode = GridMode.Solicitudes;
 
+        private bool _soloSolicitudesNuevas = false;
         // Modo Solicitudes (columnas visibles)
         private static readonly string[] COLS_SOLICITUDES =
         {
@@ -110,18 +111,34 @@ namespace Manga_Rica_P1.UI.Empleados
             if (_mode == GridMode.Empleados)
             {
                 pagedGrid.Title = "Listado de Empleados";
+
                 pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
                     _empSvc.GetPageAsDataTable(pageIndex, pageSize, filtro);
 
                 pagedGrid.SetViewNewButtonText("Solicitudes");
+
+                // 👉 ocultar botón "Ver nuevas"
+                pagedGrid.SecondaryButtonVisible = false;
+                _soloSolicitudesNuevas = false;
             }
             else
             {
                 pagedGrid.Title = "Listado de Solicitudes";
+
                 pagedGrid.GetPage = (pageIndex, pageSize, filtro) =>
-                    _solSvc.GetPageAsDataTable(pageIndex, pageSize, filtro);
+                    _soloSolicitudesNuevas
+                        ? _solSvc.GetNewPageAsDataTable(pageIndex, pageSize, filtro)
+                        : _solSvc.GetPageAsDataTable(pageIndex, pageSize, filtro);
 
                 pagedGrid.SetViewNewButtonText("Empleados");
+
+                // 👉 activar botón secundario (Ver nuevas)
+                pagedGrid.SecondaryButtonVisible = true;
+                pagedGrid.SetSecondaryButtonText(
+                    _soloSolicitudesNuevas ? "Ver todas" : "Ver nuevas"
+                );
+                pagedGrid.SecondaryRequested -= (_, __) => { };
+                pagedGrid.SecondaryRequested += (_, __) => ToggleVerSolicitudesNuevas();
             }
 
             if (doRefresh)
@@ -143,6 +160,21 @@ namespace Manga_Rica_P1.UI.Empleados
 
             SetMode(newMode, doRefresh: true);
         }
+
+        private void ToggleVerSolicitudesNuevas()
+        {
+            if (_mode != GridMode.Solicitudes)
+                return;
+
+            _soloSolicitudesNuevas = !_soloSolicitudesNuevas;
+
+            pagedGrid.SetSecondaryButtonText(
+                _soloSolicitudesNuevas ? "Ver todas" : "Ver nuevas"
+            );
+
+            pagedGrid.RefreshData();
+        }
+
 
         // =========================
         // CRUD

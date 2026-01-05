@@ -84,6 +84,21 @@ namespace Manga_Rica_P1.UI.Solicitudes
 
             // Primer bind
             pagedGrid.RefreshData();
+
+            var grid = pagedGrid.Grid;
+
+            if (grid.Columns.Contains("Cedula"))
+            {
+                grid.Columns["Cedula"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                grid.Columns["Cedula"].Width = 125; // ajusta el valor a tu gusto
+            }
+
+            if (grid.Columns.Contains("Laboro"))
+            {
+                grid.Columns["Laboro"].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                grid.Columns["Laboro"].Width = 50; // ajusta el valor a tu gusto
+            }
+
         }
 
         // =========================

@@ -13,11 +13,12 @@ namespace Manga_Rica_P1.UI.Helpers
         public Func<string, DataTable>? GetAllFilteredDataTable { get; set; }
         public Func<int /*pageIndex*/, int /*pageSize*/, string /*filtro*/, (DataTable page, int total)>? GetPage { get; set; }
 
-        // ==== Eventos CRUD + extra ====
+        // ==== Eventos CRUD + extras ====
         public event EventHandler? NewRequested;
         public event EventHandler? EditRequested;
         public event EventHandler? DeleteRequested;
-        public event EventHandler? ViewNewRequested;   // usado p.ej. en Solicitudes / Empleados
+        public event EventHandler? ViewNewRequested;
+        public event EventHandler? SecondaryRequested; // 🆕 segundo botón extra
 
         // ==== Campos UI ====
         private Panel panelHeader = new();
@@ -33,7 +34,8 @@ namespace Manga_Rica_P1.UI.Helpers
         private Button btnNuevo = new();
         private Button btnEditar = new();
         private Button btnEliminar = new();
-        private Button btnVerNuevas = new();   // botón extra lateral
+        private Button btnVerNuevas = new();   // botón extra 1
+        private Button btnSecondary = new();   // 🆕 botón extra 2
 
         private DataGridView grid = new();
 
@@ -63,23 +65,33 @@ namespace Manga_Rica_P1.UI.Helpers
                 .Select(r => Convert.ToInt32(r.Cells["Id"]!.Value))
                 .ToList();
 
-        // ==== Accesores públicos para los botones ====
+        // ==== Accesores CRUD ====
         public Button BtnNuevo => btnNuevo;
         public Button BtnEditar => btnEditar;
         public Button BtnEliminar => btnEliminar;
 
-        // Cambiar texto del botón extra
+        // ==== Botón extra 1 (existente) ====
         public void SetViewNewButtonText(string text)
         {
-            if (btnVerNuevas != null)
-                btnVerNuevas.Text = text;
+            btnVerNuevas.Text = text;
         }
 
-        // Controlar visibilidad del botón extra desde cada módulo
         public bool ViewNewButtonVisible
         {
             get => btnVerNuevas.Visible;
             set => btnVerNuevas.Visible = value;
+        }
+
+        // ==== Botón extra 2 (nuevo) ====
+        public void SetSecondaryButtonText(string text)
+        {
+            btnSecondary.Text = text;
+        }
+
+        public bool SecondaryButtonVisible
+        {
+            get => btnSecondary.Visible;
+            set => btnSecondary.Visible = value;
         }
 
         public PagedSearchGrid()
@@ -122,7 +134,7 @@ namespace Manga_Rica_P1.UI.Helpers
             btnLimpiar = new Button { Text = "Limpiar", Location = new Point(365, 7), Size = new Size(65, 25) };
             panelSearch.Controls.AddRange(new Control[] { lblBuscar, txtBuscar, btnBuscar, btnLimpiar });
 
-            // Toolbar (derecha)
+            // Toolbar
             panelToolbar = new Panel
             {
                 Dock = DockStyle.Right,
@@ -158,22 +170,31 @@ namespace Manga_Rica_P1.UI.Helpers
                 Location = new Point(6, 124)
             };
 
-            // Botón extra (Ver Nuevas / Ver empleados / Ver solicitudes)
             btnVerNuevas = new Button
             {
                 Text = "Ver Nuevas",
                 BackColor = Color.FromArgb(33, 150, 243),
                 ForeColor = Color.White,
-                // ⬇️ Ajuste de tamaño y fuente para que se vea texto largo ("Ver empleados")
                 Size = new Size(80, 30),
                 Location = new Point(6, 175),
-                Font = new Font("Segoe UI", 8.25f, FontStyle.Regular),
-                Visible = false // por defecto oculto; cada módulo lo activa si lo necesita
+                Font = new Font("Segoe UI", 8.25f),
+                Visible = false
+            };
+
+            btnSecondary = new Button
+            {
+                Text = "Acción",
+                BackColor = Color.FromArgb(156, 39, 176),
+                ForeColor = Color.White,
+                Size = new Size(80, 30),
+                Location = new Point(6, 216),
+                Font = new Font("Segoe UI", 8.25f),
+                Visible = false
             };
 
             panelToolbar.Controls.AddRange(new Control[]
             {
-                btnNuevo, btnEditar, btnEliminar, btnVerNuevas
+                btnNuevo, btnEditar, btnEliminar, btnVerNuevas, btnSecondary
             });
 
             // Grid
@@ -195,7 +216,7 @@ namespace Manga_Rica_P1.UI.Helpers
             btnNext = new Button { Text = "▶", Size = new Size(40, 28), Location = new Point(100, 6) };
             btnLast = new Button { Text = "⏭", Size = new Size(40, 28), Location = new Point(145, 6) };
 
-            lblPageInfo = new Label { AutoSize = true, Location = new Point(200, 11), Text = "1 de 1 (Total: 0)" };
+            lblPageInfo = new Label { AutoSize = true, Location = new Point(200, 11) };
             lblTam = new Label { AutoSize = true, Location = new Point(290, 11), Text = "Tamaño:" };
 
             cboPageSize = new ComboBox
@@ -206,14 +227,12 @@ namespace Manga_Rica_P1.UI.Helpers
             };
             cboPageSize.Items.AddRange(PageSizeOptions.Cast<object>().ToArray());
             cboPageSize.SelectedItem = PageSize;
-            if (cboPageSize.SelectedIndex < 0) cboPageSize.SelectedIndex = 2; // 20 por defecto
 
             panelPager.Controls.AddRange(new Control[]
             {
                 btnFirst, btnPrev, btnNext, btnLast, lblPageInfo, lblTam, cboPageSize
             });
 
-            // Compose
             Controls.Add(grid);
             Controls.Add(panelPager);
             Controls.Add(panelToolbar);
@@ -223,27 +242,16 @@ namespace Manga_Rica_P1.UI.Helpers
 
         private void WireEvents()
         {
-            // Búsqueda
             btnBuscar.Click += (s, e) => { PageIndex = 0; RefreshData(); };
             btnLimpiar.Click += (s, e) => { txtBuscar.Text = ""; PageIndex = 0; RefreshData(); };
-            txtBuscar.KeyDown += (s, e) =>
-            {
-                if (e.KeyCode == Keys.Enter)
-                {
-                    btnBuscar.PerformClick();
-                    e.SuppressKeyPress = true;
-                }
-            };
 
-            // CRUD
             btnNuevo.Click += (s, e) => NewRequested?.Invoke(this, EventArgs.Empty);
             btnEditar.Click += (s, e) => EditRequested?.Invoke(this, EventArgs.Empty);
             btnEliminar.Click += (s, e) => DeleteRequested?.Invoke(this, EventArgs.Empty);
 
-            // Botón extra (Ver Nuevas / Ver empleados …)
             btnVerNuevas.Click += (s, e) => ViewNewRequested?.Invoke(this, EventArgs.Empty);
+            btnSecondary.Click += (s, e) => SecondaryRequested?.Invoke(this, EventArgs.Empty);
 
-            // Paginación
             btnFirst.Click += (s, e) => { PageIndex = 0; RefreshData(); };
             btnPrev.Click += (s, e) => { PageIndex--; RefreshData(); };
             btnNext.Click += (s, e) => { PageIndex++; RefreshData(); };
@@ -257,7 +265,6 @@ namespace Manga_Rica_P1.UI.Helpers
             };
         }
 
-        // === Entrada pública para refrescar ===
         public void RefreshData()
         {
             if (GetPage != null)
@@ -265,8 +272,6 @@ namespace Manga_Rica_P1.UI.Helpers
                 var (pageResult, total) = GetPage(PageIndex, PageSize, FilterText);
                 _totalFiltrado = total;
                 _totalPages = Math.Max(1, (int)Math.Ceiling(total / (double)PageSize));
-                if (PageIndex < 0) PageIndex = 0;
-                if (PageIndex > _totalPages - 1) PageIndex = _totalPages - 1;
                 grid.DataSource = pageResult;
                 UpdatePager(total);
                 return;
@@ -282,20 +287,8 @@ namespace Manga_Rica_P1.UI.Helpers
             var filtered = GetAllFilteredDataTable(FilterText);
             var totalFiltradas = filtered?.Rows.Count ?? 0;
 
-            if (totalFiltradas == 0)
-            {
-                _totalFiltrado = 0;
-                _totalPages = 1;
-                PageIndex = 0;
-                grid.DataSource = filtered; // null o vacía
-                UpdatePager(0);
-                return;
-            }
-
             _totalFiltrado = totalFiltradas;
             _totalPages = Math.Max(1, (int)Math.Ceiling(totalFiltradas / (double)PageSize));
-            if (PageIndex < 0) PageIndex = 0;
-            if (PageIndex > _totalPages - 1) PageIndex = _totalPages - 1;
 
             var pageSegment = filtered!.Clone();
             foreach (var r in filtered.AsEnumerable().Skip(PageIndex * PageSize).Take(PageSize))
